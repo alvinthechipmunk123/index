@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sophia's Mountain Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3E6E2; --snow:#FDF6F3; --ink:#33222A; --rock:#8A6E72; --scree:#E0CBC8;
+  --sign:#F2A0A8; --glacier:#B27E97; --pine:#7A4A5A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:'IBM Plex Sans',system-ui,sans-serif; font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden; transition:background .7s ease;
+}
+.wrap{max-width:1200px;margin:0 auto;padding:0 22px 90px}
+
+.scene{position:relative;height:clamp(300px,44vh,430px);overflow:hidden;border-bottom:2px solid var(--ink)}
+.scene svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.scene-txt{position:absolute;left:22px;right:22px;top:26px;z-index:3;max-width:1156px;margin:0 auto;pointer-events:none}
+@media(min-width:1244px){.scene-txt{left:calc(50% - 578px);right:auto}}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);opacity:.62;margin-bottom:10px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,5.6vw,58px);line-height:.92;letter-spacing:-.04em;font-variation-settings:'opsz' 96;text-shadow:0 2px 26px rgba(255,255,255,.45)}
+h1 em{font-style:normal;opacity:.4}
+.season-tag{position:absolute;right:22px;bottom:18px;z-index:3;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;background:var(--ink);color:var(--snow);padding:6px 12px}
+
+.band{padding:26px 0 0}
+.band-head{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--rock);margin-bottom:10px}
+#readout{color:var(--ink);font-weight:600;letter-spacing:.05em;font-size:12px}
+.months{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+.mo{background:var(--snow);border:1.5px solid var(--scree);border-bottom-width:5px;padding:10px 3px 7px;cursor:pointer;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--rock);transition:.16s}
+.mo:hover{border-color:var(--rock);color:var(--ink);transform:translateY(-2px)}
+.mo.on{background:var(--sign);border-color:var(--ink);color:var(--ink);font-weight:600}
+.mo .n{display:block;font-size:8.5px;letter-spacing:.1em;opacity:.55;margin-top:2px}
+
+.controls{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:24px 0 26px}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;padding:7px 12px;border:1.5px solid var(--scree);background:transparent;color:var(--rock);cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--rock);color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--snow)}
+#sound{border-color:var(--ink);color:var(--ink);font-weight:600;background:var(--sign)}
+#sound.on{background:var(--ink);color:var(--sign)}
+.spacer{flex:1;min-width:16px}
+
+.thead{display:grid;grid-template-columns:104px minmax(150px,1.05fr) 170px 150px 88px 80px;gap:14px;
+  padding:0 16px 7px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--rock)}
+.thead span:nth-child(n+3){text-align:left}
+@media(max-width:900px){.thead{display:none}}
+
+.grid{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:104px minmax(150px,1.05fr) 170px 150px 88px 80px;gap:14px;
+  align-items:center;background:var(--snow);border:1.5px solid var(--ink);padding:11px 16px;
+  cursor:pointer;position:relative;transition:background .15s,opacity .3s,box-shadow .15s}
+.row+.row{margin-top:-1.5px}
+.row:hover{background:#FFFAF8;z-index:3;box-shadow:0 0 0 1.5px var(--ink)}
+.row.dim{opacity:.28;filter:saturate(.15)}
+.row.dim:hover{box-shadow:none;background:var(--snow)}
+.row.peak{border-left:5px solid var(--sign);padding-left:12px}
+.ridge{grid-row:1/3;align-self:stretch;width:104px;min-height:66px;height:100%;
+  border:1px solid var(--scree);display:block}
+.r-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:19px;letter-spacing:-.02em;line-height:1.1}
+.r-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--rock);margin-top:2px}
+.strip{display:grid;grid-template-columns:repeat(12,1fr);gap:2px}
+.cell{height:20px;background:var(--scree)}
+.cell[data-s="1"]{background:#EBCBC9}
+.cell[data-s="2"]{background:#BE7E92}
+.cell[data-s="3"]{background:var(--pine)}
+.cell.sel{outline:2px solid var(--ink);outline-offset:1px}
+.meters{display:flex;gap:9px}
+.meter{flex:1}
+.m-lab{font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--rock);margin-bottom:3px}
+.dots{display:flex;gap:2px}
+.dot{width:100%;height:5px;background:var(--scree)}
+.dot.f{background:var(--ink)}
+.meter.lifts .dot.f{background:var(--glacier)}
+.meter.comf .dot.f{background:#C97F86}
+.live{display:flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--rock);min-height:14px;flex-wrap:wrap}
+.live b{color:var(--ink);font-weight:600;font-size:14px}
+.live .pip{width:5px;height:5px;border-radius:50%;background:#79A05B;flex:none;animation:pulse 2.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.huts{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--rock);line-height:1.25}
+.huts b{display:block;font-size:16px;color:var(--ink);font-weight:600;font-family:'Bricolage Grotesque',sans-serif}
+.r-verdict{grid-column:2/-1;font-size:13px;line-height:1.45;color:#53393F;padding-top:4px;display:flex;gap:13px;align-items:flex-start}
+.r-vtext{flex:1;min-width:0}
+.r-verdict b{font-weight:600;color:var(--ink)}
+.tags{display:inline-flex;flex-wrap:wrap;gap:5px;margin-left:8px;vertical-align:1px}
+.tag{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rock);border:1px solid var(--scree);padding:1px 5px}
+.tag.been{background:var(--ink);color:var(--snow);border-color:var(--ink)}
+.tag.booked{background:var(--sign);border-color:var(--ink);color:var(--ink);font-weight:600}
+@media(max-width:900px){
+  .row{grid-template-columns:88px 1fr;gap:11px}
+  .ridge{width:88px;grid-row:1/2}
+  .strip,.meters,.live,.huts,.r-verdict{grid-column:1/-1}
+  .strip{margin-top:2px}
+}
+.livebox{position:relative;width:112px;aspect-ratio:16/9;flex:none;
+  border:1px solid var(--ink);background:var(--scree);overflow:hidden;display:block}
+.livebox img{width:100%;height:100%;display:block;object-fit:fill}
+.livebox .badge{position:absolute;left:0;bottom:0;background:rgba(28,22,16,.72);color:#FBF7EE;
+  font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:.11em;padding:2px 5px;display:flex;gap:4px;align-items:center}
+.livebox .badge i{width:4px;height:4px;border-radius:50%;background:#8FD07A;display:block;animation:pulse 2.6s infinite}
+.livebox.none{border:1.5px solid var(--ink);background:var(--sign);aspect-ratio:auto;width:auto;
+  display:flex;align-items:center;gap:5px;padding:5px 9px;align-self:flex-start;
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--ink);text-transform:uppercase;
+  text-decoration:none;font-weight:600;white-space:nowrap}
+.livebox.none:hover{background:var(--ink);color:var(--snow)}
+.livebox.none i{width:5px;height:5px;border-radius:50%;background:#4C7A3A;display:block;animation:pulse 2.6s infinite}
+@media(max-width:900px){.livebox{width:132px}}
+.cam{display:block;width:100%;aspect-ratio:16/9;object-fit:fill;border:1.5px solid var(--ink);background:var(--scree)}
+.camwrap{margin:18px 0 6px;display:block}
+.camcap{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--rock);margin-top:5px;display:flex;justify-content:space-between}
+.climate{margin-top:18px}
+.cl-head{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--rock);margin-bottom:6px;display:flex;justify-content:space-between}
+.bars{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;align-items:end;height:56px}
+.bar{background:var(--glacier);min-height:2px}
+.bar.hot{background:#D98A3C}
+.hutlist{margin-top:16px;font-size:13px;line-height:1.5}
+.hutlist span{color:var(--rock)}
+.sheet{position:fixed;inset:auto 0 0 0;max-height:88vh;overflow-y:auto;z-index:50;background:var(--snow);border-top:2.5px solid var(--ink);transform:translateY(101%);transition:transform .32s cubic-bezier(.3,.8,.4,1);box-shadow:0 -14px 44px rgba(44,36,28,.22)}
+.sheet.open{transform:translateY(0)}
+.sheet-in{max-width:1200px;margin:0 auto;padding:28px 22px 46px;position:relative}
+.sheet-x{position:absolute;top:22px;right:22px;background:none;border:1.5px solid var(--ink);width:34px;height:34px;cursor:pointer;font-size:17px;color:var(--ink)}
+.sheet-x:hover{background:var(--ink);color:var(--snow)}
+.d-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(28px,5vw,44px);letter-spacing:-.03em;line-height:1}
+.d-where{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--rock);margin:7px 0 20px}
+.d-cols{display:grid;grid-template-columns:1.4fr 1fr;gap:32px}
+@media(max-width:760px){.d-cols{grid-template-columns:1fr;gap:20px}}
+.d-body p{margin-bottom:12px;line-height:1.6}
+.facts{border-top:1.5px solid var(--ink)}
+.fact{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--scree);font-size:13px}
+.fact dt{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--rock);padding-top:2px}
+.fact dd{text-align:right;font-weight:500}
+.d-strip{margin:20px 0 4px}
+.d-strip .cell{height:26px}
+.strip-key{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--rock);text-align:center;margin-top:5px}
+
+footer{margin-top:52px;padding-top:20px;border-top:1.5px solid var(--ink);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--rock);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.legend{display:flex;gap:13px;flex-wrap:wrap}
+.lg{display:flex;gap:5px;align-items:center}
+.lg i{width:12px;height:12px;display:block}
+@media(max-width:620px){.months{grid-template-columns:repeat(6,1fr)}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <svg viewBox="0 0 1200 430" preserveAspectRatio="xMidYMax slice" id="sceneSvg"></svg>
+  <div class="scene-txt">
+    <div class="eyebrow">Field index · assembled Aug 2026</div>
+    <h1>Sophia's<br>Mountain<br>Planner<em>.</em></h1>
+  </div>
+  <div class="season-tag" id="seasonTag">All seasons</div>
+</div>
+
+<div class="wrap">
+  <div class="band">
+    <div class="band-head">
+      <span>Pick a month — the sky moves with it</span>
+      <span id="readout"></span>
+    </div>
+    <div class="months" id="months"></div>
+  </div>
+
+  <div class="controls" id="controls">
+    <button class="chip on" data-reg="all">All</button>
+    <button class="chip" data-reg="Alps">Alps</button>
+    <button class="chip" data-reg="Asia">Asia</button>
+    <button class="chip" data-reg="Beyond">Beyond</button>
+    <span class="spacer"></span>
+    <button class="chip on" data-sort="drama">Sort · Drama</button>
+    <button class="chip" data-sort="comfort">Comfort</button>
+    <button class="chip" data-sort="lifts">Walk to the lift</button>
+    <button class="chip" id="sound" aria-pressed="false">♪ Piano off</button>
+  </div>
+
+  <div class="thead">
+    <span>Skyline</span><span>Base</span><span>Season by month</span><span>Drama / comfort / lifts</span><span>Now</span><span>Huts</span>
+  </div>
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <div class="legend">
+      <span class="lg"><i style="background:#7A4A5A"></i> Prime</span>
+      <span class="lg"><i style="background:#BE7E92"></i> Good</span>
+      <span class="lg"><i style="background:#EBCBC9"></i> Marginal</span>
+      <span class="lg"><i style="background:#E0CBC8"></i> Shut</span>
+    </div>
+    <div>Five nights per base. Then move.</div>
+  </footer>
+</div>
+
+<div class="sheet" id="sheet">
+  <div class="sheet-in">
+    <button class="sheet-x" id="sheetX" aria-label="Close">×</button>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<script>
+const M=['J','F','M','A','M','J','J','A','S','O','N','D'];
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const SKY=[
+ ['#B48CA6','#F6D9D4','#FBE3C0','#4A3242','#F2E4E4','Deep winter'],
+ ['#B78FA6','#F7DCD6','#FCE5C2','#4C3444','#F2E5E4','Late winter'],
+ ['#BC93A4','#F9DFD6','#FBE0BC','#4E3644','#F3E6E3','Early spring'],
+ ['#C297A2','#FADFD2','#FBD8B0','#4F3842','#F4E7E1','Spring'],
+ ['#C89A9E','#FBE0CE','#FBD0A4','#513A41','#F5E7DF','Late spring'],
+ ['#CE9E9A','#FCE1CA','#FBC796','#523B40','#F6E8DD','Early summer'],
+ ['#D2A196','#FCE0C4','#FBBE88','#533C3E','#F7E8DB','High summer'],
+ ['#D6A093','#FBDCBE','#FAB47C','#553C3D','#F6E5D8','Late summer'],
+ ['#D89A8C','#FAD5B4','#F7A56C','#563A3B','#F5E2D5','Early autumn'],
+ ['#D39285','#F7CBA9','#F2955E','#563739','#F3DFD2','Autumn'],
+ ['#C88A85','#F2C0A4','#EA8659','#523438','#F0DACF','Late autumn'],
+ ['#B98C9C','#F0D2CC','#F5C79E','#4C3340','#EFDEDC','Onset of winter']
+];
+
+const D=[
+{n:'Ortisei',lat:46.576,lon:11.672,cam:'valgardena',r:'Val Gardena, Italy',reg:'Alps',alt:1236,lifts:3,drama:5,comf:4,s:[2,2,2,0,1,2,3,2,3,3,0,1],
+ v:'Three lifts from the village and the Seceda ridge in front of you. <b>Seven nights was two too many</b> — and the food wore thin by day four.',
+ tags:['been','ladin','escalators'],
+ body:['Seceda, Alpe di Siusi and Resciesa all leave from the village, which is the rarest thing on this list. The Puez plateau from Col Raiser is the day that stayed unwalked.','The complaint that surfaced by midweek was the rotation: speck, dumplings, pizza, repeat. Val Gardena is a scenery valley, not a food one.','September beats August on every axis — a third off the apartment rate, the Italian holidays finished, and the thunderstorms easing.'],
+ f:{'Best window':'Sep 5–19','Lift season':'Late Jun – early Oct','Rain risk':'Low–mid','Car':'No','Apartment':'€805/wk shoulder'}},
+{n:'Corvara',lat:46.551,lon:11.874,cam:'kronplatz',r:'Alta Badia, Italy',reg:'Alps',alt:1568,lifts:2,drama:5,comf:4,s:[2,2,2,0,1,2,3,2,3,3,0,1],
+ v:'Ortisei\'s structure one valley east, with <b>the best eating in the Dolomites</b>. The obvious return.',
+ tags:['next','sella','michelin'],
+ body:['Boè lifts you onto the Sella massif; Col Alto onto the Pralongià meadows. Four more lifts across the valley on a frequent bus, guest-card covered.','Alta Badia is where South Tyrol\'s chefs actually are, and the mountain huts cook properly rather than serving canteen Knödel. That fixes the one thing Val Gardena got wrong.','Weaker than Ortisei on one count: no proper pedestrian centre.'],
+ f:{'Best window':'Sep 5–19','Lift season':'Late Jun – early Oct','Rain risk':'Low–mid','Car':'No','Getting there':'Rail to Brunico, bus 460'}},
+{n:'Schönau',lat:47.591,lon:12.994,cam:'koenigssee',r:'Königssee, Germany',reg:'Alps',alt:600,lifts:1,drama:5,comf:3,s:[1,1,1,1,2,3,3,3,3,2,0,1],
+ v:'<b>Best terrain on the list.</b> One lift. Every other day starts with a bus — that\'s the tax and it\'s real.',
+ tags:['booked','watzmann','national park'],
+ body:['The Watzmann east face is the tallest wall in the Eastern Alps and it drops straight into the Königssee. The Steinernes Meer, Wimbachgries and the Obersee are all first-rate and all reached from valley trailheads.','The apartment sits 200 metres from the Jenner gondola, which converts two or three days into walk-out-the-door days.','Wettest place on this index. September is the month; August is thunderstorms.'],
+ f:{'Best window':'Early–mid Sep','Lift':'Jenner, 9–17','Rain risk':'High','Car':'No','Nearest city':'Salzburg, 30 min'}},
+{n:'St. Anton',lat:47.129,lon:10.264,cam:'stuben',r:'Arlberg, Austria',reg:'Alps',alt:1300,lifts:5,drama:4,comf:4,s:[3,3,3,1,0,1,3,3,3,1,0,2],
+ v:'Mayrhofen\'s formula done properly — <b>five lifts from the village</b>, the Valluga to 2,650m, mainline rail.',
+ tags:['galzig','valluga','cheap lifts'],
+ body:['Galzig leaves from the village centre; the Valluga runs 3 July to 4 October and puts you at 2,650m looking into three countries.','The Arlberg Trail is the local multi-day: three stages linking St. Anton, Stuben, Zürs and Lech with lift tickets built in.','A winter resort in summer means fewer people and some restaurants shut. Check what\'s open before committing.'],
+ f:{'Best window':'Jul – late Sep','Lift season':'13 Jun – 4 Oct','Rain risk':'Mid','Car':'No','Day pass':'~€28–35'}},
+{n:'Zell am See',lat:47.323,lon:12.797,cam:'zellamsee',r:'Pinzgau, Austria',reg:'Alps',alt:750,lifts:1,drama:3,comf:5,s:[3,3,3,1,1,2,3,3,3,2,0,2],
+ v:'<b>Best week, weakest hiking base.</b> One gentle town mountain — but a lake you can swim in and a town worth walking around.',
+ tags:['lake','glacier','rail hub'],
+ body:['The Schmittenhöhe covers two or three days. Everything better — Kitzsteinhorn, the Tauern valleys, the Großglockner road — is 20 minutes to two hours by bus.','What it has that no other Alpine base does: a warm lake, a medieval core, and enough restaurants that you\'re not eating the same three menus.','July–August brings a large Gulf-state clientele and changes the town\'s texture. September avoids it.'],
+ f:{'Best window':'Sep','Lift':'Kitzsteinhorn year-round','Rain risk':'Mid','Car':'No','Salzburg':'90 min'}},
+{n:'Mayrhofen',lat:47.166,lon:11.863,cam:'mayrhofen',r:'Zillertal, Austria',reg:'Alps',alt:630,lifts:2,drama:3,comf:3,s:[3,3,3,1,1,2,3,3,3,2,0,2],
+ v:'Two cable cars from one street. The mountains were <b>okay</b> — grass and rounded ridges, the drama always one valley further than the lifts go.',
+ tags:['been','penken','ahorn'],
+ body:['The Penken ridge to Granatalm and the Ahorn up to the Edelhütte are both good days. Neither makes you stop mid-stride.','The Schlegeis suspension bridge and the glaciated main crest are the real scenery, and they need a bus and a 600m climb.','Worked as a warm-up. Wouldn\'t repeat unless the valley pulled you back.'],
+ f:{'Verdict':'Okay','Lift season':'Late May – early Oct','Rain risk':'Mid','Car':'No','Gym':'Shape, €15/day'}},
+{n:'Vinschgau',lat:46.628,lon:10.771,cam:'meran',r:'South Tyrol, Italy',reg:'Alps',alt:720,lifts:1,drama:2,comf:4,s:[1,1,2,3,3,3,3,3,3,3,1,1],
+ v:'<b>The driest valley in the Alps.</b> Fixes the weather and the food, gentles the terrain, and almost nobody goes.',
+ tags:['dry','apples','quiet'],
+ body:['The Waalwege are the signature — footpaths beside ancient irrigation channels, contouring through orchards and larch. Dozens of them, shaded and gentle.','Stelvio National Park has the serious terrain under the Ortler, and the Vinschger Höhenweg is a six-day route with luggage transport.','Rain shadow means sun when the rest of the Alps are under cloud. The trade is drama.'],
+ f:{'Best window':'May–Jun, Sep–Oct','Lift':'Watles','Rain risk':'Lowest in the Alps','Car':'Helps','Bases':'Schlanders, Mals, Glurns'}},
+{n:'Bregenzerwald',lat:47.383,lon:9.938,cam:'damuels',r:'Vorarlberg, Austria',reg:'Alps',alt:700,lifts:2,drama:2,comf:5,s:[2,2,2,1,2,3,3,3,3,2,0,2],
+ v:'Quiet, superb food, contemporary timber architecture, <b>no drama whatsoever</b>. The anti-Dolomites.',
+ tags:['cheese road','design','empty'],
+ body:['An unusual concentration of family-run design hotels and serious kitchens for a valley this size, plus the Käsestrasse and working dairies.','Lifts at Damüls, Mellau and Bezau. Hiking is Zillertal-grade — pleasant, never astonishing.','The pick if the complaint was crowds and eating rather than scenery.'],
+ f:{'Best window':'Jun–Sep','Lift season':'Jun – mid Oct','Rain risk':'Mid–high','Car':'Helps','Draw':'Food, architecture'}},
+{n:'Grindelwald',lat:46.624,lon:8.041,cam:null,r:'Bernese Oberland, Switzerland',reg:'Alps',alt:1034,lifts:3,drama:5,comf:5,s:[3,3,3,1,1,2,3,3,3,2,0,2],
+ v:'<b>The formula at its ceiling</b> — Eiger overhead, three lift systems from the village, Swiss rail to the door. You pay for all of it.',
+ tags:['eiger','rail','expensive'],
+ body:['Nothing in the Alps combines drama and lift-density this well. Mürren and Wengen next door are car-free villages on cliff shelves, reached only by train or cable car.','Roughly 1.5–2× Dolomites pricing across the board.','The upgrade if the compact-base formula is what you\'re optimising and budget stops being the constraint.'],
+ f:{'Best window':'Jun–Sep','Lift':'Year-round','Rain risk':'Mid–high','Car':'No','Cost':'1.5–2× Italy'}},
+{n:'Chamonix',lat:45.923,lon:6.869,cam:null,r:'Haute-Savoie, France',reg:'Alps',alt:1035,lifts:3,drama:5,comf:4,s:[3,3,3,1,1,2,3,3,3,2,0,2],
+ v:'Biggest vertical relief in western Europe, a real town underneath it, and <b>meaningfully cheaper than Switzerland</b>.',
+ tags:['mont blanc','tmb','alpinist'],
+ body:['Aiguille du Midi and Brévent both leave from town. The Mer de Glace, the Balcon Sud, and the Tour du Mont Blanc if the trek appetite grows.','Grittier and more mountaineering-flavoured than the Swiss or Italian options — a working alpinist town, not a resort.','The one dramatic option in the mid price band that hasn\'t been on the list.'],
+ f:{'Best window':'Jul–Sep','Lift':'Year-round','Rain risk':'Mid','Car':'No','Trek':'TMB starts here'}},
+{n:'Oberstdorf',lat:47.41,lon:10.279,cam:'nebelhorn',r:'Allgäu, Germany',reg:'Alps',alt:815,lifts:3,drama:3,comf:4,s:[2,2,2,1,2,3,3,3,3,2,0,2],
+ v:'Germany\'s most frictionless base — rail terminus, three lift systems, walkable town. <b>Green loveliness rather than rock.</b>',
+ tags:['nebelhorn','spa town','easy'],
+ body:['Nebelhorn from the centre, Fellhorn crossing into Austria mid-ridge, plus three car-free side valleys walkable from town.','The Allgäu is grassy-steep — flower meadows tilting into sharp grass ridges. Ceiling below the Dolomites, floor above boredom.','German spa-hotel stock at Austrian-adjacent prices.'],
+ f:{'Best window':'Jun–Sep','Lift':'May – Oct','Rain risk':'Mid–high','Car':'No','Rail':'Direct from Munich'}},
+{n:'Bohinj',lat:46.277,lon:13.856,cam:null,r:'Julian Alps, Slovenia',reg:'Alps',alt:525,lifts:1,drama:3,comf:2,s:[1,1,1,1,2,3,3,3,3,2,0,1],
+ v:'One cable car in the entire range, rough steep trails, <b>half the price</b>. A four-night add-on, not a week.',
+ tags:['triglav','cheap','wild'],
+ body:['Vogel from the lakeshore is the only real lift. Everything else you walk up from the valley floor, on paths that are lines of mud and rock straight up.','Genuinely wild terrain, a swimmable lake, and a fraction of the crowds. Prices 30–40% below Austria.','Three and a half hours from Ortisei, two from Venice. That\'s the shape where it works.'],
+ f:{'Best window':'Jun–Sep','Lift':'Vogel','Rain risk':'Mid','Car':'Helps','From Venice':'2 hrs'}},
+{n:'Innsbruck',lat:47.269,lon:11.404,cam:'innsbruck',r:'Tyrol, Austria',reg:'Alps',alt:574,lifts:1,drama:2,comf:5,s:[2,2,2,2,2,2,2,2,2,2,1,2],
+ v:'A city with mountains visible from it. Went looking for a trail and found <b>ninety minutes of asphalt</b>. Two nights as a transition, not a base.',
+ tags:['been','city','transition'],
+ body:['Reaching real terrain means the funicular-plus-cable-car chain, tickets and a schedule. The valley walls are residential far higher than feels right.','What it does well: the bell foundry, the bronze army in the Hofkirche, strudel, and a proper rainy-day city.','Correct use is what it got — a two-night decompression between Munich and the Alps.'],
+ f:{'Verdict':'Not a base','Nordkette':'~€60 return','Rain risk':'Mid','Car':'No','Best for':'2 nights, transit'}},
+
+{n:'Kamikochi',lat:36.25,lon:137.633,cam:null,r:'Japan Alps, Nagano',reg:'Asia',alt:1500,lifts:1,drama:5,comf:4,s:[0,0,0,1,2,2,3,3,3,3,1,0],
+ v:'<b>Car-free by law</b>, ringed by 3,000m peaks, hut-dense. The closest thing in Asia to the Alpine formula.',
+ tags:['car-free','huts','ryokan'],
+ body:['Private vehicles are banned; you arrive by bus through a tunnel and the valley floor is a river plain with the Hotaka range standing over it. Day walks from the door, and the Yari–Hotaka traverses above for the serious version.','The Shinhotaka Ropeway nearby is Japan\'s biggest and puts you at 2,156m in minutes.','Ryokan half-board is the format — kaiseki dinners, onsen after walking. Vegan needs arranging ahead; dashi is in everything.'],
+ f:{'Best window':'Jul–Oct','Closed':'Mid Nov – mid Apr','Lift':'Shinhotaka Ropeway','Car':'Banned','Colour':'Mid–late Oct'}},
+{n:'Sounkyo',lat:43.72,lon:142.966,cam:null,r:'Daisetsuzan, Hokkaido',reg:'Asia',alt:670,lifts:1,drama:4,comf:3,s:[0,0,0,0,1,2,3,3,3,2,0,0],
+ v:'Onsen village in a gorge with a <b>ropeway to 1,984m</b> and Japan\'s biggest alpine plateau above it. Hot springs instead of saunas.',
+ tags:['onsen','ropeway','august'],
+ body:['Ropeway plus chairlift from the village onto Kurodake, then the Daisetsuzan plateau — Japan\'s earliest autumn colours, from mid-September.','Hokkaido skips the mainland\'s misery: no rainy season, 22–26°C, typhoons usually weakened or absent. Mid-August works here when it works nowhere else in Japan.','The Grand Traverse across the plateau is 4–7 days, tent-based, bear country. An expedition, not a holiday.'],
+ f:{'Best window':'Jul–mid Sep','Lift':'Kurodake ropeway','Heat':'22–26°C','Car':'Useful','Alt base':'Asahidake Onsen'}},
+{n:'Nakasendō',lat:35.577,lon:137.564,cam:null,r:'Kiso Valley, Japan',reg:'Asia',alt:800,lifts:0,drama:2,comf:5,s:[1,1,2,3,3,2,1,1,2,3,3,1],
+ v:'The Edo post road, village to village through cedar forest. <b>Ryokan every night, bags forwarded</b> — the most civilised multi-day walk in Asia.',
+ tags:['walking route','ryokan','self-guided'],
+ body:['Magome to Tsumago is the famous section — two and a half hours between restored post towns. String more stages together and it runs for days.','Self-guided with luggage transfer costs a fraction of a guided tour: $800–1,500 per person for a week, booked direct or through Oku Japan.','Culture rather than altitude. Zero drama, maximum comfort, and the food is the point.'],
+ f:{'Best window':'Apr–May, Oct–Nov','Format':'Inn to inn','Luggage':'Forwarded','Difficulty':'Easy','Cost':'$800–1,500/wk'}},
+{n:'Seoraksan',lat:38.19,lon:128.466,cam:null,r:'Gangwon, South Korea',reg:'Asia',alt:400,lifts:1,drama:4,comf:4,s:[1,1,2,3,3,2,1,1,3,3,2,1],
+ v:'Granite spires, a cable car from the park gate, and <b>October colour that stops the country</b>. Underrated by everyone outside Korea.',
+ tags:['granite','autumn','cable car'],
+ body:['Ulsanbawi is the classic day — 800-odd steps up a granite ridge to a summit looking over the East Sea. Daecheongbong is the long one.','Korean trail infrastructure is excellent: signed, maintained, and busy with locals who take hiking seriously as a national pastime.','Sokcho on the coast is the base — seafood market, hot springs, half an hour from the park gate.'],
+ f:{'Best window':'Late Sep–Oct, May','Peak crowds':'Oct colour','Lift':'Sinheungsa cable car','Base':'Sokcho','Food':'Excellent'}},
+{n:'Ladakh',lat:34.165,lon:77.585,cam:null,r:'Markha Valley, India',reg:'Asia',alt:3500,lifts:0,drama:5,comf:2,s:[0,0,0,0,1,3,3,3,3,2,0,0],
+ v:'High-desert Buddhist Himalaya, homestay to homestay. <b>You land at 3,500m</b> — the acclimatisation is not optional.',
+ tags:['homestay','altitude','moonscape'],
+ body:['The Markha Valley trek is 6–8 days between villages, sleeping in family homes, crossing passes above 5,000m. The most visually alien landscape on this index.','Flying into Leh puts you at 3,500m with no gradual gain — two full rest days on arrival are mandatory, not advisory.','Cheap, and the monastery towns are the other half of the trip.'],
+ f:{'Best window':'Jun–Sep','Altitude':'3,500–5,200m','Acclimatise':'2 days minimum','Format':'Homestay','Cost':'Low'}},
+{n:'Ala-Kul',lat:42.49,lon:78.394,cam:null,r:'Tian Shan, Kyrgyzstan',reg:'Asia',alt:2000,lifts:0,drama:5,comf:2,s:[0,0,0,0,0,2,3,3,3,1,0,0],
+ v:'4,000m passes, glacial lakes, yurts and horses — at <b>$60–100 a day fully supported</b>. Nobody is there.',
+ tags:['yurts','cheap','undiscovered'],
+ body:['The Ala-Kul trek out of Karakol is 3–4 days over a 3,900m pass to a turquoise lake, ending at hot springs. Jyrgalan is the quieter alternative.','Prices read like typos next to the Alps, and the terrain is bigger.','Season is short and hard-edged: July to early September, and the passes hold snow either side.'],
+ f:{'Best window':'Jul–early Sep','Pass':'3,900m','Cost':'$60–100/day','Format':'Yurt + camp','Base':'Karakol'}},
+{n:'Druk Path',lat:27.433,lon:89.416,cam:null,r:'Bhutan',reg:'Asia',alt:2400,lifts:0,drama:4,comf:3,s:[0,0,2,3,1,0,0,0,1,3,3,1],
+ v:'Paro to Thimphu over five days of ridges and lakes, with the <b>$100/day tariff</b> buying a country with no crowds.',
+ tags:['tariff','monasteries','permit'],
+ body:['Five days, 4,200m passes, camping between glacial lakes with the Himalaya on the horizon. Ends near Tiger\'s Nest if you time it.','The daily Sustainable Development Fee is the entry cost and the reason Bhutan never feels overrun.','If the budget goes to lodge-trek levels anyway, this spends it better than most.'],
+ f:{'Best window':'Mar–Apr, Oct–Nov','Max pass':'4,200m','Format':'Camping','Tariff':'~$100/day','Length':'5 days'}},
+{n:'Annapurna',lat:28.596,lon:83.822,cam:null,r:'Nepal',reg:'Asia',alt:2000,lifts:0,drama:5,comf:2,s:[0,0,2,3,1,0,0,0,1,3,3,0],
+ v:'The best hut-to-hut analogue on earth — <b>teahouses, cooked meals, a daypack</b>, and the Himalaya. A third the price of the Alps.',
+ tags:['teahouse','altitude','oct-nov'],
+ body:['Five to seven hours a day between villages, sleeping in lodges, eating dal bhat. Two weeks guided runs $1,500–2,500 all in.','Thorong La is 5,416m and the circuits are designed to acclimatise you gradually — the schedule is the safety system, and rushing it is the danger.','No altitude data on yourself yet. A 3,000m+ overnight somewhere lower would answer that before committing.'],
+ f:{'Best window':'Oct–Nov, Mar–Apr','Max altitude':'5,416m','Cost':'$1,500–2,500','Format':'Teahouse','Vegan':'Dal bhat, easy'}},
+{n:'Svaneti',lat:43.045,lon:42.728,cam:null,r:'Caucasus, Georgia',reg:'Asia',alt:1500,lifts:0,drama:5,comf:1,s:[0,0,0,0,1,2,3,3,3,1,0,0],
+ v:'Medieval stone towers under glaciated 4,000m peaks. <b>Comfort is the problem</b> — guesthouses, rough roads, long access.',
+ tags:['mestia','towers','guided'],
+ body:['Mestia to Ushguli is four days guesthouse-to-guesthouse through a landscape that exists nowhere else.','Getting there is a domestic flight or a nine-hour drive from Tbilisi, and the roads are the genuine risk rather than any crime.','Guided fixes the logistics but can\'t conjure a spa hotel in Ushguli. The wine and the hospitality are the real draw.'],
+ f:{'Best window':'Jun–Sep','Format':'Guesthouse trek','Access':'Hard','Guided':'$2,500–4,000','Caveat':'Low comfort floor'}},
+
+{n:'El Chaltén',lat:-49.331,lon:-72.886,cam:null,r:'Patagonia, Argentina',reg:'Beyond',alt:405,lifts:0,drama:5,comf:2,s:[3,3,2,1,0,0,0,0,0,1,2,3],
+ v:'<b>Every trail starts in the street.</b> No lifts, no permits, no fees — the purest version of the compact-base idea anywhere.',
+ tags:['fitz roy','feb','trailhead town'],
+ body:['Laguna de los Tres is ten hours and 800m to the Fitz Roy viewpoint. Laguna Torre is six. Loma del Pliegue Tumbado gives the 360° panorama with fewer people.','A village of 1,500 built for trekkers — hostels through to decent hotels, a brewery, bakeries, and everyone doing the same thing you are.','Patagonian wind is the real difficulty. Four seasons a day, and gusts that stop you walking.'],
+ f:{'Best window':'Dec–Mar','Lifts':'None','Wind':'Severe','Car':'No','Access':'El Calafate + 3 hr'}},
+{n:'Torres del Paine',lat:-51.073,lon:-72.507,cam:null,r:'Patagonia, Chile',reg:'Beyond',alt:150,lifts:0,drama:5,comf:3,s:[3,3,2,1,0,0,0,0,0,1,2,3],
+ v:'The W circuit, four or five days, refugios or domes. <b>Book months ahead</b> or don\'t go.',
+ tags:['w circuit','refugios','feb'],
+ body:['Refugios booked direct through Fantástico Sur and Vertice run €1,000–1,600 for the W with meals, self-guided. EcoCamp\'s domes are more comfortable and deliberately off-grid — no wifi, by philosophy rather than oversight.','Puerto Natales means a two-hour drive to the park each day; it isn\'t a base-town week.','Guided in the mid band: Cascada, Chile Nativo, Antares at €1,500–2,800.'],
+ f:{'Best window':'Dec–Mar','Format':'Point to point','Wifi':'Poor everywhere','Book':'Months ahead','Cost':'€1,000–2,800'}},
+{n:'Kaş',lat:36.202,lon:29.639,cam:null,r:'Lycian coast, Turkey',reg:'Beyond',alt:0,lifts:0,drama:3,comf:3,s:[0,0,1,3,3,2,1,1,3,3,2,0],
+ v:'Lycian Way from the door, the best water on the coast, and <b>half the price of anywhere in Greece</b>.',
+ tags:['lycian way','diving','cheap'],
+ body:['A town of 8,000 rather than a resort — whitewashed hillside, small harbour, and trails running straight out along the coast.','Kekova and the sunken city, Kaputaş beach, and the best diving on the Turkish coast.','Beats the Greek islands on hiking and price. Loses on the town — Chania is the grander place.'],
+ f:{'Best window':'Apr–Jun, Sep–Oct','Trail':'Lycian Way','Sea':'Warmest in Sep','Car':'No','From Dalaman':'2 hrs'}},
+{n:'Chania',lat:35.514,lon:24.018,cam:null,r:'Crete, Greece',reg:'Beyond',alt:0,lifts:0,drama:3,comf:4,s:[0,0,1,3,3,2,1,1,3,3,1,0],
+ v:'Venetian harbour town, <b>the best food on any of these lists</b>, and the White Mountains behind it.',
+ tags:['samaria','venetian','food'],
+ body:['Samaria Gorge is 16km and needs the early bus. Imbros is the shorter version. The Lefka Ori behind them have the only Greek hiking that competes with the Alps.','Five nights covers the west — the gorges, Elafonissi and Balos, the Akrotiri peninsula, and the town as the evening reward.','Needs a car for the good bits, which are spread out.'],
+ f:{'Best window':'Apr–Jun, Sep–Oct','Big day':'Samaria, 16km','Heat':'Avoid Jul–Aug','Car':'Yes','Second base':'Rethymno'}},
+{n:'Madeira',lat:32.758,lon:-16.966,cam:null,r:'Portugal',reg:'Beyond',alt:600,lifts:0,drama:4,comf:4,s:[2,2,3,3,3,3,3,3,3,3,2,2],
+ v:'Levada walks along cliff-edge irrigation channels, <b>18–20°C in January</b>, and it never closes.',
+ tags:['levadas','winter','year-round'],
+ body:['The levadas are contour paths beside 500-year-old water channels — flat walking through laurel forest with enormous drops beside you.','Pico Ruivo and the Areeiro ridge give you real mountain terrain above the cloud line.','The best winter hiking reachable from either side of the Atlantic.'],
+ f:{'Best window':'Year-round','Winter':'18–20°C','Format':'Levada paths','Car':'Helps','From Lisbon':'1.5 hr'}},
+{n:'La Palma',lat:28.686,lon:-17.867,cam:null,r:'Canary Islands, Spain',reg:'Beyond',alt:800,lifts:0,drama:4,comf:3,s:[3,3,3,3,3,2,2,2,3,3,3,3],
+ v:'A volcanic ridge walk above the clouds at 20°C in <b>February</b>. The Canaries\' hiking island.',
+ tags:['volcano','winter','ruta'],
+ body:['The Ruta de los Volcanes runs the spine of the island at around 2,000m with the Atlantic on both sides. The Caldera de Taburiente is the other headline.','Cheap flights from Europe, dry, and it works every month of the year.','Least developed of the main Canaries and the one people go to specifically to walk.'],
+ f:{'Best window':'Oct–May','Winter':'20°C','Trail':'Ruta de los Volcanes','Car':'Yes','Crowds':'Low'}}
+];
+
+let sel=null,reg='all',sort='drama';
+const grid=document.getElementById('grid'),monthsEl=document.getElementById('months'),
+      readout=document.getElementById('readout'),sheet=document.getElementById('sheet'),
+      sheetBody=document.getElementById('sheetBody'),svg=document.getElementById('sceneSvg'),
+      seasonTag=document.getElementById('seasonTag');
+
+M.forEach((m,i)=>{
+  const b=document.createElement('button');
+  b.className='mo';b.innerHTML=m+'<span class="n">'+String(i+1).padStart(2,'0')+'</span>';
+  b.setAttribute('aria-label',MN[i]);
+  b.onclick=()=>{sel=(sel===i)?null:i;render()};
+  monthsEl.appendChild(b);
+});
+
+function seedFrom(s){let h=7;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h}
+function rnd(seed){let s=seed||1;return()=>{s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff}}
+
+/* real skylines, anime-flattened — 320x58, baseline 58 */
+const PEAKS={
+'Ortisei':        ['Seceda',      [[0,54],[46,47],[92,38],[136,28],[168,17],[186,9],[196,20],[206,7],[216,21],[228,5],[238,22],[250,11],[262,25],[278,36],[300,46],[320,52]],1],
+'Corvara':        ['Sella',       [[0,53],[38,47],[66,30],[82,15],[104,12],[196,12],[214,16],[232,30],[262,42],[320,51]],1],
+'Schönau':        ['Watzmann',    [[0,55],[38,46],[72,32],[100,18],[126,6],[146,15],[166,9],[186,20],[206,14],[224,26],[252,37],[288,47],[320,54]],1],
+'St. Anton':      ['Valluga',     [[0,55],[46,46],[92,33],[132,18],[158,5],[184,17],[214,29],[252,39],[292,48],[320,54]],1],
+'Zell am See':    ['Kitzsteinhorn',[[0,55],[40,49],[78,40],[112,27],[142,14],[162,9],[184,15],[214,27],[252,38],[292,48],[320,54]],1],
+'Mayrhofen':      ['Penken',      [[0,54],[42,46],[86,38],[124,32],[158,28],[192,31],[228,36],[266,43],[300,49],[320,53]],0],
+'Vinschgau':      ['Ortler',      [[0,55],[44,50],[86,41],[124,28],[152,12],[172,6],[194,16],[224,29],[262,40],[300,49],[320,54]],1],
+'Bregenzerwald':  ['Kanisfluh',   [[0,54],[40,48],[74,40],[100,34],[150,32],[200,35],[240,40],[282,47],[320,52]],0],
+'Grindelwald':    ['Eiger',       [[0,55],[36,51],[74,44],[108,26],[134,10],[152,4],[176,16],[208,28],[248,39],[290,48],[320,54]],1],
+'Chamonix':       ['Mont Blanc',  [[0,55],[36,48],[68,36],[92,22],[108,26],[118,10],[128,26],[140,14],[156,24],[178,12],[208,20],[240,32],[280,44],[320,53]],1],
+'Oberstdorf':     ['Nebelhorn',   [[0,54],[38,48],[76,39],[112,29],[142,20],[166,15],[194,22],[228,32],[268,42],[320,52]],0],
+'Bohinj':         ['Triglav',     [[0,55],[42,49],[80,40],[112,26],[132,14],[146,20],[158,8],[172,20],[186,15],[212,28],[250,39],[292,48],[320,54]],1],
+'Innsbruck':      ['Nordkette',   [[0,52],[30,44],[56,30],[74,24],[100,22],[130,20],[160,21],[190,20],[220,23],[248,27],[272,34],[296,44],[320,51]],1],
+'Kamikochi':      ['Hotaka',      [[0,55],[34,48],[66,36],[88,22],[102,28],[114,10],[126,24],[138,6],[152,22],[164,12],[180,26],[206,34],[248,43],[292,50],[320,54]],1],
+'Sounkyo':        ['Daisetsuzan', [[0,54],[40,49],[76,41],[112,30],[142,22],[168,18],[196,21],[228,29],[266,39],[300,47],[320,52]],1],
+'Nakasendō':      ['Kiso hills',  [[0,53],[36,47],[68,42],[96,45],[124,38],[156,42],[188,36],[220,42],[254,39],[288,46],[320,51]],0],
+'Seoraksan':      ['Ulsanbawi',   [[0,54],[44,48],[76,40],[92,26],[104,18],[116,26],[128,14],[142,24],[154,12],[168,24],[180,17],[196,28],[224,36],[268,45],[320,53]],0],
+'Ladakh':         ['Stok Kangri', [[0,55],[46,50],[90,42],[128,30],[156,16],[176,8],[198,17],[230,29],[268,40],[302,48],[320,53]],1],
+'Ala-Kul':        ['Tian Shan',   [[0,55],[36,49],[64,36],[82,20],[96,10],[112,24],[128,12],[144,26],[160,16],[178,28],[206,36],[248,44],[292,50],[320,54]],1],
+'Druk Path':      ['Jomolhari',   [[0,55],[44,50],[84,42],[120,29],[148,14],[168,7],[190,16],[222,28],[262,39],[300,48],[320,54]],1],
+'Annapurna':      ['Annapurna',   [[0,55],[30,50],[58,40],[80,26],[96,14],[112,20],[128,8],[144,18],[160,10],[178,20],[200,16],[228,26],[262,36],[298,46],[320,53]],1],
+'Svaneti':        ['Ushba',       [[0,55],[48,48],[88,36],[112,20],[126,6],[140,18],[154,4],[170,20],[196,32],[236,42],[280,49],[320,54]],1],
+'El Chaltén':     ['Fitz Roy',    [[0,55],[46,50],[86,42],[106,32],[118,36],[128,10],[138,30],[148,3],[160,28],[172,14],[184,32],[198,24],[216,36],[252,44],[292,50],[320,54]],1],
+'Torres del Paine':['Las Torres', [[0,54],[40,48],[74,40],[92,30],[102,10],[110,30],[120,6],[130,30],[140,12],[150,32],[176,26],[200,34],[234,42],[276,48],[320,53]],1],
+'Kaş':            ['Lycian coast',[[0,50],[34,44],[62,36],[92,30],[122,33],[152,28],[186,34],[214,40],[244,44],[280,48],[320,50]],0],
+'Chania':         ['Lefka Ori',   [[0,53],[34,46],[62,34],[80,26],[96,32],[112,22],[130,30],[148,20],[168,30],[192,26],[220,34],[258,42],[294,48],[320,52]],1],
+'Madeira':        ['Pico Ruivo',  [[0,54],[32,46],[56,34],[70,22],[82,30],[94,16],[106,28],[120,20],[136,30],[158,24],[188,32],[228,40],[274,47],[320,52]],0],
+'La Palma':       ['Caldera rim', [[0,52],[34,44],[62,32],[86,22],[104,26],[120,18],[142,26],[172,22],[204,30],[240,38],[280,45],[320,51]],0]
+};
+
+function cardRidge(d,idx){
+  const sky=SKY[sel===null?7:sel];
+  const P=PEAKS[d.n]||['',[[0,50],[80,36],[160,26],[240,36],[320,50]],0];
+  const pts=P[1], snowCap=P[2], label=P[0];
+  const bg = d.reg==='Asia'?'#F7E2E0' : d.reg==='Beyond'?'#F8E4DC' : '#F6E1E2';
+  const line=p=>`M0,58 L`+p.map(q=>q[0]+','+q[1]).join(' L')+` L320,58 Z`;
+  const back=pts.map(q=>[q[0]+16,q[1]+9]);
+  const cid='pk'+idx;
+  let out=`<svg class="ridge" viewBox="0 0 320 58" preserveAspectRatio="xMidYMax slice">
+    <defs><clipPath id="${cid}"><path d="${line(pts)}"/></clipPath></defs>
+    <rect width="320" height="58" fill="${bg}"/>
+    <circle cx="268" cy="15" r="17" fill="${sky[2]}" opacity=".3"/>
+    <circle cx="268" cy="15" r="7.5" fill="${sky[2]}"/>
+    <path d="${line(back)}" fill="#C79AA4" opacity=".55"/>
+    <path d="${line(pts)}" fill="#7E5266"/>
+    <path d="${line(pts.map(q=>[q[0]+9,q[1]+7]))}" fill="#5E3B4E" opacity=".55" clip-path="url(#${cid})"/>`;
+  if(snowCap)
+    out+=`<polyline points="${pts.map(q=>q[0]+','+q[1]).join(' ')}" fill="none"
+      stroke="#FBF7EE" stroke-width="6" stroke-linejoin="round" opacity=".85" clip-path="url(#${cid})"/>`;
+  if(label)
+    out+=`<text x="8" y="53" font-family="IBM Plex Mono, monospace" font-size="10"
+      letter-spacing="1.2" fill="#FBF7EE" opacity=".9">${label.toUpperCase()}</text>`;
+  return out+`</svg>`;
+}
+
+function drawScene(){
+  const p=SKY[sel===null?7:sel], m = sel===null?7:sel;
+  document.documentElement.style.setProperty('--paper',p[4]);
+  const WX=['Snow','Snow','Thaw','Showers','Showers','Clear','Clear','Storms','Golden','Amber','Rain','Snow'];
+  seasonTag.textContent=(sel===null?'All seasons':MN[m])+' · '+WX[m];
+
+  const W=1200,H=430,mi=sel===null?6.5:m+.5;
+  const sx=115+(mi/12)*970;
+  const sy=196-Math.sin(mi/12*Math.PI*2-Math.PI/2)*80;
+  const snowy=[11,0,1,2].includes(m)&&sel!==null;
+  const rainy=[3,4,9,10].includes(m)&&sel!==null;
+  const stormy=(m===7&&sel!==null);
+  // transhumance: how high the herd has climbed, 0 valley → 1 high alm
+  const UP=[0,0,.05,.2,.55,1,1,1,.8,.3,.05,0][sel===null?7:m];
+
+  let s=`<defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${p[0]}"/><stop offset="100%" stop-color="${p[1]}"/></linearGradient>
+    <radialGradient id="glow"><stop offset="0%" stop-color="${p[2]}" stop-opacity=".7"/>
+      <stop offset="100%" stop-color="${p[2]}" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="${W}" height="${H}" fill="url(#sky)"/>
+  <path d="M115,116 Q600,-4 1085,116" fill="none" stroke="${p[3]}" stroke-width="1" opacity=".18" stroke-dasharray="3 8"/>
+  <circle cx="${sx}" cy="${sy}" r="125" fill="url(#glow)"/>
+  <circle cx="${sx}" cy="${sy}" r="30" fill="${p[2]}"/>`;
+
+  // ---- clouds ----
+  const cloudSet = stormy
+    ? [[300,74,1.5,.95],[700,58,1.25,.9],[1000,92,1,.8]]
+    : [[150,92,1.25,.85],[430,58,.85,.68],[760,104,1.05,.78],[1020,66,.7,.62]];
+  cloudSet.forEach(([cx,cy,sc,op],ci)=>{
+    const r=rnd(seedFrom('cloud'+ci)); let lobes='';
+    for(let i=0;i<7;i++){
+      const lx=cx+(i-3)*26*sc, ly=cy-Math.abs(Math.sin(i*1.3))*20*sc-(r()*7*sc);
+      lobes+=`<circle cx="${lx}" cy="${ly}" r="${(19+r()*13)*sc}"/>`;
+    }
+    const body=stormy?'#8E8478':'#FFFFFF';
+    s+=`<g opacity="${op*.92}"><g fill="${body}">${lobes}
+      <rect x="${cx-4*26*sc}" y="${cy-2}" width="${8*26*sc}" height="${20*sc}" rx="${10*sc}"/></g>
+      <g fill="${stormy?'#6B6357':p[0]}" opacity=".3" transform="translate(0,${9*sc})">${lobes}</g></g>`;
+  });
+
+  // August joke: one small lightning bolt, because that was the whole month
+  if(stormy) s+=`<path d="M712,112 l-16,34 h13 l-9,30 26,-40 h-13 l12,-24 Z" fill="#F6D34B" stroke="#5A4A22" stroke-width="1.4" stroke-linejoin="round"/>`;
+
+  // ---- birds ----
+  if(!snowy&&!stormy) [[300,150,1],[330,138,.8],[356,158,.7]].forEach(([bx,by,bs])=>{
+    s+=`<path d="M${bx},${by} q${7*bs},${-6*bs} ${13*bs},0 q${6*bs},${-6*bs} ${13*bs},0"
+      fill="none" stroke="${p[3]}" stroke-width="${1.7*bs}" opacity=".5" stroke-linecap="round"/>`;
+  });
+
+  // ---- ridges ----
+  const layers=[
+    {k:'far', y:262, amp:98, op:.22, jag:1.2},
+    {k:'mid', y:300, amp:82, op:.4,  jag:1.0},
+    {k:'near',y:344, amp:68, op:.66, jag:.82},
+    {k:'fore',y:386, amp:46, op:1,   jag:.62}
+  ];
+  layers.forEach(L=>{
+    const r=rnd(seedFrom(L.k)),n=14;let pts=[];
+    for(let i=0;i<=n;i++)
+      pts.push([(i/n)*W, L.y-Math.abs(Math.sin(i*1.63+seedFrom(L.k)%11))*L.amp*L.jag-(r()-.5)*26*L.jag]);
+    let d=`M0,${H} L${pts[0][0]},${pts[0][1]}`;
+    pts.slice(1).forEach(q=>d+=` L${q[0]},${q[1]}`);
+    s+=`<path d="${d} L${W},${H} Z" fill="${p[3]}" opacity="${L.op}"/>`;
+    // snow caps on the two back ridges in winter
+    if(snowy){
+      let c=`M${pts[0][0]},${pts[0][1]}`;
+      pts.slice(1).forEach(q=>c+=` L${q[0]},${q[1]}`);
+      s+=`<path d="${c}" fill="none" stroke="#FFFDF8" stroke-width="${L.k==='fore'?9:7}" opacity="${L.k==='far'?.55:L.k==='fore'?.9:.7}" stroke-linejoin="round"/>`;
+    }
+  });
+
+  // ---- fir trees on the near + fore ridges ----
+  const larchGold=(m===9||m===10)&&sel!==null, larchBare=[11,0,1,2].includes(m)&&sel!==null;
+  function fir(x,y,sc,op,cap,larch){
+    let t=`<g transform="translate(${x},${y}) scale(${sc})" opacity="${op}">
+      <rect x="-2" y="0" width="4" height="11" fill="#4A3A2A"/>`;
+    if(larch&&larchBare){
+      t+=`<path d="M0,4 L0,-34 M0,-26 l-9,-7 M0,-26 l9,-7 M0,-16 l-11,-8 M0,-16 l11,-8 M0,-6 l-9,-7 M0,-6 l9,-7"
+        stroke="#6B5844" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+    }else{
+      const col = larch&&larchGold ? '#E0A05C' : larch ? '#8A5F70' : '#5E3D4E';
+      t+=`<path d="M0,-40 L13,-12 L6,-12 L16,4 L-16,4 L-6,-12 L-13,-12 Z" fill="${col}"/>`;
+    }
+    if(cap&&!larchBare) t+=`<path d="M0,-40 L7,-25 L-7,-25 Z" fill="#FBF7EE" opacity=".85"/>`;
+    return t+`</g>`;
+  }
+  const treeSeed=rnd(seedFrom('trees'));
+  for(let i=0;i<26;i++){
+    const x=20+i*46+treeSeed()*22;
+    const near=i%3!==0;
+    const y=near?358+treeSeed()*10:396+treeSeed()*8;
+    s+=fir(x,y,near?.55+treeSeed()*.2:.85+treeSeed()*.3, near?.72:1, snowy, i%4===1);
+  }
+
+  // ---- goats, high on the rocks, always ----
+  function goat(x,y,sc,flipG){
+    return `<g transform="translate(${x},${y}) scale(${sc*(flipG||1)},${sc})">
+      <path d="M-9,0 l0,-7 M-4,0 l0,-7 M5,0 l0,-7 M10,0 l0,-7" stroke="#6D6156" stroke-width="2.4" stroke-linecap="round"/>
+      <ellipse cx="0" cy="-11" rx="12" ry="7" fill="#D8CDBC"/>
+      <circle cx="11" cy="-16" r="5.5" fill="#E4DACB"/>
+      <path d="M13,-21 q6,-4 5,-11 q3,7 -2,12 Z" fill="#7A6A58"/>
+      <path d="M9,-21 q6,-4 5,-11 q3,7 -2,12 Z" fill="#8B7A66"/>
+      <circle cx="14" cy="-16" r="1.4" fill="#332B22"/>
+      <path d="M-12,-13 q-7,-2 -6,6 q4,1 6,-3 Z" fill="#D8CDBC"/>
+    </g>`;
+  }
+  s+=goat(352,304,.72)+goat(388,309,.6,-1)+goat(1058,330,.8);
+  // the one standing on top of a rock, because goats do that
+  s+=`<path d="M636,318 l16,-30 l16,30 Z" fill="${p[3]}" opacity=".85"/>`+goat(652,290,.55);
+
+  // ---- cows: up to the alm in June, down in September ----
+  const cowY = 400 - UP*74, cowX = 176 + UP*470;
+  function cow(x,y,sc,bell,crown){
+    let g=`<g transform="translate(${x},${y}) scale(${sc})">
+      <ellipse cx="0" cy="6" rx="26" ry="5" fill="#3A2E22" opacity=".2"/>
+      <path d="M-13,3 l0,-11 M-6,3 l0,-11 M7,3 l0,-11 M14,3 l0,-11" stroke="#5C4B3A" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="0" cy="-16" rx="19" ry="11" fill="#C8A374"/>
+      <ellipse cx="-6" cy="-13" rx="7" ry="5" fill="#F3EADC"/>
+      <ellipse cx="8" cy="-20" rx="5" ry="4" fill="#F3EADC"/>
+      <path d="M-19,-20 q-9,-3 -11,4 q5,4 11,1 Z" fill="#C8A374"/>
+      <circle cx="19" cy="-23" r="9" fill="#D3AE7F"/>
+      <ellipse cx="26" cy="-20" rx="6" ry="4.5" fill="#EBD3B4"/>
+      <circle cx="28" cy="-21" r="1.3" fill="#3A2B1E"/>
+      <circle cx="22" cy="-27" r="1.6" fill="#2E2318"/>
+      <path d="M13,-31 q3,-7 -2,-9 q7,0 6,9 Z" fill="#8E7B62"/>
+      <path d="M25,-31 q3,-7 -2,-9 q7,0 6,9 Z" fill="#8E7B62"/>`;
+    if(bell) g+=`<circle cx="20" cy="-15" r="4" fill="#E9A93C" stroke="#7A5A22" stroke-width="1"/>`;
+    if(crown) g+=`<g><circle cx="14" cy="-32" r="3.2" fill="#E8687F"/><circle cx="20" cy="-34" r="3.6" fill="#F2C84B"/><circle cx="26" cy="-32" r="3.2" fill="#E8687F"/><circle cx="20" cy="-38" r="3" fill="#7FB27A"/></g>`;
+    return g+`</g>`;
+  }
+  const almabtrieb = (m===8&&sel!==null); // September: down from the alm, flower crowns on
+  s+=cow(cowX,cowY,.92,true,almabtrieb)
+    +cow(cowX-58,cowY+7,.8,false,almabtrieb)
+    +cow(cowX+52,cowY+4,.74,true,false);
+
+  // ---- the party on the foreground ridge ----
+  const hx=905, hy=352, flip = sx < hx ? -1 : 1;
+  s+=`<g transform="translate(${hx},${hy}) scale(${flip},1)">
+    <ellipse cx="0" cy="52" rx="27" ry="4.5" fill="#3A2E22" opacity=".26"/>
+    <ellipse cx="-40" cy="52" rx="20" ry="4" fill="#3A2E22" opacity=".2"/>
+    <ellipse cx="-72" cy="53" rx="14" ry="3.5" fill="#3A2E22" opacity=".18"/>
+    <g transform="translate(-40,3) scale(.95)">
+      <path d="M-3,49 L-3,26 M6,49 L5,26" stroke="#3B4A52" stroke-width="6.5" stroke-linecap="round"/>
+      <path d="M-11,26 q11,-6 22,0 l-2,-21 q-9,-4 -18,0 Z" fill="#C4713C"/>
+      <path d="M11,7 q9,4 8,15 q-1,4 -5,3 q-3,-8 -6,-13 Z" fill="#C4713C"/>
+      <path d="M-12,6 q-8,5 -7,15 q1,4 5,3 q2,-8 5,-13 Z" fill="#C4713C"/>
+      <rect x="-10" y="-7" width="20" height="9" rx="4" fill="#3B4A52"/>
+      <circle cx="0" cy="-14" r="9.5" fill="#EEC9A4"/>
+      <path d="M-9.5,-16 q3,-10 10,-9 q8,1 9,9 q-4,-4 -10,-3 q-6,1 -9,3 Z" fill="#2C2622"/>
+      <path d="M13,3 q10,3 11,13 l-4,1 q-2,-8 -9,-11 Z" fill="#7E5A32"/>
+    </g>
+    <path d="M-3,50 L-3,26 M6,50 L5,26" stroke="#3B4A52" stroke-width="6.5" stroke-linecap="round"/>
+    <path d="M-11,26 q11,-6 22,0 l-2,-20 q-9,-4 -18,0 Z" fill="#3FA2B8"/>
+    <path d="M-12,10 q12,-5 24,0 l-3,-8 q-9,-3 -18,0 Z" fill="#E0577C"/>
+    <path d="M11,8 q9,4 8,15 q-1,4 -5,3 q-3,-8 -6,-13 Z" fill="#3FA2B8"/>
+    <path d="M-12,7 q-8,5 -7,15 q1,4 5,3 q2,-8 5,-13 Z" fill="#3FA2B8"/>
+    <rect x="-10" y="-6" width="20" height="9" rx="4" fill="#3B4A52"/>
+    <circle cx="0" cy="-13" r="9.5" fill="#F6DCC2"/>
+    <path d="M-9.5,-15 q3,-11 10,-10 q8,1 9,10 q-4,-5 -10,-4 q-6,1 -9,4 Z" fill="#20272C"/>
+    <path d="M-19,-14 q19,-9 38,0 l-3,-4 q-16,-7 -32,0 Z" fill="#E8B93C"/>
+    <path d="M13,4 q10,3 11,13 l-4,1 q-2,-8 -9,-11 Z" fill="#8C6239"/>
+    <g transform="translate(-72,32)">
+      <path d="M-11,18 l1,-8 M-4,18 l0,-8 M6,18 l1,-8 M12,18 l0,-8" stroke="#C79A63" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="0" cy="6" rx="14" ry="9" fill="#D9AC74"/>
+      <circle cx="-9" cy="2" r="6" fill="#D9AC74"/><circle cx="7" cy="1" r="6.5" fill="#D9AC74"/>
+      <path d="M13,3 q9,-5 8,-14 q4,6 0,13 q-3,5 -8,4 Z" fill="#D9AC74"/>
+      <circle cx="15" cy="-5" r="8" fill="#E3BB86"/>
+      <ellipse cx="21" cy="-2" rx="6" ry="4.5" fill="#E3BB86"/>
+      <circle cx="25" cy="-2" r="2" fill="#3A2B1E"/>
+      <circle cx="19" cy="-7" r="1.6" fill="#3A2B1E"/>
+      <path d="M9,-9 q-5,2 -4,9 q4,-3 6,-8 Z" fill="#BF8E55"/>
+    </g>
+  </g>`;
+
+  // ---- marmot, front left, whistling in summer ----
+  s+=`<g transform="translate(196,${H-46}) scale(1.15)">
+    <ellipse cx="0" cy="14" rx="24" ry="7" fill="${p[3]}" opacity=".5"/>
+    <path d="M-16,12 q-10,3 -14,-2 q6,-6 14,-5 Z" fill="#9A7047"/>
+    <ellipse cx="0" cy="2" rx="10" ry="13" fill="#A87A4E"/>
+    <circle cx="0" cy="-12" r="8" fill="#B98A5C"/>
+    <circle cx="-6" cy="-18" r="3" fill="#A87A4E"/><circle cx="6" cy="-18" r="3" fill="#A87A4E"/>
+    <circle cx="-3" cy="-13" r="1.5" fill="#2E2318"/><circle cx="3" cy="-13" r="1.5" fill="#2E2318"/>
+    <ellipse cx="0" cy="-8" rx="2.5" ry="2" fill="#3A2B1E"/>
+    <path d="M-7,0 q-3,7 0,11 M7,0 q3,7 0,11" stroke="#8E653E" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+    ${UP>.5?`<g opacity=".8"><path d="M12,-22 q6,-4 4,-10" stroke="#4A3A2A" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M16,-34 l4,-3 v9 q-4,2 -4,-2 q0,-3 4,-3" stroke="#4A3A2A" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>`:''}
+  </g>`;
+
+  // ---- village in the valley, with the church that every one of them has ----
+  s+=`<g transform="translate(268,${H-30})" opacity=".92">
+    <g fill="#8A6E52">
+      <rect x="-96" y="-22" width="26" height="22"/><rect x="-64" y="-17" width="21" height="17"/>
+      <rect x="34" y="-19" width="24" height="19"/><rect x="64" y="-14" width="18" height="14"/></g>
+    <g fill="#B4553C">
+      <path d="M-98,-22 l13,-11 l13,11 Z"/><path d="M-66,-17 l10,-9 l11,9 Z"/>
+      <path d="M32,-19 l12,-10 l14,10 Z"/><path d="M62,-14 l9,-8 l11,8 Z"/></g>
+    <rect x="-14" y="-30" width="30" height="30" fill="#EFE4D2"/>
+    <path d="M-16,-30 l16,-13 l16,13 Z" fill="#B4553C"/>
+    <rect x="-2" y="-62" width="12" height="34" fill="#EFE4D2"/>
+    <path d="M-6,-62 l10,-22 l10,22 Z" fill="#7E6A4E"/>
+    <path d="M4,-88 l0,7 M1,-85 l6,0" stroke="#6B5844" stroke-width="1.6"/>
+    <circle cx="4" cy="-52" r="3" fill="#C9A45E"/>
+  </g>`;
+
+  // ---- the cable car: parked when the season is shut ----
+  const liftOpen = sel===null || ![3,4,10].includes(m);
+  const ax=78, ay=352, bx=1128, by=214;
+  s+=`<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="${p[3]}" stroke-width="1.6" opacity=".55"/>
+    <path d="M${ax-13},${ay+16} l13,-22 l13,22 Z" fill="#6E5B45"/>
+    <path d="M${bx-11},${by+14} l11,-19 l11,19 Z" fill="#6E5B45"/>`;
+  const tt = liftOpen ? .42+.16*Math.sin(mi) : .045;
+  const gx = ax+(bx-ax)*tt, gy = ay+(by-ay)*tt;
+  s+=`<g transform="translate(${gx},${gy})">
+    <path d="M0,0 l-7,9" stroke="#4A3A2A" stroke-width="2"/>
+    <rect x="-16" y="8" width="18" height="15" rx="3.5" fill="${liftOpen?'#D9564B':'#9C9184'}" stroke="#4A3A2A" stroke-width="1.2"/>
+    <rect x="-13" y="11" width="12" height="6" rx="1.5" fill="#F6E6C8" opacity=".9"/>
+  </g>`;
+  if(!liftOpen) s+=`<text x="${gx+12}" y="${gy+20}" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#5A4A38" opacity=".8">shut</text>`;
+
+  // ---- alm hut, smoking only while the herd is up ----
+  s+=`<g transform="translate(702,326)">
+    <rect x="-19" y="-14" width="38" height="16" fill="#8A6E52"/>
+    <path d="M-24,-14 l24,-15 l24,15 Z" fill="#5E4E3C"/>
+    <rect x="-6" y="-8" width="9" height="10" fill="#4A3A2A"/>
+    <rect x="9" y="-11" width="7" height="6" fill="#F2D79A"/>
+    <rect x="10" y="-31" width="6" height="9" fill="#7A6249"/>`;
+  if(UP>.45) s+=`<path d="M13,-33 q7,-8 0,-15 q-7,-8 2,-15" stroke="#F3EADB" stroke-width="4" fill="none" opacity=".75" stroke-linecap="round"/>`;
+  s+=`</g>`;
+
+  // ---- paraglider, high summer only ----
+  if(sel!==null && [5,6,7].includes(m)){
+    s+=`<g transform="translate(452,166)">
+      <path d="M-34,0 q34,-26 68,0 q-16,7 -34,7 q-18,0 -34,-7 Z" fill="#E86A5C" stroke="#7A3A32" stroke-width="1.2"/>
+      <path d="M-26,4 L0,26 M0,5 L0,26 M26,4 L0,26" stroke="#4A3A2A" stroke-width="1"/>
+      <circle cx="0" cy="30" r="5" fill="#3B4A52"/>
+      <path d="M-4,34 l-3,8 M4,34 l3,8" stroke="#3B4A52" stroke-width="2.6" stroke-linecap="round"/>
+    </g>`;
+  }
+
+  // ---- eagle on a thermal ----
+  if(!snowy) s+=`<g transform="translate(872,124)" opacity=".7">
+    <path d="M-22,0 q11,-11 22,-2 q11,-9 22,2 q-11,5 -22,3 q-11,2 -22,-3 Z" fill="${p[3]}"/>
+  </g>`;
+
+  // ---- wildflowers, late spring into summer ----
+  if(sel!==null && [4,5,6].includes(m)){
+    const r=rnd(seedFrom('flowers')); let f='';
+    const cols=['#E8687F','#F2C84B','#B98BD1','#F6F1E4'];
+    for(let i=0;i<70;i++){
+      const x=r()*W, y=H-4-r()*46;
+      f+=`<circle cx="${x}" cy="${y}" r="${1.6+r()*1.6}" fill="${cols[(i*7)%4]}" opacity=".85"/>`;
+    }
+    s+=f;
+  }
+
+  // ---- weather ----
+  if(snowy){
+    const r=rnd(seedFrom('snow'+m)); let f='';
+    for(let i=0;i<210;i++){
+      const rad=1.4+r()*3.4;
+      f+=`<circle cx="${r()*W}" cy="${r()*H}" r="${rad}" fill="#FFFDF8" opacity="${.6+r()*.4}"/>`;
+    }
+    s+=f;
+  }
+  if(rainy||stormy){
+    const r=rnd(seedFrom('rain'+m)); let f='';
+    const n=stormy?150:95;
+    for(let i=0;i<n;i++){const x=r()*W,y=r()*H;
+      f+=`<line x1="${x}" y1="${y}" x2="${x-5}" y2="${y+14}" stroke="${stormy?'#6E7A82':'#8FA0A8'}" stroke-width="1.3" opacity="${.25+r()*.35}"/>`;}
+    s+=f;
+  }
+
+  svg.innerHTML=s;
+}
+
+function strip(d){return '<div class="strip">'+d.s.map((v,i)=>
+  `<div class="cell${sel===i?' sel':''}" data-s="${v}"></div>`).join('')+'</div>'}
+function dots(n,cls,lab){
+  let h=`<div class="meter ${cls}"><div class="m-lab">${lab}</div><div class="dots">`;
+  for(let i=0;i<5;i++)h+=`<div class="dot${i<n?' f':''}"></div>`;
+  return h+'</div></div>';
+}
+
+function render(){
+  [...monthsEl.children].forEach((b,i)=>b.classList.toggle('on',sel===i));
+  if(playing) rebuildDrone();
+  drawScene();
+  let list=D.filter(d=>reg==='all'||d.reg===reg);
+  list.sort((a,b)=>{
+    if(sel!==null&&b.s[sel]!==a.s[sel])return b.s[sel]-a.s[sel];
+    const k=sort==='lifts'?'lifts':sort==='comfort'?'comf':'drama';
+    return b[k]-a[k];
+  });
+  const inS=sel===null?list.length:list.filter(d=>d.s[sel]>=2).length;
+  readout.textContent=sel===null?`${list.length} bases on file`:`${MN[sel]} — ${inS} in season`;
+  grid.innerHTML=list.map((d,idx)=>{
+    const sc=sel===null?null:d.s[sel];
+    return `<article class="row${sc!==null&&sc<2?' dim':''}${sc===3?' peak':''}" data-n="${d.n}" tabindex="0">
+      ${cardRidge(d,idx)}
+      <div class="r-id">
+        <div class="r-name">${d.n}</div>
+        <div class="r-sub">${d.r} · ${d.alt>0?d.alt+' m':'sea level'}</div>
+      </div>
+      ${strip(d)}
+      <div class="meters">${dots(d.drama,'drama','Drama')}${dots(d.comf,'comf','Comf')}${dots(d.lifts,'lifts','Lifts')}</div>
+      <div class="live" data-live="${d.n}"></div>
+      <div class="huts" data-huts="${d.n}"><b>·</b>huts</div>
+      <div class="r-verdict">
+        <span class="r-vtext">${d.v}<span class="tags">${d.tags.map(t=>`<span class="tag ${t==='been'?'been':t==='booked'?'booked':''}">${t}</span>`).join('')}</span></span>
+        ${d.cam?`<a class="livebox" href="https://www.foto-webcam.eu/webcam/${d.cam}/" target="_blank" rel="noopener"
+            data-cam="${d.cam}" onclick="event.stopPropagation()">
+            <img alt="Live view near ${d.n}" loading="lazy" referrerpolicy="no-referrer"
+                 src="https://www.foto-webcam.eu/webcam/${d.cam}/current/240.jpg"
+                 onerror="camFallback(this)">
+            <span class="badge"><i></i>LIVE</span></a>`:''}
+      </div>
+    </article>`;
+  }).join('');
+  paintLive(); paintHuts();
+  grid.querySelectorAll('.row').forEach(c=>{
+    c.onclick=()=>openSheet(c.dataset.n);
+    c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openSheet(c.dataset.n)}};
+  });
+}
+
+function openSheet(name){
+  const d=D.find(x=>x.n===name);
+  sheetBody.innerHTML=`<div class="d-name">${d.n}</div>
+    <div class="d-where">${d.r} · ${d.alt>0?d.alt+' m':'sea level'}</div>
+    <div class="d-cols">
+      <div class="d-body">${d.body.map(p=>`<p>${p}</p>`).join('')}
+        <div class="d-strip">${strip(d)}
+          <div class="strip-key">${M.map(m=>`<span>${m}</span>`).join('')}</div></div></div>
+      <dl class="facts">${Object.entries(d.f).map(([k,v])=>
+        `<div class="fact"><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
+        ${d.cam?`<a class="camwrap" href="https://www.foto-webcam.eu/webcam/${d.cam}/" target="_blank" rel="noopener">
+          <img class="cam" alt="Live view near ${d.n}" referrerpolicy="no-referrer"
+            src="https://www.foto-webcam.eu/webcam/${d.cam}/current/640.jpg"
+            onerror="this.closest('.camwrap').innerHTML='<span class=\'livebox none\'><i></i>Open live view &#8599;</span>'">
+          <span class="camcap"><span>Live · ${d.cam}</span><span>foto-webcam.eu</span></span></a>`:''}
+        <div class="climate" id="climateBox"></div>
+        ${(HUTNAMES[d.n]&&HUTNAMES[d.n].length)?`<div class="hutlist"><span>Huts within 15 km · </span>${HUTNAMES[d.n].join(' · ')}</div>`:''}
+      </div>
+    </div>`;
+  sheet.classList.add('open');
+  paintClimate(d.n);
+}
+document.getElementById('sheetX').onclick=()=>sheet.classList.remove('open');
+document.addEventListener('keydown',e=>{if(e.key==='Escape')sheet.classList.remove('open')});
+document.getElementById('controls').addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;
+  if(b.dataset.reg){reg=b.dataset.reg;document.querySelectorAll('[data-reg]').forEach(x=>x.classList.toggle('on',x===b))}
+  if(b.dataset.sort){sort=b.dataset.sort;document.querySelectorAll('[data-sort]').forEach(x=>x.classList.toggle('on',x===b))}
+  render();
+});
+/* ---------------- live feeds ---------------- */
+const WMO={0:'clear',1:'mostly clear',2:'part cloud',3:'overcast',45:'fog',48:'fog',51:'drizzle',53:'drizzle',55:'drizzle',
+61:'rain',63:'rain',65:'heavy rain',66:'freezing rain',67:'freezing rain',71:'snow',73:'snow',75:'heavy snow',77:'snow grains',
+80:'showers',81:'showers',82:'heavy showers',85:'snow showers',86:'snow showers',95:'thunderstorm',96:'thunderstorm',99:'thunderstorm'};
+const LIVE={};
+
+async function loadLive(){
+  const lats=D.map(d=>d.lat).join(','), lons=D.map(d=>d.lon).join(',');
+  try{
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}`
+      +`&current=temperature_2m,weather_code&timezone=auto`);
+    const j=await r.json(); const arr=Array.isArray(j)?j:[j];
+    arr.forEach((o,i)=>{ if(o&&o.current) LIVE[D[i].n]={t:Math.round(o.current.temperature_2m),c:o.current.weather_code}; });
+  }catch(e){}
+  liveTried=true; paintLive();
+}
+let liveTried=false;
+function paintLive(){
+  document.querySelectorAll('[data-live]').forEach(el=>{
+    const v=LIVE[el.dataset.live];
+    el.innerHTML = v ? `<span class="pip"></span><b>${v.t}°</b> ${WMO[v.c]||''}`
+                     : (liveTried ? '<span style="opacity:.5">offline</span>' : '');
+  });
+}
+
+function camFallback(img){
+  const box=img.closest('.livebox');
+  box.classList.add('none');
+  box.innerHTML='<i></i>Live view &#8599;';
+}
+const HUTS={}; const HUTNAMES={};
+async function loadHuts(){
+  const R=15000;
+  const q='[out:json][timeout:120];('+D.map(d=>
+    `nwr["tourism"~"^(alpine_hut|wilderness_hut)$"](around:${R},${d.lat},${d.lon});`).join('')+');out center 900;';
+  const EPS=['https://overpass-api.de/api/interpreter',
+             'https://overpass.kumi.systems/api/interpreter',
+             'https://overpass.osm.ch/api/interpreter',
+             'https://overpass.private.coffee/api/interpreter'];
+  let j=null;
+  for(const ep of EPS){
+    try{
+      const r=await fetch(ep,{method:'POST',body:'data='+encodeURIComponent(q)});
+      if(!r.ok) continue;
+      j=await r.json(); if(j&&j.elements) break; j=null;
+    }catch(e){}
+  }
+  try{
+    if(!j) throw 0;
+    D.forEach(d=>{HUTS[d.n]=0;HUTNAMES[d.n]=[]});
+    j.elements.forEach(el=>{
+      const la=el.lat??el.center?.lat, lo=el.lon??el.center?.lon;
+      if(la==null) return;
+      D.forEach(d=>{
+        const dx=(lo-d.lon)*Math.cos(d.lat*Math.PI/180)*111.32, dy=(la-d.lat)*110.57;
+        if(Math.hypot(dx,dy)<=R/1000){
+          HUTS[d.n]++;
+          if(el.tags&&el.tags.name&&HUTNAMES[d.n].length<14) HUTNAMES[d.n].push(el.tags.name);
+        }
+      });
+    });
+  }catch(e){}
+  paintHuts();
+}
+function paintHuts(){
+  document.querySelectorAll('[data-huts]').forEach(el=>{
+    const v=HUTS[el.dataset.huts];
+    el.innerHTML = v===undefined ? '<b>·</b>huts' : `<b>${v}</b>${v===1?'hut':'huts'}`;
+  });
+}
+
+const CLIM={};
+async function loadClimate(name){
+  if(CLIM[name]) return CLIM[name];
+  const d=D.find(x=>x.n===name);
+  const end=new Date(Date.now()-5*864e5).toISOString().slice(0,10);
+  const url=`https://archive-api.open-meteo.com/v1/archive?latitude=${d.lat}&longitude=${d.lon}`
+    +`&start_date=2015-01-01&end_date=${end}&daily=precipitation_sum,temperature_2m_max&timezone=auto`;
+  try{
+    const j=await (await fetch(url)).json();
+    const wet=Array(12).fill(0), n=Array(12).fill(0), tsum=Array(12).fill(0);
+    j.daily.time.forEach((t,i)=>{
+      const m=+t.slice(5,7)-1;
+      n[m]++; if((j.daily.precipitation_sum[i]||0)>=1) wet[m]++;
+      tsum[m]+=(j.daily.temperature_2m_max[i]||0);
+    });
+    const yrs=n.map((c,m)=>c/[31,28.3,31,30,31,30,31,31,30,31,30,31][m]);
+    CLIM[name]={rain:wet.map((w,m)=>Math.round(w/Math.max(yrs[m],1))), temp:tsum.map((t,m)=>Math.round(t/Math.max(n[m],1)))};
+  }catch(e){ CLIM[name]=null; }
+  return CLIM[name];
+}
+
+async function paintClimate(name){
+  const box=document.getElementById('climateBox'); if(!box) return;
+  const c=await loadClimate(name);
+  if(!c||!document.getElementById('climateBox')) return;
+  const mx=Math.max(...c.rain,1);
+  document.getElementById('climateBox').innerHTML=
+    `<div class="cl-head"><span>Rain days per month · 10-yr average</span><span>Open-Meteo</span></div>
+     <div class="bars">${c.rain.map((v,i)=>
+       `<div class="bar${c.temp[i]>=20?' hot':''}" style="height:${Math.max(4,v/mx*56)}px" title="${MN[i]}: ${v} rain days, avg high ${c.temp[i]}°"></div>`).join('')}</div>
+     <div class="strip-key">${M.map((m,i)=>`<span>${m}</span>`).join('')}</div>`;
+}
+
+
+/* ---------------- generative alpine sound ---------------- */
+let AC=null, master=null, verb=null, wind=null, windGain=null, droneNodes=[], seq=null, playing=false;
+
+function reverbIR(ctx,sec,decay){
+  const n=ctx.sampleRate*sec, b=ctx.createBuffer(2,n,ctx.sampleRate);
+  for(let c=0;c<2;c++){const d=b.getChannelData(c);
+    for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay);}
+  return b;
+}
+/* per-season: root midi, scale, note gap ms, cowbell chance, wind level, timbre */
+function season(){
+  const m = sel===null?7:sel;
+  if([11,0,1].includes(m))  return {root:69, sc:[0,3,5,7,10], gap:2400, bell:.18, wind:.012, wave:'sine',     drone:[0,7]};
+  if(m===2)                 return {root:67, sc:[0,3,5,7,10], gap:2150, bell:.24, wind:.006, wave:'sine',     drone:[0,7]};
+  if([3,4].includes(m))     return {root:64, sc:[0,2,4,7,9],  gap:1850, bell:.30, wind:.008, wave:'triangle', drone:[0,7,12]};
+  if([5,6,7].includes(m))   return {root:62, sc:[0,2,4,7,9],  gap:1450, bell:.36, wind:.006, wave:'triangle', drone:[0,7,12]};
+  return                           {root:60, sc:[0,2,4,7,10], gap:1950, bell:.32, wind:.008, wave:'triangle', drone:[0,7]};
+}
+const mtof = n => 440*Math.pow(2,(n-69)/12);
+
+/* struck-string piano voice: three inharmonic partials + a hammer knock */
+function note(f,t,dur,gain,wave){
+  const out=AC.createGain();
+  out.gain.value=1;
+  out.connect(verb); out.connect(master);
+  const parts=[[1,1,1],[2.003,.22,.7],[3.011,.07,.42],[4.02,.022,.26]];
+  parts.forEach(([mult,amp,decayScale])=>{
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type='sine'; o.frequency.value=f*mult;
+    const peak=gain*amp, len=dur*decayScale+.15;
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(peak,t+.022);
+    g.gain.exponentialRampToValueAtTime(Math.max(peak*.42,.0002),t+.22);
+    g.gain.exponentialRampToValueAtTime(.00012,t+len);
+    o.connect(g); g.connect(out);
+    o.start(t); o.stop(t+len+.05);
+  });
+  // hammer thud
+  const nb=AC.createBufferSource(), b=AC.createBuffer(1,AC.sampleRate*.05,AC.sampleRate);
+  const d=b.getChannelData(0);
+  for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,11);
+  nb.buffer=b;
+  const nf=AC.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=Math.min(f*1.9,1600); nf.Q.value=.8;
+  const ng=AC.createGain(); ng.gain.value=gain*.14;
+  nb.connect(nf); nf.connect(ng); ng.connect(out);
+  nb.start(t);
+}
+function cowbell(t,f){                       // now a soft left-hand chord, not a bell
+  [0,7,12].forEach((iv,i)=> note(f*Math.pow(2,(iv-24)/12), t+i*.13, 6.5, .034, 'sine'));
+}
+function alphorn(t){                          // opening chord instead of a horn
+  const S=season(), r=mtof(S.root-12);
+  [0,7,12,16].forEach((iv,i)=> note(r*Math.pow(2,iv/12), t+i*.22, 8, .06,'sine'));
+}
+function rebuildDrone(){
+  droneNodes.forEach(n=>{try{n.stop()}catch(e){}});
+  droneNodes=[];
+  const S=season();
+  S.drone.forEach((iv,k)=>{
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type='triangle'; o.frequency.value=mtof(S.root-24+iv);
+    o.detune.value=(k-1)*6;
+    g.gain.value=.042/(k+1);
+    o.connect(g); g.connect(verb); g.connect(master);
+    o.start(); droneNodes.push(o);
+  });
+  if(windGain) windGain.gain.setTargetAtTime(S.wind,AC.currentTime,1.2);
+}
+function startSound(){
+  AC=new (window.AudioContext||window.webkitAudioContext)();
+  if(AC.state==='suspended') AC.resume();
+  master=AC.createGain(); master.gain.value=.7;
+  const soft=AC.createBiquadFilter(); soft.type='lowpass'; soft.frequency.value=2300; soft.Q.value=.5;
+  master.connect(soft); soft.connect(AC.destination);
+  verb=AC.createConvolver(); verb.buffer=reverbIR(AC,6.5,1.7);
+  const vg=AC.createGain(); vg.gain.value=.62; verb.connect(vg); vg.connect(AC.destination);
+  // wind: filtered noise
+  const n=AC.createBufferSource(), buf=AC.createBuffer(1,AC.sampleRate*4,AC.sampleRate);
+  const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+  n.buffer=buf; n.loop=true;
+  const bp=AC.createBiquadFilter(); bp.type='lowpass'; bp.frequency.value=380; bp.Q.value=.4;
+  windGain=AC.createGain(); windGain.gain.value=season().wind;
+  n.connect(bp); bp.connect(windGain); windGain.connect(master); n.start(); wind=n;
+  rebuildDrone();
+  alphorn(AC.currentTime+.15);
+  let next=AC.currentTime+3.4;
+  seq=setInterval(()=>{
+    if(!playing) return;
+    const S=season();
+    while(next < AC.currentTime+1.5){
+      const deg=S.sc[Math.floor(Math.random()*S.sc.length)];
+      const oct=[0,12,12,24][Math.floor(Math.random()*4)];
+      note(mtof(S.root+deg+oct), next, 5.2+Math.random()*3, .085, S.wave);
+      if(Math.random()<S.bell) cowbell(next+.25+Math.random()*.5, mtof(S.root+deg+12));
+      next += (S.gap*1.7+Math.random()*S.gap*1.1)/1000;
+    }
+  },250);
+  playing=true;
+}
+function stopSound(){
+  playing=false; clearInterval(seq); seq=null;
+  try{wind&&wind.stop()}catch(e){}
+  droneNodes.forEach(n=>{try{n.stop()}catch(e){}}); droneNodes=[];
+  if(AC){AC.close(); AC=null;}
+}
+document.getElementById('sound').onclick=e=>{
+  e.stopPropagation();
+  const b=e.currentTarget;
+  if(playing){
+    stopSound(); b.textContent='♪ Piano off'; b.classList.remove('on'); b.setAttribute('aria-pressed','false');
+  }else{
+    try{
+      startSound();
+      b.textContent='♪ Piano on'; b.classList.add('on'); b.setAttribute('aria-pressed','true');
+    }catch(err){
+      b.textContent='♪ blocked'; console.error('audio:',err);
+    }
+  }
+};
+
+loadLive();
+loadHuts();
+setInterval(()=>{
+  document.querySelectorAll('.livebox img').forEach(im=>{
+    const cam=im.closest('.livebox').dataset.cam;
+    im.src=`https://www.foto-webcam.eu/webcam/${cam}/current/240.jpg?t=${Date.now()}`;
+  });
+},300000);
+render();
+</script>
+</body>
+</html>
