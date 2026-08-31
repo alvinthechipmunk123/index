@@ -72,6 +72,9 @@ h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(
 .art{display:block;width:100%;background:#FFF;border-bottom:2.5px solid var(--ink)}
 .dbody{padding:7px 9px 9px}
 .dtr{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:14.5px;letter-spacing:-.01em;line-height:1.12;display:flex;align-items:center;gap:5px}
+.stars{font-size:11px;color:var(--gold);letter-spacing:1px;margin-top:2px;line-height:1}
+.stars .dim{color:var(--line)}
+.starlab{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--grey);vertical-align:2px}
 .dph{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--turq);letter-spacing:.04em;margin-top:2px}
 .den{font-size:11px;color:var(--grey);margin-top:3px;line-height:1.3}
 .seas{position:absolute;top:6px;left:6px;z-index:2;background:var(--sage);color:#FFF;
@@ -142,6 +145,8 @@ h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(
 .p-hi{color:#A8471F;border-color:#A8471F;background:#FBEDE6}
 .p-prot{color:var(--ink);border-color:var(--line);background:#F7F3E8}
 .p-heat{color:var(--coral);border-color:var(--coral);background:#FCEDEC;letter-spacing:-1px}
+.p-rate{color:var(--gold);border-color:var(--gold);background:#FDF6E6;letter-spacing:-.5px}
+.p-price{color:#2E6B4A;border-color:#2E6B4A;background:#E9F4EE;font-weight:600}
 
 /* ---------- sheet ---------- */
 .sheet{position:fixed;inset:auto 0 0 0;max-height:88vh;overflow-y:auto;z-index:60;background:var(--tile);
@@ -259,6 +264,9 @@ footer{margin-top:44px;padding-top:18px;border-top:3px solid var(--ink);
     <span class="spacer"></span>
     <button class="chip snd" id="snd">♪ Müzik</button>
   </div>
+  <div class="idbar">
+    <button class="idbtn" id="idopen">👁 What's on the table?</button>
+  </div>
   <div class="grid" id="grid"></div>
 
   <section class="phr">
@@ -288,6 +296,8 @@ footer{margin-top:44px;padding-top:18px;border-top:3px solid var(--ink);
   <button class="bskbtn" id="bskclear">Clear</button>
   <button class="bskbtn go" id="bskgo">Order it</button>
 </div>
+
+<div class="idwrap" id="idwrap"><div class="idbox" id="idbox"></div></div>
 
 <div class="ordwrap" id="ordwrap"><div class="ordbox" id="ordbox"></div></div>
 
@@ -506,395 +516,380 @@ function tileMotif(seed){
 /* diet: vegan | veg | fish | meat ;  na = sodium mg (typical serving) */
 const F=[
 /* ---- MEZE ---- */
-{tr:'Ezme',reg:'Southeast',ph:'ez-MEH',en:'Chopped hot pepper salad',cat:'Meze',diet:'vegan',prot:2,na:340,
+{tr:'Ezme',tg:'red,chunky,cold,spicy',tl:90,reg:'Southeast',ph:'ez-MEH',en:'Chopped hot pepper salad',cat:'Meze',diet:'vegan',prot:2,na:340,
  desc:'Tomato, pepper, onion and parsley chopped to a coarse paste with pomegranate molasses. The one meze that reliably has heat — ask for it acılı.',
  order:'Acılı ezme, lütfen',oph:'ah-juh-LUH ez-MEH loot-FEN',
  note:'Your best friend on a meze table: the only dish that\'s dependably spicy.',
  v:'bowl',c1:'#D9463E',top:T.dots('#8C1F1F',7,3)+T.leaf(C.green)},
-{tr:'Haydari',reg:'Nationwide',ph:'HIGH-da-ruh',en:'Thick garlic-mint yoghurt',cat:'Meze',diet:'veg',prot:6,na:290,
+{tr:'Haydari',tg:'white,thick,cold',tl:110,reg:'Nationwide',ph:'HIGH-da-ruh',en:'Thick garlic-mint yoghurt',cat:'Meze',diet:'veg',prot:6,na:290,
  desc:'Strained yoghurt whipped with garlic, dill and mint, finished with a pool of olive oil. Cooling counterweight to anything grilled.',
  order:'Haydari alabilir miyim?',oph:'HIGH-da-ruh a-la-bi-LEER mi-yim',
  v:'bowl',c1:'#FBF6EC',top:T.drizzle(C.gold)+T.leaf(C.green)},
-{tr:'Cacık',reg:'Nationwide',ph:'ja-JUHK',en:'Yoghurt, cucumber, mint',cat:'Meze',diet:'veg',prot:5,na:260,
+{tr:'Cacık',tg:'white,thin,cold',tl:90,reg:'Nationwide',ph:'ja-JUHK',en:'Yoghurt, cucumber, mint',cat:'Meze',diet:'veg',prot:5,na:260,
  desc:'Looser than haydari and often eaten with a spoon — yoghurt thinned with water, cucumber, garlic, dried mint.',
  order:'Bir cacık',oph:'beer ja-JUHK',v:'bowl',c1:'#F2F7F2',top:T.dots(C.green,6,9)},
-{tr:'Muhammara',reg:'Gaziantep',ph:'moo-ha-ma-RA',en:'Walnut & red pepper paste',cat:'Meze',diet:'vegan',prot:5,na:320,
+{tr:'Muhammara',tg:'red,thick,cold',tl:140,reg:'Gaziantep',ph:'moo-ha-ma-RA',en:'Walnut & red pepper paste',cat:'Meze',diet:'vegan',prot:5,na:320,
  desc:'Roasted red pepper ground with walnuts, breadcrumbs, cumin and pomegranate molasses. Sweet, smoky, faintly hot — the richest vegan thing on the table.',
  order:'Muhammara var mı?',oph:'moo-ha-ma-RA var muh',v:'bowl',c1:'#B8412C',top:T.dots('#7A4A2A',8,12)},
-{tr:'Patlıcan salatası',reg:'Nationwide',ph:'pat-luh-JAN sa-la-ta-SUH',en:'Smoked aubergine salad',cat:'Meze',diet:'vegan',prot:2,na:260,
+{tr:'Patlıcan salatası',tg:'brown,thick,cold',tl:120,reg:'Nationwide',ph:'pat-luh-JAN sa-la-ta-SUH',en:'Smoked aubergine salad',cat:'Meze',diet:'vegan',prot:2,na:260,
  desc:'Aubergine charred whole over flame until the skin blisters, then mashed with lemon and olive oil. The smoke is the whole point.',
  order:'Patlıcan salatası',oph:'pat-luh-JAN sa-la-ta-SUH',v:'bowl',c1:'#8A7D68',top:T.drizzle(C.gold)},
-{tr:'Şakşuka',reg:'Aegean',ph:'shak-SHOO-ka',en:'Fried aubergine in tomato',cat:'Meze',diet:'vegan',prot:3,na:380,
+{tr:'Şakşuka',tg:'red,chunky,cold',tl:120,reg:'Aegean',ph:'shak-SHOO-ka',en:'Fried aubergine in tomato',cat:'Meze',diet:'vegan',prot:3,na:380,
  desc:'Aubergine and courgette fried soft, then bathed in garlicky tomato sauce. Served cool. Often has a yoghurt dollop — say it plain to keep it vegan.',
  order:'Şakşuka, yoğurtsuz',oph:'shak-SHOO-ka yo-oort-SOOZ',
  note:'yoğurtsuz = without yoghurt.',v:'plate',c1:'#C4522E',top:T.dots(C.aub,7,5)},
-{tr:'Zeytinyağlı yaprak sarma',reg:'Aegean',ph:'zay-tin-ya-LUH yap-RAK sar-MA',en:'Vine leaves in olive oil',cat:'Meze',diet:'vegan',prot:3,na:400,
+{tr:'Zeytinyağlı yaprak sarma',tg:'green,rolled,cold',tl:140,reg:'Aegean',ph:'zay-tin-ya-LUH yap-RAK sar-MA',en:'Vine leaves in olive oil',cat:'Meze',diet:'vegan',prot:3,na:400,
  desc:'Vine leaves rolled around rice, pine nuts, currants and herbs, cooked in olive oil and served cold. The word zeytinyağlı on any menu means olive-oil-cooked and vegan.',
  order:'Zeytinyağlı sarma',oph:'zay-tin-ya-LUH sar-MA',
  note:'Learn this word: zeytinyağlı marks the whole vegan section of a Turkish menu.',
  v:'plate',c1:'#5E8C57',top:T.rolls('#4E7A46')},
-{tr:'Fava',reg:'İstanbul',ph:'FA-va',en:'Broad bean purée',cat:'Meze',diet:'vegan',prot:7,na:300,
+{tr:'Fava',tg:'yellow,thick,cold',tl:120,reg:'İstanbul',ph:'FA-va',en:'Broad bean purée',cat:'Meze',diet:'vegan',prot:7,na:300,
  desc:'Dried broad beans cooked down and set into a smooth block, cut into squares, dressed with dill and lemon. Nutty and mild.',
  order:'Fava',oph:'FA-va',v:'plate',c1:'#D6C98A',top:T.leaf(C.green)},
-{tr:'Barbunya pilaki',reg:'İstanbul',ph:'bar-BOON-ya pi-la-KUH',en:'Borlotti beans in olive oil',cat:'Meze',diet:'vegan',prot:8,na:340,
+{tr:'Barbunya pilaki',tg:'brown,chunky,cold',tl:120,reg:'İstanbul',ph:'bar-BOON-ya pi-la-KUH',en:'Borlotti beans in olive oil',cat:'Meze',diet:'vegan',prot:8,na:340,
  desc:'Cranberry beans stewed with carrot, potato and tomato, served cold with lemon. Genuinely filling and one of the highest-protein mezes.',
  order:'Barbunya',oph:'bar-BOON-ya',v:'bowl',c1:'#C08A6A',top:T.dots('#8C4A32',7,17)},
-{tr:'Kısır',reg:'Southeast',ph:'kuh-SUHR',en:'Fine bulgur salad',cat:'Meze',diet:'vegan',prot:6,na:290,
+{tr:'Kısır',tg:'red,chunky,cold',tl:100,reg:'Southeast',ph:'kuh-SUHR',en:'Fine bulgur salad',cat:'Meze',diet:'vegan',prot:6,na:290,
  desc:'Fine bulgur worked with pepper paste, pomegranate molasses, parsley and spring onion. Turkey\'s tabbouleh, redder and more robust.',
  order:'Kısır',oph:'kuh-SUHR',v:'plate',c1:'#C25A3A',top:T.dots(C.green,9,21)},
-{tr:'Deniz börülcesi',reg:'Aegean',ph:'de-NEEZ bo-rool-je-SEE',en:'Samphire with garlic',cat:'Meze',diet:'vegan',prot:3,na:520,
+{tr:'Deniz börülcesi',tg:'green,leafy,cold',tl:150,reg:'Aegean',ph:'de-NEEZ bo-rool-je-SEE',en:'Samphire with garlic',cat:'Meze',diet:'vegan',prot:3,na:520,
  desc:'Sea beans blanched and dressed with garlic, olive oil and lemon. Squeaky, saline, and a coastal speciality — you\'ll see it in Fethiye and not inland.',
  order:'Deniz börülcesi',oph:'de-NEEZ bo-rool-je-SEE',
  note:'Naturally salty — it grows in salt marsh.',v:'plate',c1:'#4E8C4A',top:T.drizzle(C.gold)},
-{tr:'Piyaz',reg:'Antalya',ph:'pee-YAHZ',en:'White bean salad',cat:'Meze',diet:'vegan',prot:9,na:420,
+{tr:'Piyaz',tg:'white,chunky,cold',tl:110,reg:'Antalya',ph:'pee-YAHZ',en:'White bean salad',cat:'Meze',diet:'vegan',prot:9,na:420,
  desc:'White beans with onion, parsley and sumac. The Antalya version adds tahini and is a different, better dish. Sometimes topped with egg — ask.',
  order:'Piyaz, yumurtasız',oph:'pee-YAHZ yoo-moor-ta-SUHZ',
  note:'yumurtasız = without egg.',v:'plate',c1:'#EFE6CE',top:T.dots('#B04A5A',6,29)},
-{tr:'Semizotu',reg:'Aegean',ph:'se-MEEZ-o-too',en:'Purslane with yoghurt',cat:'Meze',diet:'veg',prot:4,na:240,
+{tr:'Semizotu',tg:'white,green,cold',tl:100,reg:'Aegean',ph:'se-MEEZ-o-too',en:'Purslane with yoghurt',cat:'Meze',diet:'veg',prot:4,na:240,
  desc:'A succulent, lemony green folded through garlicky yoghurt. Refreshing and almost never found outside Turkey and Greece.',
  order:'Semizotu',oph:'se-MEEZ-o-too',v:'bowl',c1:'#EAF2E4',top:T.dots(C.green,8,33)},
-{tr:'Atom',reg:'İstanbul',ph:'a-TOM',en:'Hot yoghurt with chilli butter',cat:'Meze',diet:'veg',prot:6,na:380,
+{tr:'Atom',tg:'white,thick,cold,spicy',tl:130,reg:'İstanbul',ph:'a-TOM',en:'Hot yoghurt with chilli butter',cat:'Meze',diet:'veg',prot:6,na:380,
  desc:'Yoghurt with dried chillies fried in butter poured over. Named for the effect. The spiciest meze on most tables.',
  order:'Atom',oph:'a-TOM',v:'bowl',c1:'#FBF6EC',top:T.drizzle(C.coral)+T.dots(C.coral,4,37)},
-{tr:'Mücver',reg:'Aegean',ph:'mooj-VER',en:'Courgette fritters',cat:'Meze',diet:'veg',prot:7,na:430,
+{tr:'Mücver',tg:'green,fried,hot',tl:140,reg:'Aegean',ph:'mooj-VER',en:'Courgette fritters',cat:'Meze',diet:'veg',prot:7,na:430,
  desc:'Grated courgette bound with egg, feta and dill, fried into soft green patties. Served with yoghurt to dip.',
  order:'Mücver',oph:'mooj-VER',v:'plate',c1:'#8FA85C',top:T.dots('#5E7A3A',6,41)},
-{tr:'Sigara böreği',reg:'Nationwide',ph:'si-ga-RA bo-reh-EE',en:'Cheese cigars',cat:'Meze',diet:'veg',prot:9,na:620,
+{tr:'Sigara böreği',tg:'brown,fried,hot',tl:140,reg:'Nationwide',ph:'si-ga-RA bo-reh-EE',en:'Cheese cigars',cat:'Meze',diet:'veg',prot:9,na:620,
  desc:'Thin yufka pastry rolled around white cheese and parsley, fried crisp. Impossible to eat only one.',
  order:'Sigara böreği',oph:'si-ga-RA bo-reh-EE',v:'plate',c1:'#E0B45C',top:''},
-{tr:'Midye dolma',reg:'İstanbul',ph:'MEED-yeh dol-MA',en:'Stuffed mussels',cat:'Meze',diet:'fish',prot:8,na:560,
+{tr:'Midye dolma',tg:'black,shell,cold',tl:12,un:'each',reg:'İstanbul',ph:'MEED-yeh dol-MA',en:'Stuffed mussels',cat:'Meze',diet:'fish',prot:8,na:560,
  desc:'Mussel shells packed with spiced rice, sold from carts by the dozen. Squeeze lemon in, eat straight from the shell, stack the empties — the seller counts them.',
  order:'On tane, lütfen',oph:'ON ta-neh loot-FEN',
  note:'"Ten, please." Street price is per mussel.',v:'plate',c1:'#3F3B4A',top:T.dots(C.cream,5,43)},
-{tr:'Lakerda',reg:'İstanbul',ph:'la-KER-da',en:'Salt-cured bonito',cat:'Meze',diet:'fish',prot:22,na:980,
+{tr:'Lakerda',tg:'pink,sliced,cold',tl:280,reg:'İstanbul',ph:'la-KER-da',en:'Salt-cured bonito',cat:'Meze',diet:'fish',prot:22,na:980,
  desc:'Thick slices of bonito cured in brine, served with red onion and olive oil. Turkey\'s answer to sashimi, and the classic partner to rakı.',
  order:'Lakerda',oph:'la-KER-da',
  note:'Cured in salt — the highest-sodium thing on the meze table.',v:'plate',c1:'#E8B8A8',top:T.dots('#B08A98',5,47)},
-{tr:'Topik',reg:'İstanbul',ph:'to-PEEK',en:'Armenian chickpea & tahini ball',cat:'Meze',diet:'vegan',prot:9,na:390,
+{tr:'Topik',tg:'white,thick,cold',tl:180,reg:'İstanbul',ph:'to-PEEK',en:'Armenian chickpea & tahini ball',cat:'Meze',diet:'vegan',prot:9,na:390,
  desc:'Potato and chickpea shell around a filling of onion cooked down with tahini, currants and allspice. Rare, Armenian-Istanbul, and worth ordering wherever you see it.',
  order:'Topik var mı?',oph:'to-PEEK var muh',v:'plate',c1:'#EFE0C4',top:T.drizzle('#A88A5C')},
-{tr:'Çiğ köfte',reg:'Şanlıurfa',ph:'CHEE kuf-TEH',en:'Spiced bulgur balls',cat:'Meze',diet:'vegan',prot:6,na:480,
+{tr:'Çiğ köfte',tg:'red,chunky,cold,spicy',tl:90,reg:'Şanlıurfa',ph:'CHEE kuf-TEH',en:'Spiced bulgur balls',cat:'Meze',diet:'vegan',prot:6,na:480,
  desc:'Once raw meat, now legally meatless — fine bulgur kneaded for hours with pepper paste and spices, wrapped in lettuce with lemon. Fiery.',
  order:'Çiğ köfte, acılı',oph:'CHEE kuf-TEH a-juh-LUH',v:'plate',c1:'#A83C2E',top:T.leaf(C.green)},
-{tr:'Beyaz peynir',reg:'Nationwide',ph:'beh-YAHZ pay-NEER',en:'White cheese',cat:'Meze',diet:'veg',prot:14,na:820,
+{tr:'Beyaz peynir',tg:'white,cubed,cold',tl:120,un:'per kilo',reg:'Nationwide',ph:'beh-YAHZ pay-NEER',en:'White cheese',cat:'Meze',diet:'veg',prot:14,na:820,
  desc:'Turkish brined sheep\'s cheese, firmer and saltier than feta. On every breakfast table and every rakı table.',
  order:'Beyaz peynir',oph:'beh-YAHZ pay-NEER',v:'plate',c1:'#FFFDF7',top:T.cubes('#FFFDF7')},
 
 /* ---- MAINS ---- */
-{tr:'Adana kebap',reg:'Adana',ph:'a-da-NA ke-BAHP',en:'Spicy minced lamb skewer',cat:'Mains',diet:'meat',prot:34,na:920,
+{tr:'Adana kebap',tg:'brown,skewer,hot,spicy',tl:420,reg:'Adana',ph:'a-da-NA ke-BAHP',en:'Spicy minced lamb skewer',cat:'Mains',diet:'meat',prot:34,na:920,
  desc:'Hand-minced lamb with red pepper flakes, pressed onto a flat skewer and grilled over coals. The spicy one — its mild twin is Urfa.',
  order:'Bir Adana, acılı',oph:'beer a-da-NA a-juh-LUH',
  note:'Adana = hot. Urfa = mild. That\'s the whole distinction.',v:'plate',c1:'#F0E4CE',top:T.skewer('#8C4A32')},
-{tr:'İskender',reg:'Bursa',ph:'is-KEN-der',en:'Döner over bread with tomato & butter',cat:'Mains',diet:'meat',prot:38,na:1400,
+{tr:'İskender',tg:'red,meat,hot',tl:520,reg:'Bursa',ph:'is-KEN-der',en:'Döner over bread with tomato & butter',cat:'Mains',diet:'meat',prot:38,na:1400,
  desc:'Sliced döner laid over cubes of pide, drowned in tomato sauce, with melted butter poured at the table and a slab of yoghurt beside. Bursa\'s gift and a genuinely enormous plate.',
  order:'İskender',oph:'is-KEN-der',
  note:'The saltiest main on this list by some distance.',v:'plate',c1:'#C4522E',top:T.dots('#8C3A24',8,53)},
-{tr:'Lahmacun',reg:'Southeast',ph:'lah-ma-JOON',en:'Thin lamb flatbread',cat:'Mains',diet:'meat',prot:16,na:680,
+{tr:'Lahmacun',tg:'red,flat,hot',tl:110,reg:'Southeast',ph:'lah-ma-JOON',en:'Thin lamb flatbread',cat:'Mains',diet:'meat',prot:16,na:680,
  desc:'Paper-thin dough spread with minced lamb, tomato and pepper, blasted in a hot oven. Load it with parsley and lemon, roll it, eat it with your hands.',
  order:'Bir lahmacun',oph:'beer lah-ma-JOON',v:'flat',c1:'#D9A05C',top:T.dots('#8C4A32',10,59)},
-{tr:'Pide',reg:'Black Sea',ph:'PEE-deh',en:'Boat-shaped baked flatbread',cat:'Mains',diet:'meat',prot:22,na:760,
+{tr:'Pide',tg:'yellow,flat,hot',tl:320,reg:'Black Sea',ph:'PEE-deh',en:'Boat-shaped baked flatbread',cat:'Mains',diet:'meat',prot:22,na:760,
  desc:'A canoe of dough filled with cheese, egg, minced meat or sucuk. Kaşarlı (cheese) is the vegetarian version and it\'s excellent.',
  order:'Kaşarlı pide',oph:'ka-shar-LUH PEE-deh',
  note:'Kaşarlı = cheese, so vegetarian. Kıymalı = minced meat.',v:'plate',c1:'#E0B45C',top:T.dots('#E8C86A',6,61)},
-{tr:'Mantı',reg:'Kayseri',ph:'man-TUH',en:'Tiny dumplings in yoghurt',cat:'Mains',diet:'meat',prot:20,na:780,
+{tr:'Mantı',tg:'white,dumpling,hot',tl:300,reg:'Kayseri',ph:'man-TUH',en:'Tiny dumplings in yoghurt',cat:'Mains',diet:'meat',prot:20,na:780,
  desc:'Minuscule meat dumplings under garlic yoghurt with paprika butter and dried mint. Kayseri claims them, and Cappadocia is where you should eat them.',
  order:'Mantı',oph:'man-TUH',v:'plate',c1:'#FBF6EC',top:T.dots('#E8A83C',9,67)},
-{tr:'İmam bayıldı',reg:'İstanbul',ph:'ee-MAHM ba-yuhl-DUH',en:'Aubergine stuffed with onion & tomato',cat:'Mains',diet:'vegan',prot:4,na:420,
+{tr:'İmam bayıldı',tg:'purple,whole,cold',tl:240,reg:'İstanbul',ph:'ee-MAHM ba-yuhl-DUH',en:'Aubergine stuffed with onion & tomato',cat:'Mains',diet:'vegan',prot:4,na:420,
  desc:'"The imam fainted" — whole aubergine split and stuffed with slow-cooked onion, garlic and tomato, drenched in olive oil, served at room temperature. The great vegan main.',
  order:'İmam bayıldı',oph:'ee-MAHM ba-yuhl-DUH',
  note:'Its meat sibling is karnıyarık. Easy to confuse — this one is vegan.',
  v:'plate',c1:'#5D4A72',top:T.dots(C.tom,6,71)},
-{tr:'Mercimek çorbası',reg:'Nationwide',ph:'mer-ji-MEK chor-ba-SUH',en:'Red lentil soup',cat:'Mains',diet:'vegan',prot:9,na:640,
+{tr:'Mercimek çorbası',tg:'orange,soup,hot',tl:140,reg:'Nationwide',ph:'mer-ji-MEK chor-ba-SUH',en:'Red lentil soup',cat:'Mains',diet:'vegan',prot:9,na:640,
  desc:'The national soup — red lentils blended smooth, with lemon squeezed in and chilli flakes shaken over. Almost always vegan but stock varies; ask.',
  order:'Mercimek çorbası',oph:'mer-ji-MEK chor-ba-SUH',
  note:'Ask "et suyu var mı?" — is there meat stock?',v:'bowl',c1:'#E08A3C',top:T.steam()},
-{tr:'Kuru fasulye',reg:'Nationwide',ph:'koo-ROO fa-sool-YEH',en:'White bean stew',cat:'Mains',diet:'meat',prot:16,na:720,
+{tr:'Kuru fasulye',tg:'red,stew,hot',tl:260,reg:'Nationwide',ph:'koo-ROO fa-sool-YEH',en:'White bean stew',cat:'Mains',diet:'meat',prot:16,na:720,
  desc:'White beans stewed in tomato, usually with lamb or pastırma, served with rice. Turkey\'s comfort food. A meatless version exists — ask for etsiz.',
  order:'Etsiz kuru fasulye',oph:'et-SEEZ koo-ROO fa-sool-YEH',
  note:'etsiz = without meat.',v:'bowl',c1:'#C4703C',top:T.dots('#EFE6CE',8,73)},
-{tr:'Gözleme',reg:'Anatolia',ph:'guz-le-MEH',en:'Griddled stuffed flatbread',cat:'Mains',diet:'veg',prot:11,na:540,
+{tr:'Gözleme',tg:'brown,flat,hot',tl:160,reg:'Anatolia',ph:'guz-le-MEH',en:'Griddled stuffed flatbread',cat:'Mains',diet:'veg',prot:11,na:540,
  desc:'Dough rolled paper-thin, folded around cheese, spinach or potato and cooked on a convex griddle. Trail food, village food, and what gets handed to walkers on the Lycian Way.',
  order:'Ispanaklı gözleme',oph:'uhs-pa-nak-LUH guz-le-MEH',
  note:'Potato (patatesli) or spinach without cheese is usually vegan.',
  v:'flat',c1:'#E8C88A',top:T.dots('#5E8C57',7,83)},
-{tr:'Levrek ızgara',sea:[3,4,5,6,7,8,9],reg:'Coast',ph:'lev-REK uhz-ga-RA',en:'Grilled sea bass',cat:'Mains',diet:'fish',prot:32,na:360,
+{tr:'Levrek ızgara',tg:'white,fish,hot',tl:650,sea:[3,4,5,6,7,8,9],reg:'Coast',ph:'lev-REK uhz-ga-RA',en:'Grilled sea bass',cat:'Mains',diet:'fish',prot:32,na:360,
  desc:'Whole fish over coals with nothing but salt, lemon and a pile of rocket. Priced by weight — always ask the price per kilo before agreeing.',
  order:'Kilosu ne kadar?',oph:'ki-lo-SOO neh ka-DAR',
  note:'"How much per kilo?" — the single most useful sentence in a fish restaurant.',
  v:'plate',c1:'#F0E4CE',top:T.fishShape()},
-{tr:'Lüfer',sea:[8,9,10],reg:'Bosphorus',ph:'loo-FER',en:'Bluefish',cat:'Mains',diet:'fish',prot:30,na:340,
+{tr:'Lüfer',tg:'white,fish,hot',tl:750,sea:[8,9,10],reg:'Bosphorus',ph:'loo-FER',en:'Bluefish',cat:'Mains',diet:'fish',prot:30,na:340,
  desc:'The autumn fish. Migrates through the Bosphorus from September and the whole country pays attention. Oily, firm, strongly flavoured — grilled whole with rocket and raki.',
  order:'Lüfer var mı?',oph:'loo-FER var muh',
  note:'Season opens September. Sized by name: çinekop small, kofana large.',
  v:'plate',c1:'#F0E4CE',top:T.fishShape()},
-{tr:'Testi kebabı',reg:'Cappadocia',ph:'tes-TEE ke-ba-BUH',en:'Pottery kebab',cat:'Mains',diet:'meat',prot:36,na:820,
+{tr:'Testi kebabı',tg:'brown,stew,hot',tl:650,reg:'Cappadocia',ph:'tes-TEE ke-ba-BUH',en:'Pottery kebab',cat:'Mains',diet:'meat',prot:36,na:820,
  desc:'Meat and vegetables sealed in a clay pot, cooked slowly, then the pot is cracked open at your table with a blade. Cappadocia\'s signature and pure theatre.',
  order:'Testi kebabı',oph:'tes-TEE ke-ba-BUH',v:'bowl',c1:'#A8623C',top:T.steam()},
 
 /* ---- FISH ---- */
-{tr:'Çupra',sea:[3,4,5,6,7,8,9],reg:'Aegean',ph:'CHOO-pra',en:'Gilt-head sea bream',cat:'Fish',diet:'fish',prot:31,na:330,
+{tr:'Çupra',tg:'white,fish,hot',tl:600,sea:[3,4,5,6,7,8,9],reg:'Aegean',ph:'CHOO-pra',en:'Gilt-head sea bream',cat:'Fish',diet:'fish',prot:31,na:330,
  desc:'The other whole grilled fish beside levrek, and slightly richer. Farmed widely, so it is the reliable year-round order when nothing is running wild.',
  order:'Bir çupra ızgara',oph:'beer CHOO-pra uhz-ga-RA',
  note:'ızgara = grilled, tava = pan-fried, buğulama = steamed in broth.',
  v:'plate',c1:'#F0E4CE',top:T.fishShape()+T.lemon()},
-{tr:'Hamsi',sea:[10,11,0,1],reg:'Black Sea',ph:'ham-SEE',en:'Black Sea anchovy',cat:'Fish',diet:'fish',prot:20,na:640,
+{tr:'Hamsi',tg:'brown,fried,hot',tl:280,sea:[10,11,0,1],reg:'Black Sea',ph:'ham-SEE',en:'Black Sea anchovy',cat:'Fish',diet:'fish',prot:20,na:640,
  desc:'Small silver anchovies rolled in cornmeal and fried in a fan-shaped pan, eaten whole by the handful. The Black Sea coast is built around them. Winter is the season.',
  order:'Hamsi tava',oph:'ham-SEE ta-VA',
  note:'Best November to February. Out of season it will be frozen.',
  v:'plate',c1:'#E8D8B0',top:T.smallfish(5,'#A8B8C4')},
-{tr:'Palamut',sea:[8,9,10],reg:'Bosphorus',ph:'pa-la-MOOT',en:'Bonito',cat:'Fish',diet:'fish',prot:29,na:390,
+{tr:'Palamut',tg:'white,fish,hot',tl:550,sea:[8,9,10],reg:'Bosphorus',ph:'pa-la-MOOT',en:'Bonito',cat:'Fish',diet:'fish',prot:29,na:390,
  desc:'Oily, meaty, and the fish that becomes lakerda when cured. Autumn migration through the Bosphorus makes September and October its months. Grilled whole or in thick steaks.',
  order:'Palamut var mı?',oph:'pa-la-MOOT var muh',v:'plate',c1:'#F0E4CE',top:T.fishShape()+T.lemon()},
-{tr:'İstavrit',sea:[9,10,11,0],reg:'Marmara',ph:'is-tav-REET',en:'Horse mackerel',cat:'Fish',diet:'fish',prot:23,na:410,
+{tr:'İstavrit',tg:'brown,fried,hot',tl:260,sea:[9,10,11,0],reg:'Marmara',ph:'is-tav-REET',en:'Horse mackerel',cat:'Fish',diet:'fish',prot:23,na:410,
  desc:'The cheap, everyday fish — small, oily, grilled or fried and piled on a plate. What the fishermen on the Galata Bridge are actually catching.',
  order:'İstavrit ızgara',oph:'is-tav-REET uhz-ga-RA',v:'plate',c1:'#EDE0C6',top:T.smallfish(4,'#B8C4C8')},
-{tr:'Kalamar tava',sea:[4,5,6,7,8,9],reg:'Aegean',ph:'ka-la-MAR ta-VA',en:'Fried calamari',cat:'Fish',diet:'fish',prot:24,na:720,
+{tr:'Kalamar tava',tg:'brown,fried,hot',tl:420,sea:[4,5,6,7,8,9],reg:'Aegean',ph:'ka-la-MAR ta-VA',en:'Fried calamari',cat:'Fish',diet:'fish',prot:24,na:720,
  desc:'Squid rings floured and fried, served with tarator — a garlic and walnut sauce that is far better than the tartare you get elsewhere.',
  order:'Kalamar tava',oph:'ka-la-MAR ta-VA',
  note:'Ask for tarator alongside. Nut-based, and vegan on its own.',
  v:'plate',c1:'#E8C88A',top:T.rings('#F2DFB0')},
-{tr:'Karides güveç',sea:[3,4,5,6,7,8,9,10],reg:'Coast',ph:'ka-ree-DES goo-VECH',en:'Prawn casserole',cat:'Fish',diet:'fish',prot:26,na:780,
+{tr:'Karides güveç',tg:'red,stew,hot',tl:480,sea:[3,4,5,6,7,8,9,10],reg:'Coast',ph:'ka-ree-DES goo-VECH',en:'Prawn casserole',cat:'Fish',diet:'fish',prot:26,na:780,
  desc:'Prawns baked in a clay dish with tomato, garlic, peppers and a lid of melted kaşar cheese. Bubbling when it arrives. A meze-table staple on the coast.',
  order:'Karides güveç',oph:'ka-ree-DES goo-VECH',v:'bowl',c1:'#D9543A',top:T.prawns(3)},
-{tr:'Ahtapot salatası',sea:[4,5,6,7,8,9],reg:'Aegean',ph:'ah-ta-POT sa-la-ta-SUH',en:'Octopus salad',cat:'Fish',diet:'fish',prot:25,na:520,
+{tr:'Ahtapot salatası',tg:'purple,sliced,cold',tl:450,sea:[4,5,6,7,8,9],reg:'Aegean',ph:'ah-ta-POT sa-la-ta-SUH',en:'Octopus salad',cat:'Fish',diet:'fish',prot:25,na:520,
  desc:'Octopus simmered until tender, sliced and dressed with olive oil, lemon and parsley. Cold, clean, and one of the best things on an Aegean meze table.',
  order:'Ahtapot salatası',oph:'ah-ta-POT sa-la-ta-SUH',v:'plate',c1:'#EDE0CE',top:T.octopus()},
-{tr:'Balık ekmek',reg:'İstanbul',ph:'ba-LUHK ek-MEK',en:'Fish in bread',cat:'Fish',diet:'fish',prot:24,na:820,
+{tr:'Balık ekmek',tg:'brown,bread,hot',tl:180,reg:'İstanbul',ph:'ba-LUHK ek-MEK',en:'Fish in bread',cat:'Fish',diet:'fish',prot:24,na:820,
  desc:'Grilled mackerel fillet in half a loaf with onion, lettuce and lemon, sold from boats at Eminönü. Cheap, enormous, and best eaten standing by the water.',
  order:'Bir balık ekmek',oph:'beer ba-LUHK ek-MEK',v:'plate',c1:'#D9A05C',top:T.sandwichFish()},
-{tr:'Barbunya',sea:[5,6,7,8,9],reg:'Aegean',ph:'bar-BOON-ya',en:'Red mullet',cat:'Fish',diet:'fish',prot:26,na:350,
+{tr:'Barbunya',tg:'pink,fish,hot',tl:700,sea:[5,6,7,8,9],reg:'Aegean',ph:'bar-BOON-ya',en:'Red mullet',cat:'Fish',diet:'fish',prot:26,na:350,
  desc:'Small, pink, delicate and expensive — usually fried whole. Not to be confused with the bean of the same name on the meze list.',
  order:'Barbunya balık',oph:'bar-BOON-ya ba-LUHK',
  note:'Same word as the bean. Add "balık" to be clear you mean the fish.',
  v:'plate',c1:'#EDE0C6',top:T.smallfish(3,'#E88A8A')},
-{tr:'Çipura buğulama',reg:'Aegean',ph:'chi-poo-RA boo-oo-la-MA',en:'Bream steamed in broth',cat:'Fish',diet:'fish',prot:30,na:420,
+{tr:'Çipura buğulama',tg:'white,fish,hot',tl:620,reg:'Aegean',ph:'chi-poo-RA boo-oo-la-MA',en:'Bream steamed in broth',cat:'Fish',diet:'fish',prot:30,na:420,
  desc:'Fish poached gently with tomato, onion and herbs rather than grilled — softer, lighter, and the version to ask for when you have had enough char.',
  order:'Buğulama yapar mısınız?',oph:'boo-oo-la-MA ya-PAR muh-suh-nuhz',v:'bowl',c1:'#E8C08A',top:T.fishShape()+T.steam()},
 
 /* ---- RAKI ---- */
-{tr:'Yeni Rakı',reg:'Nationwide',ph:'yeh-NEE ra-KUH',en:'The standard bottle',cat:'Rakı',diet:'vegan',prot:0,na:5,
- desc:'The one on every table and the benchmark everything else is judged against. 45%, twice-distilled, clean anise. If you order "rakı" without naming a brand, this is what arrives.',
- order:'Bir duble Yeni',oph:'beer DOOB-leh yeh-NEE',
- note:'duble = a double, the standard pour. tek = single.',
- v:'glass',c1:'#F2F6F2',top:T.bottle('#2E7D4F','#FFFDF7')},
-{tr:'Tekirdağ Rakısı',reg:'Tekirdağ',ph:'te-keer-DAA ra-kuh-SUH',en:'The connoisseur\'s choice',cat:'Rakı',diet:'vegan',prot:0,na:5,
- desc:'Made with Turkish-grown anise from Tekirdağ on the Sea of Marmara. Softer and rounder than Yeni, and what people who drink rakı seriously tend to order.',
- order:'Tekirdağ, lütfen',oph:'te-keer-DAA loot-FEN',
- note:'The Gold (Altın Seri) version is the step up and worth the few extra lira.',
+{tr:'Göbek rakısı',tl:1400,un:'bottle / jar',ph:'guh-BEK ra-kuh-SUH',en:'The heart cut',cat:'Rakı',reg:'Nationwide',diet:'vegan',prot:0,na:5,
+ desc:'Göbek means belly — the middle of the distillation, with head and tail thrown away. Purists say a real one is triple-distilled from fresh grapes only. What reliably separates it: no refined sugar and no agricultural ethanol cut in, only grape suma. That is what you are paying for.',
+ order:'Göbek rakısı var mı?',oph:'guh-BEK ra-kuh-SUH var muh',
+ note:'Forums claim göbek gives no headache the next morning. Folklore, but with a plausible mechanism.',
+ v:'glass',c1:'#F2F6F2',top:T.rakiSet()},
+{tr:'Tekirdağ Altın Seri',tl:1450,un:'bottle / jar',ph:'te-keer-DAA al-TUHN se-REE',en:'The benchmark',cat:'Rakı',reg:'Tekirdağ',diet:'vegan',prot:0,na:5,rate:5,
+ desc:'The most-repeated line on Turkish forums: "Tekirdağ Altın Seri is the father of rakı — this subject is closed to debate." What separates it, per one drinker: the explosion on the first sip carries through the middle and into the finish. If you want the anise to announce itself, start here.',
+ order:'Tekirdağ Altın Seri',oph:'te-keer-DAA al-TUHN se-REE',
+ note:'The one to taste first. Everything else gets measured against it.',
  v:'glass',c1:'#F2F6F2',top:T.bottle('#1B4F8A','#E0A83C')},
-{tr:'Efe Rakı',reg:'Aegean',ph:'EH-feh ra-KUH',en:'Aegean, from fresh grapes',cat:'Rakı',diet:'vegan',prot:0,na:5,
- desc:'Distilled from fresh grape must rather than raisins, which gives it a lighter, fruitier edge. The Efe Gold is triple-distilled and very smooth. Popular along this coast.',
- order:'Efe var mı?',oph:'EH-feh var muh',v:'glass',c1:'#F2F6F2',top:T.bottle('#7A1E5A','#FFFDF7')},
-{tr:'Beylerbeyi',reg:'İstanbul',ph:'bay-ler-bay-EE',en:'Rich and aniseed-forward',cat:'Rakı',diet:'vegan',prot:0,na:5,
- desc:'A heavier, more perfumed style with a strong anise nose. Divides people — try a single before committing to a bottle.',
- order:'Bir tek Beylerbeyi',oph:'beer TEK bay-ler-bay-EE',v:'glass',c1:'#F2F6F2',top:T.bottle('#8C2A2A','#E0A83C')},
-{tr:'Kulüp Rakı',reg:'Nationwide',ph:'koo-LOOP ra-KUH',en:'The old-school label',ca:'',cat:'Rakı',diet:'vegan',prot:0,na:5,
- desc:'An older brand with a loyal following, drier and more restrained than Yeni. Often a little cheaper and frequently what the older men at the next table are drinking.',
+{tr:'Kara Efe',tl:1250,un:'bottle / jar',ph:'ka-RA EH-feh',en:'High strength, almost no nose',cat:'Rakı',reg:'Aegean',diet:'vegan',prot:0,na:5,rate:4,
+ desc:'Stronger than most and yet it barely smells. As one forum put it: beginners try it, decide rakı does not actually smell, and become addicts. From fresh grape must rather than raisins, so lighter and fruitier.',
+ order:'Kara Efe',oph:'ka-RA EH-feh',
+ note:'The outlier. Worth tasting precisely because it breaks the pattern.',
+ v:'glass',c1:'#F2F6F2',top:T.bottle('#2E2A2A','#E0A83C')},
+{tr:'Beylerbeyi Göbek',tl:1350,un:'bottle / jar',ph:'bay-ler-bay-EE guh-BEK',en:'The smooth extreme',cat:'Rakı',reg:'İstanbul',diet:'vegan',prot:0,na:5,rate:3,
+ desc:'The one the smooth camp defends and the burn camp dismisses. Best line on it: "It is beautiful. But it is not like rakı, it is like sherbet. My wife who cannot manage two glasses can drink a whole 35cl." Taste it to know what you are rejecting.',
+ order:'Beylerbeyi Göbek',oph:'bay-ler-bay-EE guh-BEK',
+ note:'If you like Braulio neat, this is probably too soft for you.',
+ v:'glass',c1:'#F2F6F2',top:T.bottle('#8C2A2A','#FFFDF7')},
+{tr:'Kulüp Rakı',tl:1050,un:'bottle / jar',ph:'koo-LOOP ra-KUH',en:'The old-school label',cat:'Rakı',reg:'Nationwide',diet:'vegan',prot:0,na:5,rate:4,
+ desc:'Made since the 1930s and several drinkers call it the best brand outright, separated from its rivals by a higher alcohol ratio. Drier and more restrained than Yeni, usually a little cheaper, and frequently what the older men at the next table are drinking.',
  order:'Kulüp',oph:'koo-LOOP',v:'glass',c1:'#F2F6F2',top:T.bottle('#2A3A6A','#FFFDF7')},
-{tr:'Rakı sofrası',reg:'Nationwide',ph:'ra-KUH sof-ra-SUH',en:'How to drink it',cat:'Rakı',diet:'vegan',prot:0,na:5,
+{tr:'Tekirdağ No 10',tl:1600,un:'bottle / jar',ph:'te-keer-DAA no ON',en:'Called legendary',cat:'Rakı',reg:'Tekirdağ',diet:'vegan',prot:0,na:5,rate:5,
+ desc:'Named efsane — legendary — repeatedly. Pairs with classic meze and a proper meal rather than being sipped alone. The Öküzgözü bottling from the same house is more divisive: some call it magnificent, one respected drinker called it too heavy and overpowering.',
+ order:'Tekirdağ No 10',oph:'te-keer-DAA no ON',v:'glass',c1:'#F2F6F2',top:T.bottle('#1B4F8A','#C9A45E')},
+{tr:'Yeni Rakı',tl:1100,un:'bottle / jar',ph:'yeh-NEE ra-KUH',en:'The default bottle',cat:'Rakı',reg:'Nationwide',diet:'vegan',prot:0,na:5,rate:3,
+ desc:'What arrives if you order rakı without naming a brand. Fine, and the benchmark for availability rather than quality. The Ustaların Karışımı bottling is the one forum drinkers actually rate; Ala is sharper; Uzun Demleme was called extremely spirity and volatile, more grappa than rakı.',
+ order:'Bir duble Yeni',oph:'beer DOOB-leh yeh-NEE',
+ note:'If you must drink Yeni, ask for Ustaların Karışımı.',
+ v:'glass',c1:'#F2F6F2',top:T.bottle('#2E7D4F','#FFFDF7')},
+{tr:'Sarı Zeybek',tl:1500,un:'bottle / jar',ph:'sa-RUH zay-BEK',en:'For fruit and nuts',cat:'Rakı',reg:'Aegean',diet:'vegan',prot:0,na:5,rate:4,
+ desc:'A göbek rakı that forum drinkers say goes with seasonal fruit and a handful of nuts rather than a full meal. Which makes it the September bottle — melon, figs and white cheese on a balcony.',
+ order:'Sarı Zeybek',oph:'sa-RUH zay-BEK',v:'glass',c1:'#F2F6F2',top:T.bottle('#C9A45E','#2A3A6A')},
+{tr:'Yaş üzüm rakısı',tl:1300,un:'bottle / jar',ph:'YAHSH oo-ZOOM ra-kuh-SUH',en:'Fresh-grape rakı',cat:'Rakı',reg:'Nationwide',diet:'vegan',prot:0,na:5,
+ desc:'Distilled from fresh grape must rather than raisins. Fresher, rounder, softer, more floral; raisin-based rakı is heavier and more full-bodied. Fresh grape is generally held to be the better of the two and priced accordingly.',
+ order:'Yaş üzüm mü?',oph:'YAHSH oo-ZOOM moo',
+ note:'yaş üzüm = fresh grape · kuru üzüm = raisin. It is on the label.',
+ v:'glass',c1:'#F2F6F2',top:T.grapes()},
+{tr:'Üretim tarihi',ph:'oo-re-TEEM ta-ree-HEE',en:'The production date',cat:'Rakı',reg:'Nationwide',diet:'vegan',prot:0,na:5,
+ desc:'A retired worker from the Tekirdağ distillery, quoted on a Turkish forum: forget the brand, look at the production date. Good rakı is fresh-grape rakı, and that only comes from August, September and October production. You are here in exactly that window — check the bottle.',
+ order:'Üretim tarihi nedir?',oph:'oo-re-TEEM ta-ree-HEE ne-DEER',
+ note:'The single most useful thing on this page. Almost no visitor checks it.',
+ v:'glass',c1:'#F2F6F2',top:T.bottle('#5E8C57','#FFFDF7')},
+{tr:'Rakı sofrası',ph:'ra-KUH sof-ra-SUH',en:'How to drink it',cat:'Rakı',reg:'Nationwide',diet:'vegan',prot:0,na:5,
  desc:'Water in the glass first, then rakı — it clouds white and becomes aslan sütü, lion\'s milk. Ice after, never before. A separate glass of plain water alongside. Sipped slowly over meze across three or four hours, never shot.',
  order:'Su ve buz, lütfen',oph:'SOO veh BOOZ loot-FEN',
- note:'"Water and ice, please." Order the meze first and let the rakı last the whole table.',
+ note:'For comparing bottles the forums say the opposite: drink it sek — neat, no water, no ice — then a sip of water after.',
  v:'glass',c1:'#F2F6F2',top:T.rakiSet()},
-
-/* ---- ACI · THE HOT END ---- */
-{tr:'Acılı ezme',reg:'Southeast',ph:'a-juh-LUH ez-MEH',en:'The hot chopped salad',cat:'Acı',diet:'vegan',prot:2,na:340,heat:3,
- desc:'Ezme made properly hot — tomato, pepper, onion and a serious quantity of pul biber, worked to a rough paste. The single most reliable source of heat on any meze table. Always specify acılı.',
- order:'Çok acılı ezme, lütfen',oph:'CHOK a-juh-LUH ez-MEH loot-FEN',
- note:'Say çok acılı — very spicy — or you will get the tourist version.',
- v:'bowl',c1:'#C4302A',top:T.dots('#7A1414',9,3)+T.chilli()},
-{tr:'Atom',reg:'İstanbul',ph:'a-TOM',en:'Yoghurt under chilli butter',cat:'Acı',diet:'veg',prot:6,na:380,heat:3,
- desc:'Named for what it does to you. Thick yoghurt with dried chillies fried in butter poured over while still sizzling. The heat sits on top; the yoghurt underneath does nothing to stop it.',
- order:'Atom',oph:'a-TOM',v:'bowl',c1:'#FBF6EC',top:T.drizzle('#C4302A')+T.chilli()},
-{tr:'İsot biberi',reg:'Şanlıurfa',ph:'ee-SOT bee-be-REE',en:'Urfa pepper',cat:'Acı',diet:'vegan',prot:0,na:15,heat:3,
- desc:'Dark purple-black pepper flakes from Şanlıurfa, sun-dried then sweated overnight in cloth. Smoky, raisiny, and a slow heat that builds rather than hits. Buy a bag — it does not exist outside Turkey.',
- order:'İsot var mı?',oph:'ee-SOT var muh',
- note:'The best single thing to bring home from a Turkish market.',
- v:'bowl',c1:'#3A1E28',top:T.flakes('#5A2030')},
-{tr:'Pul biber',reg:'Nationwide',ph:'POOL bee-BER',en:'Red pepper flakes',cat:'Acı',diet:'vegan',prot:0,na:10,heat:2,
- desc:'On every table in Turkey, in a shaker beside the salt. Bright red, moderately hot, faintly sweet. Your instrument — the food arrives mild and you fix it yourself.',
- order:'Pul biber var mı?',oph:'POOL bee-BER var muh',
- note:'It is already on the table. Look before you ask.',
- v:'bowl',c1:'#C4302A',top:T.flakes('#8C1F1F')},
-{tr:'Acı biber turşusu',reg:'Nationwide',ph:'a-JUH bee-BER toor-shoo-SOO',en:'Pickled hot peppers',cat:'Acı',diet:'vegan',prot:1,na:820,heat:3,
- desc:'Long green chillies pickled in brine, eaten whole alongside kebab and beans. Sour and hot at once. Ask at any pickle shop — a turşucu — and they will hand you one to try.',
- order:'Acı biber turşusu',oph:'a-JUH bee-BER toor-shoo-SOO',
- note:'Very high sodium — it is brine.',v:'bowl',c1:'#6B8C3A',top:T.chillies()},
-{tr:'Adana kebap',reg:'Adana',ph:'a-da-NA ke-BAHP',en:'The spicy kebab',cat:'Acı',diet:'meat',prot:34,na:920,heat:2,
- desc:'Hand-minced lamb worked with red pepper until it is properly hot, pressed onto a flat skewer over coals. Its mild twin is Urfa — that is the entire difference between the two.',
- order:'Bir Adana, acılı olsun',oph:'beer a-da-NA a-juh-LUH ol-SOON',
- note:'Adana = hot. Urfa = mild. Never the other way round.',
- v:'plate',c1:'#F0E4CE',top:T.skewer('#8C4A32')+T.chilli()},
-{tr:'Çiğ köfte',reg:'Şanlıurfa',ph:'CHEE kuf-TEH',en:'Fiery bulgur balls',cat:'Acı',diet:'vegan',prot:6,na:480,heat:3,
- desc:'Bulgur kneaded for hours with pepper paste and isot until the heat is in the grain itself. Wrapped in lettuce with lemon. Vegan, cheap, and hotter than it looks.',
- order:'Çiğ köfte dürüm, acılı',oph:'CHEE kuf-TEH doo-ROOM a-juh-LUH',
- v:'plate',c1:'#A83C2E',top:T.leaf('#7EA85C')+T.chilli()},
-{tr:'Muammara acılı',reg:'Gaziantep',ph:'moo-ha-ma-RA a-juh-LUH',en:'Hot walnut-pepper paste',cat:'Acı',diet:'vegan',prot:5,na:320,heat:2,
- desc:'The hot version of muhammara, made with acı biber salçası rather than sweet. Smoky, sweet-sour and warm rather than sharp. Ask for the acı one.',
- order:'Acı muhammara',oph:'a-JUH moo-ha-ma-RA',v:'bowl',c1:'#A8341F',top:T.dots('#6A2A18',8,11)},
-{tr:'Biber salçası',reg:'Southeast',ph:'bee-BER sal-cha-SUH',en:'Pepper paste',cat:'Acı',diet:'vegan',prot:2,na:640,heat:2,
- desc:'Sun-dried red pepper paste, sold sweet (tatlı) or hot (acı), and the base of half the dishes on this list. A jar travels well and will change your cooking at home.',
- order:'Acı biber salçası',oph:'a-JUH bee-BER sal-cha-SUH',
- note:'acı = hot, tatlı = sweet. Check the lid.',
- v:'bowl',c1:'#9C2818',top:T.swirl('#C4402A')},
-{tr:'Şalgam acılı',reg:'Adana',ph:'shal-GAHM a-juh-LUH',en:'Hot turnip juice',cat:'Acı',diet:'vegan',prot:1,na:900,heat:2,
- desc:'The spicy version of fermented turnip juice, and the traditional partner to Adana. Sour, salty and hot all at once. Order acılı or you get the plain one.',
- order:'Acılı şalgam',oph:'a-juh-LUH shal-GAHM',
- note:'Very high sodium.',v:'glass',c1:'#6B2A4A',top:''},
+{tr:'Sek',ph:'SEK',en:'Neat, for tasting',cat:'Rakı',reg:'Nationwide',diet:'vegan',prot:0,na:5,
+ desc:'"If you are comparing, drink it neat first — no water, no ice. That way you get both its purest form and, with a sip of water after, how it interacts with your body." Contradicts the ritual, and it is how you would actually run a comparison.',
+ order:'Sek olsun',oph:'SEK ol-SOON',
+ note:'sek = neat · duble = a double · tek = a single',
+ v:'glass',c1:'#F2F6F2',top:''},
 
 /* ---- KAHVALTI ---- */
-{tr:'Serpme kahvaltı',reg:'Nationwide',ph:'ser-PMEH kah-val-TUH',en:'The spread breakfast',cat:'Kahvaltı',diet:'veg',prot:24,na:1200,
+{tr:'Serpme kahvaltı',tg:'many,cold',tl:650,un:'for two',reg:'Nationwide',ph:'ser-PMEH kah-val-TUH',en:'The spread breakfast',cat:'Kahvaltı',diet:'veg',prot:24,na:1200,
  desc:'Fifteen to thirty small plates arriving at once — cheeses, olives, tomato, cucumber, honey, clotted cream, jams, eggs, bread — and endless tea. Ordered for the table, eaten for two hours. The single most Turkish meal there is.',
  order:'İki kişilik serpme kahvaltı',oph:'i-KEE ki-shi-LEEK ser-PMEH kah-val-TUH',
  note:'"Serpme for two." Tea is usually unlimited and included.',
  v:'plate',c1:'#F6EEDC',top:T.spread()},
-{tr:'Kaymak ve bal',reg:'Afyon',ph:'kai-MAHK veh BAHL',en:'Clotted cream and honey',cat:'Kahvaltı',diet:'veg',prot:5,na:60,
+{tr:'Kaymak ve bal',tg:'white,thick,cold',tl:220,reg:'Afyon',ph:'kai-MAHK veh BAHL',en:'Clotted cream and honey',cat:'Kahvaltı',diet:'veg',prot:5,na:60,
  desc:'A slab of buffalo-milk clotted cream with honey poured over, scooped onto bread. Afyon makes the famous kaymak. Absurdly rich and non-negotiable at breakfast.',
  order:'Kaymak ve bal',oph:'kai-MAHK veh BAHL',v:'plate',c1:'#FBF6EC',top:T.kaymak()},
-{tr:'Sahanda yumurta',reg:'Nationwide',ph:'sa-HAN-da yoo-moor-TA',en:'Eggs in the pan',cat:'Kahvaltı',diet:'veg',prot:13,na:340,
+{tr:'Sahanda yumurta',tg:'yellow,egg,hot',tl:180,reg:'Nationwide',ph:'sa-HAN-da yoo-moor-TA',en:'Eggs in the pan',cat:'Kahvaltı',diet:'veg',prot:13,na:340,
  desc:'Two eggs fried in butter in a small copper pan and brought still sizzling. Sucuklu adds spicy sausage; pastırmalı adds cured beef.',
  order:'Sahanda yumurta',oph:'sa-HAN-da yoo-moor-TA',
  note:'sucuklu = with sausage, so not vegetarian. Plain is just eggs.',
  v:'plate',c1:'#F2F0E4',top:T.friedegg()},
-{tr:'Sucuklu yumurta',reg:'Nationwide',ph:'soo-jook-LOO yoo-moor-TA',en:'Eggs with spiced sausage',cat:'Kahvaltı',diet:'meat',prot:22,na:980,
+{tr:'Sucuklu yumurta',tg:'red,egg,hot',tl:240,reg:'Nationwide',ph:'soo-jook-LOO yoo-moor-TA',en:'Eggs with spiced sausage',cat:'Kahvaltı',diet:'meat',prot:22,na:980,
  desc:'Coins of garlicky, cumin-heavy beef sausage fried until the fat renders, eggs cracked in after. The smell of a Turkish weekend morning.',
  order:'Sucuklu yumurta',oph:'soo-jook-LOO yoo-moor-TA',v:'plate',c1:'#F2F0E4',top:T.sucuk()},
-{tr:'Menemen',reg:'Aegean',ph:'me-ne-MEN',en:'Eggs in tomato and pepper',cat:'Kahvaltı',diet:'veg',prot:14,na:560,
+{tr:'Menemen',tg:'red,egg,hot',tl:220,reg:'Aegean',ph:'me-ne-MEN',en:'Eggs in tomato and pepper',cat:'Kahvaltı',diet:'veg',prot:14,na:560,
  desc:'Soft eggs cooked into tomatoes and green peppers in a copper pan, eaten with bread straight from it. Argument rages over whether onion belongs. It does not.',
  order:'Menemen, soğansız',oph:'me-ne-MEN so-an-SUHZ',
  note:'soğansız = without onion, if you want the purist version.',
  v:'plate',c1:'#E0803C',top:T.dots('#F2C84B',6,79)},
-{tr:'Mıhlama / Kuymak',reg:'Black Sea',ph:'muhh-la-MA',en:'Black Sea cheese and cornmeal',cat:'Kahvaltı',diet:'veg',prot:16,na:720,
+{tr:'Mıhlama / Kuymak',tg:'yellow,thick,hot',tl:260,reg:'Black Sea',ph:'muhh-la-MA',en:'Black Sea cheese and cornmeal',cat:'Kahvaltı',diet:'veg',prot:16,na:720,
  desc:'Cornmeal cooked into melted butter and stringy Black Sea cheese until it pulls in ropes. A fondue by another name and gloriously heavy.',
  order:'Mıhlama',oph:'muhh-la-MA',v:'bowl',c1:'#E8C24A',top:T.stringy()},
-{tr:'Katmer',reg:'Gaziantep',ph:'kat-MER',en:'Pistachio and cream pastry',cat:'Kahvaltı',diet:'veg',prot:9,na:220,
+{tr:'Katmer',tg:'brown,pastry,hot',tl:220,reg:'Gaziantep',ph:'kat-MER',en:'Pistachio and cream pastry',cat:'Kahvaltı',diet:'veg',prot:9,na:220,
  desc:'Gaziantep\'s breakfast pastry — paper-thin dough folded around clotted cream and green pistachio, baked crisp and cut into squares. Eaten in the morning, not as dessert.',
  order:'Katmer',oph:'kat-MER',v:'plate',c1:'#E8CC8A',top:T.katmer()},
-{tr:'Zeytin',reg:'Aegean',ph:'zay-TEEN',en:'Olives',cat:'Kahvaltı',diet:'vegan',prot:1,na:680,
+{tr:'Zeytin',tg:'green,black,cold',tl:90,un:'per kilo',reg:'Aegean',ph:'zay-TEEN',en:'Olives',cat:'Kahvaltı',diet:'vegan',prot:1,na:680,
  desc:'Both colours at every breakfast — black yeşil-kırma from the Aegean, green cracked ones with garlic and lemon. Sold loose by the kilo in every market.',
  order:'Yeşil zeytin',oph:'ye-SHEEL zay-TEEN',
  note:'Cured in brine — one of the saltiest items on a breakfast table.',
  v:'bowl',c1:'#5A6B32',top:T.olives(13)},
-{tr:'Reçel',reg:'Nationwide',ph:'reh-CHEL',en:'Preserves',cat:'Kahvaltı',diet:'vegan',prot:0,na:15,
+{tr:'Reçel',tg:'red,thick,cold',tl:70,un:'bottle / jar',reg:'Nationwide',ph:'reh-CHEL',en:'Preserves',cat:'Kahvaltı',diet:'vegan',prot:0,na:15,
  desc:'Small dishes of jam across the table — rose petal, sour cherry, bergamot, fig, and the strange green walnut one. Ask what is homemade; the answer is often "everything".',
  order:'Gül reçeli',oph:'GOOL reh-che-LEE',
  note:'gül = rose, vişne = sour cherry, kayısı = apricot.',
  v:'bowl',c1:'#C4304A',top:T.jamjars()},
-{tr:'Tahin pekmez',reg:'Nationwide',ph:'ta-HEEN pek-MEZ',en:'Tahini and grape molasses',cat:'Kahvaltı',diet:'vegan',prot:6,na:35,
+{tr:'Tahin pekmez',tg:'brown,thick,cold',tl:110,reg:'Nationwide',ph:'ta-HEEN pek-MEZ',en:'Tahini and grape molasses',cat:'Kahvaltı',diet:'vegan',prot:6,na:35,
  desc:'Sesame paste swirled with grape molasses and eaten on bread. Nutty, dark, iron-rich, and the traditional thing given to Turkish children in winter. Vegan and genuinely good.',
  order:'Tahin pekmez',oph:'ta-HEEN pek-MEZ',v:'bowl',c1:'#8A6A4A',top:T.swirl('#E8DCC0')},
-{tr:'Su böreği',reg:'Nationwide',ph:'SOO bo-reh-EE',en:'Layered "water" pastry',cat:'Kahvaltı',diet:'veg',prot:12,na:640,
+{tr:'Su böreği',tg:'yellow,pastry,hot',tl:160,reg:'Nationwide',ph:'SOO bo-reh-EE',en:'Layered "water" pastry',cat:'Kahvaltı',diet:'veg',prot:12,na:640,
  desc:'Sheets of pastry boiled then layered with white cheese and parsley and baked — somewhere between lasagne and börek. Heavy, soft, magnificent.',
  order:'Su böreği',oph:'SOO bo-reh-EE',v:'plate',c1:'#EFD8A0',top:T.diamonds('#E8C86A')},
 
 /* ---- FRUIT & NUTS ---- */
-{tr:'İncir',reg:'Aydın',ph:'in-JEER',en:'Fig',cat:'Fruit',diet:'vegan',prot:1,na:2,sea:[8,9],
+{tr:'İncir',tg:'purple,fruit',tl:160,un:'per kilo',reg:'Aydın',ph:'in-JEER',en:'Fig',cat:'Fruit',diet:'vegan',prot:1,na:2,sea:[8,9],
  desc:'The Aegean around Fethiye is fig country and September is the month. Fresh ones off a market stall are a different food from anything sold abroad — split them open with your thumbs.',
  order:'Yarım kilo incir',oph:'ya-RUHM KEE-lo in-JEER',
  note:'Peak now. Buy from a stall, not a shop.',v:'plate',c1:'#EDE0CE',top:T.figs()},
-{tr:'Kuru incir',reg:'Aydın',ph:'koo-ROO in-JEER',en:'Dried fig',cat:'Fruit',diet:'vegan',prot:3,na:10,sea:[8,9,10],
+{tr:'Kuru incir',tg:'brown,fruit',tl:320,un:'per kilo',reg:'Aydın',ph:'koo-ROO in-JEER',en:'Dried fig',cat:'Fruit',diet:'vegan',prot:3,na:10,sea:[8,9,10],
  desc:'Aydın figs, dried and pressed. September is just after harvest, so what is on the stalls now is this year\'s crop rather than last year\'s warehouse stock. The best in the world and priced like nothing.',
  order:'Kuru incir, kilosu ne kadar?',oph:'koo-ROO in-JEER ki-lo-SOO neh ka-DAR',
  v:'plate',c1:'#EDE0CE',top:T.driedfruit('#A88A5C')},
-{tr:'Kuru kayısı',reg:'Malatya',ph:'koo-ROO kai-yuh-SUH',en:'Dried apricot',cat:'Fruit',diet:'vegan',prot:3,na:10,sea:[7,8,9,10],
+{tr:'Kuru kayısı',tg:'orange,fruit',tl:420,un:'per kilo',reg:'Malatya',ph:'koo-ROO kai-yuh-SUH',en:'Dried apricot',cat:'Fruit',diet:'vegan',prot:3,na:10,sea:[7,8,9,10],
  desc:'Malatya supplies most of the world. The bright orange ones are sulphured; the dark brown ones are not, and taste far more of apricot. Ask for kükürtsüz — unsulphured.',
  order:'Kükürtsüz kayısı var mı?',oph:'koo-kurt-SOOZ kai-yuh-SUH var muh',
  note:'kükürtsüz = unsulphured. Dark brown, not orange.',
  v:'plate',c1:'#EDE0CE',top:T.driedfruit('#C4682A')},
-{tr:'Üzüm',reg:'Aegean',ph:'oo-ZOOM',en:'Grapes',cat:'Fruit',diet:'vegan',prot:1,na:2,sea:[7,8,9],
+{tr:'Üzüm',tg:'purple,fruit',tl:90,un:'per kilo',reg:'Aegean',ph:'oo-ZOOM',en:'Grapes',cat:'Fruit',diet:'vegan',prot:1,na:2,sea:[7,8,9],
  desc:'Harvest season. Dozens of varieties on the stalls, most of them you will not recognise — sultaniye seedless, the long green parmak, the black kara üzüm. Buy a kilo and eat them all afternoon.',
  order:'Bir kilo üzüm',oph:'beer KEE-lo oo-ZOOM',v:'plate',c1:'#EDE0CE',top:T.grapes()},
-{tr:'Nar',reg:'Antalya',ph:'NAR',en:'Pomegranate',cat:'Fruit',diet:'vegan',prot:2,na:3,sea:[8,9,10,11],
+{tr:'Nar',tg:'red,fruit',tl:110,un:'per kilo',reg:'Antalya',ph:'NAR',en:'Pomegranate',cat:'Fruit',diet:'vegan',prot:2,na:3,sea:[8,9,10,11],
  desc:'Comes in from late September and stays through winter. Juice carts press them in front of you; whole fruit on the stalls is cheaper. The molasses (nar ekşisi) is in half the meze on this list.',
  order:'Bir nar suyu',oph:'beer NAR soo-YOO',v:'plate',c1:'#EDE0CE',top:T.pom()},
-{tr:'Şeftali',reg:'Bursa',ph:'shef-ta-LEE',en:'Peach',cat:'Fruit',diet:'vegan',prot:1,na:1,sea:[5,6,7,8],
+{tr:'Şeftali',tg:'orange,fruit',tl:110,un:'per kilo',reg:'Bursa',ph:'shef-ta-LEE',en:'Peach',cat:'Fruit',diet:'vegan',prot:1,na:1,sea:[5,6,7,8],
  desc:'Bursa peaches run through summer into early September. The flat ones, yassı şeftali, are worth grabbing whenever they appear.',
  order:'Şeftali',oph:'shef-ta-LEE',v:'plate',c1:'#EDE0CE',top:T.roundfruit('#F2A05C','#E0803C')},
-{tr:'Kavun / Karpuz',reg:'Anatolia',ph:'ka-VOON / kar-POOZ',en:'Melon / watermelon',cat:'Fruit',diet:'vegan',prot:1,na:5,sea:[6,7,8],
+{tr:'Kavun / Karpuz',tg:'green,fruit',tl:50,un:'per kilo',reg:'Anatolia',ph:'ka-VOON / kar-POOZ',en:'Melon / watermelon',cat:'Fruit',diet:'vegan',prot:1,na:5,sea:[6,7,8],
  desc:'Enormous and cheap through summer. Kavun — the pale honeydew type — is the one eaten with white cheese and rakı, a combination that sounds wrong and is completely right.',
  order:'Kavun',oph:'ka-VOON',
  note:'Kavun + beyaz peynir + rakı is a genuine Turkish trio.',
  v:'plate',c1:'#EDE0CE',top:T.melon()},
-{tr:'Ayva',reg:'Marmara',ph:'eye-VA',en:'Quince',cat:'Fruit',diet:'vegan',prot:1,na:4,sea:[9,10,11],
+{tr:'Ayva',tg:'yellow,fruit',tl:120,un:'per kilo',reg:'Marmara',ph:'eye-VA',en:'Quince',cat:'Fruit',diet:'vegan',prot:1,na:4,sea:[9,10,11],
  desc:'Hard and inedible raw, transformed by slow cooking into something rose-coloured and perfumed. Ayva tatlısı — poached in syrup with clotted cream — is the autumn dessert.',
  order:'Ayva tatlısı',oph:'eye-VA tat-luh-SUH',v:'plate',c1:'#EDE0CE',top:T.roundfruit('#E8D06A','#C4A83C')},
-{tr:'Fındık',reg:'Black Sea',ph:'fuhn-DUHK',en:'Hazelnut',cat:'Fruit',diet:'vegan',prot:15,na:2,sea:[7,8,9],
+{tr:'Fındık',tg:'brown,nut',tl:480,un:'per kilo',reg:'Black Sea',ph:'fuhn-DUHK',en:'Hazelnut',cat:'Fruit',diet:'vegan',prot:15,na:2,sea:[7,8,9],
  desc:'Turkey grows about seventy per cent of the world supply, all along the Black Sea. Harvest is August, so September stalls have this year\'s nuts. Buy them in the shell and crack them yourself.',
  order:'Fındık',oph:'fuhn-DUHK',v:'plate',c1:'#EDE0CE',top:T.nuts('#B08A5C')},
-{tr:'Antep fıstığı',reg:'Gaziantep',ph:'an-TEP fuhs-tuh-UH',en:'Pistachio',cat:'Fruit',diet:'vegan',prot:20,na:8,sea:[8,9,10],
+{tr:'Antep fıstığı',tg:'green,nut',tl:1100,un:'per kilo',reg:'Gaziantep',ph:'an-TEP fuhs-tuh-UH',en:'Pistachio',cat:'Fruit',diet:'vegan',prot:20,na:8,sea:[8,9,10],
  desc:'Gaziantep pistachios are smaller, greener and more intensely flavoured than the Iranian or Californian kind. They are what makes proper baklava green rather than beige.',
  order:'Antep fıstığı',oph:'an-TEP fuhs-tuh-UH',v:'plate',c1:'#EDE0CE',top:T.nuts('#8FA85C')},
-{tr:'Dut',reg:'Anatolia',ph:'DOOT',en:'Mulberry',cat:'Fruit',diet:'vegan',prot:1,na:5,sea:[5,6],
+{tr:'Dut',tg:'purple,fruit',tl:520,un:'per kilo',reg:'Anatolia',ph:'DOOT',en:'Mulberry',cat:'Fruit',diet:'vegan',prot:1,na:5,sea:[5,6],
  desc:'White and black mulberries, sold fresh in early summer and dried the rest of the year. Dried white mulberries are intensely sweet and worth a bag for the trail.',
  order:'Kuru dut',oph:'koo-ROO DOOT',v:'plate',c1:'#EDE0CE',top:T.driedfruit('#7A5A8A')},
-{tr:'Trabzon hurması',reg:'Black Sea',ph:'trab-ZON hoor-ma-SUH',en:'Persimmon',cat:'Fruit',diet:'vegan',prot:1,na:1,sea:[9,10,11],
+{tr:'Trabzon hurması',tg:'orange,fruit',tl:150,un:'per kilo',reg:'Black Sea',ph:'trab-ZON hoor-ma-SUH',en:'Persimmon',cat:'Fruit',diet:'vegan',prot:1,na:1,sea:[9,10,11],
  desc:'Orange, glossy, and only good when almost collapsing — eaten firm it will dry your mouth out completely. Comes in from October.',
  order:'Trabzon hurması',oph:'trab-ZON hoor-ma-SUH',v:'plate',c1:'#EDE0CE',top:T.roundfruit('#E8802A','#C4601A')},
 
 /* ---- BREAD ---- */
-{tr:'Simit',reg:'Nationwide',ph:'si-MEET',en:'Sesame bread ring',cat:'Bread',diet:'vegan',prot:8,na:480,
+{tr:'Simit',tg:'brown,bread',tl:20,reg:'Nationwide',ph:'si-MEET',en:'Sesame bread ring',cat:'Bread',diet:'vegan',prot:8,na:480,
  desc:'A ring of dough dipped in molasses and sesame, baked crisp. Sold from red carts everywhere for the price of nothing. The default Turkish breakfast on foot.',
  order:'Bir simit',oph:'beer si-MEET',v:'plate',c1:'#D9A05C',
  top:`<circle cx="100" cy="52" r="30" fill="none" stroke="#C68A4A" stroke-width="17"/><circle cx="100" cy="52" r="30" fill="none" stroke="#1E3A5F" stroke-width="3"/><circle cx="100" cy="52" r="13" fill="none" stroke="#1E3A5F" stroke-width="3"/>`},
-{tr:'Poğaça',reg:'Nationwide',ph:'po-a-CHA',en:'Soft savoury bun',cat:'Bread',diet:'veg',prot:7,na:520,
+{tr:'Poğaça',tg:'yellow,bread',tl:45,reg:'Nationwide',ph:'po-a-CHA',en:'Soft savoury bun',cat:'Bread',diet:'veg',prot:7,na:520,
  desc:'A pillowy bun filled with white cheese, olives or potato. Bakery staple, eaten with tea, best in the first hour after baking.',
  order:'Peynirli poğaça',oph:'pay-neer-LEE po-a-CHA',v:'plate',c1:'#E8C88A',top:''},
 
 /* ---- SWEETS ---- */
-{tr:'Baklava',reg:'Gaziantep',ph:'bak-la-VA',en:'Layered pastry with pistachio',cat:'Sweets',diet:'veg',prot:6,na:120,
+{tr:'Baklava',tg:'yellow,pastry,sweet',tl:180,reg:'Gaziantep',ph:'bak-la-VA',en:'Layered pastry with pistachio',cat:'Sweets',diet:'veg',prot:6,na:120,
  desc:'Forty-odd sheets of filo, clarified butter, pistachio from Gaziantep, syrup. Judge it by the pistachio ratio and whether the layers shatter.',
  order:'Fıstıklı baklava',oph:'fuhs-tuhk-LUH bak-la-VA',
  note:'fıstıklı = pistachio, cevizli = walnut. Gaziantep is the source.',
  v:'plate',c1:'#E8C86A',top:T.diamonds('#D9B44A')},
-{tr:'Künefe',reg:'Hatay',ph:'koo-NE-feh',en:'Hot cheese pastry in syrup',cat:'Sweets',diet:'veg',prot:12,na:380,
+{tr:'Künefe',tg:'orange,pastry,sweet,hot',tl:260,reg:'Hatay',ph:'koo-NE-feh',en:'Hot cheese pastry in syrup',cat:'Sweets',diet:'veg',prot:12,na:380,
  desc:'Shredded pastry around a layer of unsalted cheese, baked until crisp and doused in syrup, served hot so the cheese pulls. Eat it immediately or not at all.',
  order:'Künefe',oph:'koo-NE-feh',v:'plate',c1:'#D9873C',top:T.dots('#5E8C57',5,89)},
-{tr:'Lokum',reg:'İstanbul',ph:'lo-KOOM',en:'Turkish delight',cat:'Sweets',diet:'vegan',prot:1,na:20,
+{tr:'Lokum',tg:'pink,cubed,sweet',tl:600,un:'per kilo',reg:'İstanbul',ph:'lo-KOOM',en:'Turkish delight',cat:'Sweets',diet:'vegan',prot:1,na:20,
  desc:'Starch and sugar set into cubes, dusted with icing sugar. Buy the double-roasted pistachio kind from a proper confectioner and it\'s a different food from the tourist version.',
  order:'Fıstıklı lokum',oph:'fuhs-tuhk-LUH lo-KOOM',
  note:'Sold by weight. Say "yarım kilo" for half a kilo.',
  v:'plate',c1:'#E8859B',top:T.cubes('#F0A8B8')},
-{tr:'Sütlaç',reg:'Nationwide',ph:'soot-LAHCH',en:'Baked rice pudding',cat:'Sweets',diet:'veg',prot:7,na:140,
+{tr:'Sütlaç',tg:'white,thick,sweet',tl:140,reg:'Nationwide',ph:'soot-LAHCH',en:'Baked rice pudding',cat:'Sweets',diet:'veg',prot:7,na:140,
  desc:'Rice pudding baked until the top blisters brown, served cold in a clay dish. Plainer and better than it sounds.',
  order:'Sütlaç',oph:'soot-LAHCH',v:'bowl',c1:'#FBF6EC',top:T.dots('#C68A4A',6,97)},
-{tr:'Dondurma',reg:'Kahramanmaraş',ph:'don-doo-RMA',en:'Stretchy mastic ice cream',cat:'Sweets',diet:'veg',prot:5,na:90,
+{tr:'Dondurma',tg:'white,thick,sweet',tl:120,reg:'Kahramanmaraş',ph:'don-doo-RMA',en:'Stretchy mastic ice cream',cat:'Sweets',diet:'veg',prot:5,na:90,
  desc:'Thickened with salep root and mastic so it stretches and resists the spoon. The Maraş vendors will do a routine with it before handing it over.',
  order:'Bir dondurma',oph:'beer don-doo-RMA',v:'plate',c1:'#FBF6EC',top:T.scoop('#FBF6EC')},
-{tr:'Aşure',reg:'Nationwide',ph:'a-shoo-REH',en:'Noah\'s pudding',cat:'Sweets',diet:'vegan',prot:5,na:60,
+{tr:'Aşure',tg:'brown,thick,sweet',tl:130,reg:'Nationwide',ph:'a-shoo-REH',en:'Noah\'s pudding',cat:'Sweets',diet:'vegan',prot:5,na:60,
  desc:'Wheat berries, beans, dried fruit and nuts cooked into a sweet pudding. Supposedly what was left in the ark. Naturally vegan and shared with neighbours.',
  order:'Aşure',oph:'a-shoo-REH',v:'bowl',c1:'#C4A06A',top:T.dots('#8C4A32',9,101)},
 
 /* ---- DRINKS ---- */
-{tr:'Çay',reg:'Rize',ph:'CHAI',en:'Black tea',cat:'Drinks',diet:'vegan',prot:0,na:5,
+{tr:'Çay',tl:30,reg:'Rize',ph:'CHAI',en:'Black tea',cat:'Drinks',diet:'vegan',prot:0,na:5,
  desc:'Brewed in a stacked double kettle, poured strong from the top pot and cut with water from the bottom. Served in tulip glasses with sugar cubes, all day, everywhere, often free.',
  order:'Bir çay, koyu',oph:'beer CHAI ko-YOO',
  note:'koyu = strong, açık = weak. Refusing tea is the rudeness, not accepting it.',
  v:'tulip',c1:'#B5442A',top:''},
-{tr:'Türk kahvesi',reg:'İstanbul',ph:'TURK kah-ve-SEE',en:'Turkish coffee',cat:'Drinks',diet:'vegan',prot:0,na:5,
+{tr:'Türk kahvesi',tl:110,reg:'İstanbul',ph:'TURK kah-ve-SEE',en:'Turkish coffee',cat:'Drinks',diet:'vegan',prot:0,na:5,
  desc:'Unfiltered, brewed in a cezve, served with the grounds settling at the bottom. Ordered by sweetness, not size. Don\'t drink the last inch.',
  order:'Orta şekerli',oph:'or-TA she-ker-LEE',
  note:'sade = no sugar, az şekerli = a little, orta = medium, şekerli = sweet.',
  v:'cup',c1:'#4A3226',top:T.steam()},
-{tr:'Ayran',reg:'Nationwide',ph:'eye-RAHN',en:'Salted yoghurt drink',cat:'Drinks',diet:'veg',prot:6,na:420,
+{tr:'Ayran',tl:60,reg:'Nationwide',ph:'eye-RAHN',en:'Salted yoghurt drink',cat:'Drinks',diet:'veg',prot:6,na:420,
  desc:'Yoghurt whisked with water and salt, served cold and often foamy. The correct thing to drink with kebab, and genuinely good after a hot walk.',
  order:'Bir ayran',oph:'beer eye-RAHN',
  note:'Salted by definition — one of the few drinks that counts on the sodium ledger.',
  v:'glass',c1:'#FBFAF4',top:''},
-{tr:'Şalgam suyu',reg:'Adana',ph:'shal-GAHM soo-YOO',en:'Fermented turnip juice',cat:'Drinks',diet:'vegan',prot:1,na:900,
+{tr:'Şalgam suyu',tl:60,reg:'Adana',ph:'shal-GAHM soo-YOO',en:'Fermented turnip juice',cat:'Drinks',diet:'vegan',prot:1,na:900,
  desc:'Purple carrot and turnip fermented with bulgur into a sour, salty, faintly spicy drink. The traditional partner to Adana kebab. Divisive and worth trying once.',
  order:'Şalgam, acısız',oph:'shal-GAHM a-juh-SUHZ',
  note:'Very high sodium. acısız = not spicy.',v:'glass',c1:'#6B2A4A',top:''},
-{tr:'Nar suyu',reg:'Nationwide',ph:'NAR soo-YOO',en:'Pomegranate juice',cat:'Drinks',diet:'vegan',prot:1,na:10,
+{tr:'Nar suyu',tl:110,reg:'Nationwide',ph:'NAR soo-YOO',en:'Pomegranate juice',cat:'Drinks',diet:'vegan',prot:1,na:10,
  desc:'Pressed to order from a cart, usually in front of you. Late September is peak pomegranate and the price drops accordingly.',
  order:'Bir nar suyu',oph:'beer NAR soo-YOO',v:'glass',c1:'#B22C4A',top:''},
-{tr:'Rakı',reg:'Nationwide',ph:'ra-KUH',en:'Aniseed spirit',cat:'Drinks',diet:'vegan',prot:0,na:5,
+{tr:'Rakı',tl:280,un:'a double, out',reg:'Nationwide',ph:'ra-KUH',en:'Aniseed spirit',cat:'Drinks',diet:'vegan',prot:0,na:5,
  desc:'Grape spirit flavoured with aniseed, ~45%, cut with water until it clouds white — hence aslan sütü, lion\'s milk. Drunk slowly beside meze and fish, never shot.',
  order:'Bir duble rakı',oph:'beer DOOB-leh ra-KUH',
  note:'Add water first, then ice. Never ice first.',v:'glass',c1:'#F2F6F2',top:''},
-{tr:'Salep',reg:'Nationwide',ph:'sa-LEP',en:'Hot orchid-root drink',cat:'Drinks',diet:'veg',prot:5,na:110,
+{tr:'Salep',tl:120,reg:'Nationwide',ph:'sa-LEP',en:'Hot orchid-root drink',cat:'Drinks',diet:'veg',prot:5,na:110,
  desc:'Milk thickened with powdered orchid tuber, dusted with cinnamon. Winter street drink, thick enough to coat the glass.',
  order:'Bir salep',oph:'beer sa-LEP',v:'cup',c1:'#FBF6EC',top:T.steam()},
-{tr:'Efes / Bomonti',reg:'Nationwide',ph:'e-FES / bo-MON-tee',en:'Turkish beer',cat:'Drinks',diet:'vegan',prot:1,na:15,
+{tr:'Efes / Bomonti',tl:220,reg:'Nationwide',ph:'e-FES / bo-MON-tee',en:'Turkish beer',cat:'Drinks',diet:'vegan',prot:1,na:15,
  desc:'Efes is the ubiquitous lager; Bomonti is the better one and worth seeking. Alcohol is heavily taxed here, so beer costs European prices in a country where dinner doesn\'t.',
  order:'Bir bira',oph:'beer bee-RA',
  note:'Shops stop selling alcohol at 10pm by law.',v:'glass',c1:'#E0A83C',top:''}
@@ -945,7 +940,15 @@ const W=[
  {t:'salata',p:'sa-la-TA',e:'salad'},
  {t:'karışık',p:'ka-ruh-SHUHK',e:'mixed'},
  {t:'kilosu',p:'ki-lo-SOO',e:'price per kilo — ask for fish'},
- {t:'günün',p:'goo-NOON',e:"today's — günün çorbası = soup of the day"}
+ {t:'günün',p:'goo-NOON',e:"today's — günün çorbası = soup of the day"},
+ {t:'göbek',p:'guh-BEK',e:'heart cut — the middle of the distillation'},
+ {t:'yaş üzüm',p:'YAHSH oo-ZOOM',e:'fresh grape — fresher, rounder'},
+ {t:'kuru üzüm',p:'koo-ROO oo-ZOOM',e:'raisin — heavier, fuller'},
+ {t:'suma',p:'soo-MA',e:'the grape distillate rakı is built from'},
+ {t:'anason',p:'a-na-SOHN',e:'anise'},
+ {t:'sek',p:'SEK',e:'neat, no water'},
+ {t:'duble / tek',p:'DOOB-leh / TEK',e:'a double / a single'},
+ {t:'üretim tarihi',p:'oo-re-TEEM ta-ree-HEE',e:'production date — Aug–Oct is the good window'}
 ];
 
 /* ============ phrasebook ============ */
@@ -971,6 +974,169 @@ const P=[
  {tr:'Su',ph:'SOO',en:'Water'},
  {tr:'Kolay gelsin',ph:'ko-LIE gel-SEEN',en:'"May it come easy" — said to anyone working'}
 ];
+
+/* ============ what's on the table ============ */
+const IDG=[
+ {k:'Colour', o:[['white','#FBF6EC'],['red','#C4302A'],['green','#5E8C57'],['yellow','#E8C24A'],
+                 ['orange','#E0803C'],['brown','#8A6A4A'],['purple','#6A4A7A'],['pink','#E8859B'],['black','#3F3B4A']]},
+ {k:'Texture',o:[['thick'],['thin'],['chunky'],['leafy'],['fried'],['rolled'],['sliced'],['cubed'],
+                 ['powder'],['pastry'],['flat'],['bread'],['stew'],['soup'],['dumpling'],['shell'],['whole'],['pickled']]},
+ {k:'Served', o:[['cold'],['hot']]},
+ {k:'Other',  o:[['spicy'],['sweet'],['fish'],['egg'],['meat'],['fruit'],['nut'],['skewer']]}
+];
+let IDSEL=new Set();
+function idMatches(){
+  if(!IDSEL.size) return [];
+  return F.filter(d=>{
+    if(!d.tg) return false;
+    const t=d.tg.split(',');
+    return [...IDSEL].every(x=>t.includes(x));
+  });
+}
+function drawId(){
+  const hits=idMatches();
+  document.getElementById('idbox').innerHTML=`
+    <button class="idx" onclick="document.getElementById('idwrap').classList.remove('on')">×</button>
+    <div class="idh">What's on the table?</div>
+    <div class="idsub">Tap what you can see. It narrows.</div>
+    ${IDG.map(g=>`<div class="idgroup"><div class="idlab">${g.k}</div><div class="idopts">
+      ${g.o.map(([v,col])=>`<button class="idopt${IDSEL.has(v)?' on':''}" data-id="${v}">
+        ${col?`<i style="background:${col}"></i>`:''}${v}</button>`).join('')}
+    </div></div>`).join('')}
+    ${IDSEL.size?`<button class="idreset" id="idreset">clear all</button>`:''}
+    <div class="idres">
+      <div class="idcount">${!IDSEL.size ? 'Pick a colour to start'
+        : hits.length ? hits.length+' possible' : 'nothing matches — try fewer'}</div>
+      <div class="idlist">${hits.slice(0,24).map(d=>
+        `<div class="idcard" data-idpick="${d.tr}"><div class="idn">${d.tr}</div>
+         <div class="ide">${d.en}</div></div>`).join('')}</div>
+    </div>`;
+}
+document.getElementById('idopen').onclick=()=>{ drawId(); document.getElementById('idwrap').classList.add('on') };
+document.getElementById('idwrap').onclick=e=>{ if(e.target.id==='idwrap') e.currentTarget.classList.remove('on') };
+document.addEventListener('click',e=>{
+  const o=e.target.closest('[data-id]');
+  if(o){ const v=o.dataset.id;
+    IDSEL.has(v)?IDSEL.delete(v):IDSEL.add(v);
+    if(navigator.vibrate) navigator.vibrate(8);
+    drawId(); return; }
+  if(e.target.id==='idreset'){ IDSEL.clear(); drawId(); return; }
+  const p=e.target.closest('[data-idpick]');
+  if(p){ document.getElementById('idwrap').classList.remove('on'); openSheet(p.dataset.idpick); }
+});
+
+/* ============ photos ============ */
+/* Kept small on purpose — 420px wide JPEG at 0.62 is ~35KB, so a month of
+   shooting fits in localStorage without eviction. */
+let PIC={};
+try{ const v=localStorage.getItem('alvan_pics'); if(v) PIC=JSON.parse(v) }catch(e){}
+function savePics(){
+  try{ localStorage.setItem('alvan_pics',JSON.stringify(PIC)); return true }
+  catch(e){ return false }
+}
+function shrink(file,cb){
+  const r=new FileReader();
+  r.onload=()=>{
+    const im=new Image();
+    im.onload=()=>{
+      const W=420, sc=Math.min(1,W/im.width);
+      const w=Math.round(im.width*sc), h=Math.round(im.height*sc);
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(im,0,0,w,h);
+      cb(c.toDataURL('image/jpeg',0.62));
+    };
+    im.src=r.result;
+  };
+  r.readAsDataURL(file);
+}
+let PLACE={};
+try{ const v=localStorage.getItem('alvan_places'); if(v) PLACE=JSON.parse(v) }catch(e){}
+function savePlaces(){ try{ localStorage.setItem('alvan_places',JSON.stringify(PLACE)) }catch(e){} }
+
+function grabLocation(name,thenRedraw){
+  if(!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude:la,longitude:lo}=pos.coords;
+    PLACE[name]=Object.assign({},PLACE[name],{la:+la.toFixed(5),lo:+lo.toFixed(5)});
+    savePlaces();
+    if(thenRedraw) openSheet(name);
+    /* try for a human name, but never block on it */
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${la}&lon=${lo}&zoom=18`)
+      .then(r=>r.json()).then(j=>{
+        const a=j.address||{};
+        const near = a.restaurant||a.cafe||a.bar||a.amenity||a.shop||a.road||a.suburb||a.town||a.city;
+        if(near && !(PLACE[name]||{}).n){
+          PLACE[name].n=near; savePlaces();
+          if(thenRedraw) openSheet(name);
+        }
+      }).catch(()=>{});
+  },()=>{},{enableHighAccuracy:false,timeout:8000,maximumAge:120000});
+}
+
+function takePhoto(name){
+  const inp=document.createElement('input');
+  inp.type='file'; inp.accept='image/*'; inp.capture='environment';
+  inp.onchange=()=>{
+    const f=inp.files&&inp.files[0]; if(!f) return;
+    shrink(f,data=>{
+      PIC[name]=data;
+      if(!savePics()){ delete PIC[name]; alert('Out of storage — delete a few photos first.'); return; }
+      if(navigator.vibrate) navigator.vibrate([12,40,12]);
+      grabLocation(name,true);
+      openSheet(name); render();
+    });
+  };
+  inp.click();
+}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('[data-photo]');
+  if(a){ e.stopPropagation(); takePhoto(a.dataset.photo); return }
+  const d=e.target.closest('[data-photodel]');
+  if(d){ e.stopPropagation(); const n=d.dataset.photodel;
+    delete PIC[n]; savePics(); openSheet(n); render(); return }
+  const f=e.target.closest('[data-flip]');
+  if(f){ e.stopPropagation(); f.classList.toggle('big'); return }
+  const pin=e.target.closest('[data-pin]');
+  if(pin){ e.stopPropagation(); grabLocation(pin.dataset.pin,true) }
+});
+
+/* ============ tasting log ============ */
+const AXES=[['anise','Anise'],['burn','Burn'],['sweet','Sweet'],['overall','Overall']];
+let TASTE={};
+try{ const t=localStorage.getItem('alvan_taste'); if(t) TASTE=JSON.parse(t); }catch(e){}
+function saveTaste(){ try{ localStorage.setItem('alvan_taste',JSON.stringify(TASTE)) }catch(e){} }
+function tasteBox(d){
+  const t = TASTE[d.tr] || {};
+  return `<div class="taste">
+    <div class="tlab"><span>Your tasting note</span>
+      ${Object.keys(t).length?`<button class="tclear" data-tclear="${d.tr}">clear</button>`:''}</div>
+    ${AXES.map(([k,label])=>`<div class="trow">
+      <span class="tname">${label}</span>
+      <span class="tdots">${[1,2,3,4,5].map(n=>
+        `<button class="tdot${(t[k]||0)>=n?' on':''}" data-tset="${d.tr}" data-k="${k}" data-n="${n}"
+          aria-label="${label} ${n}"></button>`).join('')}</span>
+    </div>`).join('')}
+    <textarea class="tnote" data-tnote="${d.tr}" placeholder="Where, what it went with, would you buy it again…">${(t.note||'').replace(/</g,'&lt;')}</textarea>
+  </div>`;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-tset]');
+  if(b){ const n=b.dataset.tset;
+    TASTE[n]=TASTE[n]||{};
+    TASTE[n][b.dataset.k] = TASTE[n][b.dataset.k]===+b.dataset.n ? 0 : +b.dataset.n;
+    saveTaste(); if(navigator.vibrate) navigator.vibrate(8); openSheet(n); return; }
+  const c=e.target.closest('[data-tclear]');
+  if(c){ delete TASTE[c.dataset.tclear]; saveTaste(); openSheet(c.dataset.tclear); }
+});
+document.addEventListener('change',e=>{
+  const pl=e.target.closest('[data-place]');
+  if(pl){ const n=pl.dataset.place;
+    PLACE[n]=Object.assign({},PLACE[n],{n:pl.value}); savePlaces(); return; }
+  const t=e.target.closest('[data-tnote]');
+  if(!t) return;
+  const n=t.dataset.tnote;
+  TASTE[n]=TASTE[n]||{}; TASTE[n].note=t.value; saveTaste();
+});
 
 /* ============ speech ============ */
 let TRV=null;
@@ -1091,7 +1257,7 @@ function drawCat(){
     },550); };
   const endHold=e=>{ clearTimeout(hold);
     if(!held){ const pool=F.filter(d=>(cat==='All'||d.cat===cat)&&(!veganOnly||d.diet==='vegan'));
-      if(pool.length) open(pool[Math.floor(Math.random()*pool.length)].tr); } };
+      if(pool.length) openSheet(pool[Math.floor(Math.random()*pool.length)].tr); } };
   cb.onmousedown=startHold; cb.onmouseup=endHold; cb.onmouseleave=()=>clearTimeout(hold);
   cb.ontouchstart=e=>{startHold()}; cb.ontouchend=e=>{e.preventDefault();endHold(e)};
 }
@@ -1152,6 +1318,7 @@ function showOrder(){
   const o=orderSentence();
   const items=BSK.map(t=>F.find(d=>d.tr===t)).filter(Boolean);
   const prot=items.reduce((a,d)=>a+d.prot,0), na=items.reduce((a,d)=>a+d.na,0);
+  const tl=items.reduce((a,d)=>a+(d.tl||0),0);
   document.getElementById('ordbox').innerHTML=`
     <button class="ordx" onclick="document.getElementById('ordwrap').classList.remove('on')">×</button>
     <div class="ordh">Say this</div>
@@ -1161,7 +1328,8 @@ function showOrder(){
     <div class="ordlist">${items.map(d=>
       `<div>• <b>${d.tr}</b> <span>— ${d.en}</span></div>`).join('')}
       <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--grey)">
-      ≈ ${prot} g protein · ≈ ${na} mg sodium across the table</div></div>`;
+      ≈ ${prot} g protein · ≈ ${na} mg sodium across the table
+      ${tl?`<br>≈ ₺${tl} · ${usd(tl)} for the table`:''}</div></div>`;
   document.getElementById('ordwrap').classList.add('on');
 }
 document.getElementById('bskgo').onclick=showOrder;
@@ -1210,6 +1378,10 @@ function dietPill(d){
        : d==='fish' ?'<span class="pill p-fish">fish</span>'
        :             '<span class="pill p-meat">meat</span>';
 }
+const TL_USD = 42;                        /* approximate — set from the rate you actually get */
+function usd(tl){ const v=tl/TL_USD; return v<1 ? '$'+v.toFixed(2) : '$'+(v<10?v.toFixed(1):Math.round(v)) }
+function pricePill(d){ return d.tl ? `<span class="pill p-price">₺${d.tl} · ${usd(d.tl)}</span>` : '' }
+function ratePill(r){ return r ? `<span class="pill p-rate">${'★'.repeat(r)}${'☆'.repeat(5-r)}</span>` : '' }
 function heatPill(h){ return h ? `<span class="pill p-heat">${'🌶'.repeat(h)}</span>` : '' }
 function saltPill(na){
   return na>=700 ? `<span class="pill p-hi">salt ${na}mg</span>`
@@ -1223,20 +1395,25 @@ function render(){
   document.getElementById('count').innerHTML=
     (veganOnly?'<span style="color:#3E7A38;font-weight:700">🌱 vegan · </span>':'')+list.length+' dishes'+(ATE.size?
       ` &nbsp;·&nbsp; <span class="tally">${ATE.size}/${F.length} tried</span>
-        <span class="prog"><i style="width:${pct}%"></i></span>`:'');
+        <span class="prog"><i style="width:${pct}%"></i></span>`:'')
+    + (Object.keys(PIC).length?` &nbsp;·&nbsp; <span class="tally" style="color:#1B6B72">📷 ${Object.keys(PIC).length}</span>`:'');
   grid.innerHTML=list.map((d,i)=>`<article class="dish${ATE.has(d.tr)?' eaten':''}" data-t="${d.tr}">
     ${inSeason(d)?'<span class="seas">in season</span>':''}
     <button class="ate${ATE.has(d.tr)?' on':''}" data-ate="${d.tr}" title="Mark as tried">✓</button>
     <button class="add${BSK.includes(d.tr)?' on':''}" data-add="${d.tr}" title="Add to tonight's order">+</button>
+    ${PIC[d.tr]?`<img class="snap" src="${PIC[d.tr]}" alt="">`:''}
     ${art(d)}
     <div class="dbody">
       <div class="dtr"><button class="spk" data-say="${d.tr}" aria-label="Say ${d.tr}">🔊</button>${d.tr}</div>
+      ${d.rate?`<div class="stars">${'★'.repeat(d.rate)}<span class="dim">${'★'.repeat(5-d.rate)}</span></div>`:''}
       <div class="dph">${d.ph}</div>
       <div class="den">${d.en}</div>
-      ${d.reg&&d.reg!=='Nationwide'?`<div class="dreg">◎ ${d.reg}</div>`:''}
-      <div class="pills">${heatPill(d.heat)}${dietPill(d.diet)}<span class="pill p-prot">${d.prot}g</span>${saltPill(d.na)}</div>
+      ${(PLACE[d.tr]||{}).n
+        ? `<div class="dreg" style="color:#1B6B72">📍 ${PLACE[d.tr].n}</div>`
+        : (d.reg&&d.reg!=='Nationwide'?`<div class="dreg">◎ ${d.reg}</div>`:'')}
+      <div class="pills">${pricePill(d)}${heatPill(d.heat)}${d.cat==='Rakı'?'':dietPill(d.diet)}<span class="pill p-prot">${d.prot}g</span>${saltPill(d.na)}</div>
     </div></article>`).join('');
-  grid.querySelectorAll('.dish').forEach(el=>el.onclick=()=>open(el.dataset.t));
+  grid.querySelectorAll('.dish').forEach(el=>el.onclick=()=>openSheet(el.dataset.t));
   grid.querySelectorAll('[data-add]').forEach(b=>b.onclick=e=>{
     e.stopPropagation(); toggleBsk(b.dataset.add);
   });
@@ -1249,21 +1426,27 @@ function render(){
     saveAte(); render();
   });
 }
-function open(tr){
+function openSheet(tr){
   const d=F.find(x=>x.tr===tr);
   curDish=tr;
   document.getElementById('sheetIn').innerHTML=`
     <button class="sx" onclick="document.getElementById('sheet').classList.remove('open')">×</button>
-    <div class="sart">${art(d,true)}</div>
+    <div class="sart artwrap">${art(d,true)}
+      ${PIC[d.tr]?`<div class="polaroid" data-flip><span class="tape"></span>
+        <img src="${PIC[d.tr]}" alt="Your photo of ${d.tr}"></div>`:''}
+    </div>
     <div class="sbody">
       <div class="stitle" style="display:flex;align-items:center;gap:10px">
         <button class="spk big" data-say="${d.tr}" aria-label="Say ${d.tr}">🔊</button>${d.tr}</div>
       <div class="sphon">${d.ph}</div>
+      ${d.rate?`<div class="stars" style="font-size:15px;margin:3px 0 4px">${'★'.repeat(d.rate)}<span class="dim">${'★'.repeat(5-d.rate)}</span> <span class="starlab">Turkish forums</span></div>`:''}
       <div class="sen">${d.en} · ${d.cat}${d.reg?' · ◎ '+d.reg:''}${inSeason(d)?' · <span style="color:var(--sage);font-weight:600">in season</span>':''}</div>
       <div class="sdesc">${d.desc}</div>
       <div class="facts">
         <div class="fact"><div class="fk">Diet</div><div class="fv">${d.diet==='vegan'?'Vegan':d.diet==='veg'?'Vegetarian':d.diet==='fish'?'Fish':'Meat'}</div></div>
         <div class="fact"><div class="fk">Protein</div><div class="fv">≈ ${d.prot} g</div><div class="fn">per typical serving</div></div>
+        ${d.tl?`<div class="fact"><div class="fk">Typical price</div><div class="fv">₺${d.tl}</div>
+          <div class="fn">${usd(d.tl)}${d.un?' · '+d.un:''}</div></div>`:''}
         <div class="fact"><div class="fk">Sodium</div><div class="fv">≈ ${d.na} mg</div><div class="fn">${d.na>=700?'high — kitchens vary':d.na<=300?'low':'moderate'}</div></div>
       </div>
       <div class="say"><div class="saylab">Order it</div>
@@ -1271,6 +1454,16 @@ function open(tr){
           <button class="spk" data-say="${d.order}" aria-label="Say it">🔊</button>${d.order}</div>
         <div class="sayph">${d.oph}</div></div>
       <button class="pointbtn" onclick="pointAt('${d.tr.replace(/'/g,"\\'")}')">👉 Point at this</button>
+      <button class="photobtn" data-photo="${d.tr.replace(/'/g,"\\'")}">📷 ${PIC[d.tr]?'Retake photo':'Add your photo'}</button>
+      ${PIC[d.tr]?`<button class="photodel" data-photodel="${d.tr.replace(/'/g,"\\'")}">remove photo</button>`:''}
+      ${PIC[d.tr]?`<div class="placebox">
+        <input class="placein" data-place="${d.tr}" value="${((PLACE[d.tr]||{}).n||'').replace(/"/g,'&quot;')}"
+          placeholder="Where was it? — Öztoklu, back table">
+        <button class="pinbtn" data-pin="${d.tr}" title="Use my location">📍</button></div>
+        ${(PLACE[d.tr]||{}).la?`<div class="placeline">📍 ${(PLACE[d.tr].la).toFixed(4)}, ${(PLACE[d.tr].lo).toFixed(4)}
+          · <a href="https://maps.apple.com/?ll=${PLACE[d.tr].la},${PLACE[d.tr].lo}&q=${encodeURIComponent(d.tr)}"
+            target="_blank" rel="noopener">open in Maps</a></div>`:''}`:''}
+      ${d.rate?tasteBox(d):''}
       ${d.note?`<div class="note">${d.note}</div>`:''}
     </div>`;
   sheet.classList.add('open');
@@ -1288,7 +1481,7 @@ sheet.addEventListener('touchend',e=>{
   if(i<0) return;
   i = dx<0 ? (i+1)%pool.length : (i-1+pool.length)%pool.length;
   if(navigator.vibrate) navigator.vibrate(8);
-  open(pool[i].tr);
+  openSheet(pool[i].tr);
 },{passive:true});
 document.getElementById('cats').onclick=e=>{
   const b=e.target.closest('.chip'); if(!b)return;
@@ -1301,7 +1494,7 @@ function surprise(){
   const d=pool[Math.floor(Math.random()*pool.length)];
   const dice=document.getElementById('dice');
   dice.classList.add('roll'); setTimeout(()=>dice.classList.remove('roll'),450);
-  open(d.tr);
+  openSheet(d.tr);
 }
 document.getElementById('dice').onclick=()=>{
   /* iOS needs an explicit permission grant, and it must come from a tap */
