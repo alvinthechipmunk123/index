@@ -21,8 +21,8 @@
   --r-lg:22px; --r-sm:12px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{overscroll-behavior-y:contain}
+html{height:100%}
+body{height:100vh;height:100dvh;overscroll-behavior-y:contain}
 body{font-family:'Nunito Sans',system-ui,sans-serif;color:var(--ink);background:var(--cream);
   display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
 h1,h2,h3,.frn{font-family:'Fraunces',serif}
@@ -68,7 +68,7 @@ body.hero-min .hero .bondi{top:14px}
 .tab:focus-visible{outline:3px solid var(--rosa);outline-offset:2px}
 
 /* ============ PANELS ============ */
-.panel{flex:1;overflow:hidden;display:none;position:relative}
+.panel{flex:1;min-height:0;overflow:hidden;display:none;position:relative}
 .panel.on{display:flex;flex-direction:column;min-height:0}
 #map{flex:1;background:#dfe9dc}
 .leaflet-container{font-family:'Nunito Sans'}
@@ -196,7 +196,7 @@ body.sheet-on .trackstats.on{display:none}
 
 /* ============ CARDS ============ */
 .scroller{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;touch-action:pan-y;padding:16px 14px 52px}
+  overscroll-behavior:contain;touch-action:pan-y;padding:16px 14px 68px}
 .lede{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:#5f7060;
   margin:2px 4px 14px;line-height:1.45}
 .card{background:var(--parchment);border-radius:var(--r-lg);box-shadow:var(--shadow);
@@ -374,7 +374,7 @@ footer a{pointer-events:auto}
   </div>
 </section>
 
-<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="resciesa.html" style="color:#8b967f">⇄ Resciesa</a> · Alvan maps · v4.7</footer>
+<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="resciesa.html" style="color:#8b967f">⇄ Resciesa</a> · Alvan maps · v4.8</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
