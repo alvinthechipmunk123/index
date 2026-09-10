@@ -52,19 +52,22 @@ h1,h2,h3,.frn{font-family:'Fraunces',serif}
 .glow{animation:enrosadira 9s ease-in-out infinite alternate}
 @keyframes enrosadira{from{opacity:.35}to{opacity:.8}}
 body.hero-min .hero{height:74px}
+body.hero-gone .hero{height:0}
 body.hero-min .hero h1{font-size:24px}
 body.hero-min .hero .sub{display:none}
 body.hero-min .hero .bondi{top:14px}
 @media (prefers-reduced-motion:reduce){.cloud,.gondel,.grass-sway,.glow{animation:none}.hero{transition:none}}
 
 /* ============ TABS ============ */
-.tabs{display:flex;gap:8px;padding:10px 14px;background:var(--cream);flex:none;
-  border-bottom:1.5px solid rgba(53,84,59,.12);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{flex:0 0 auto;border:1.5px solid rgba(53,84,59,.18);background:var(--parchment);
-  border-radius:999px;padding:9px 16px;font-family:'Nunito Sans';font-weight:800;font-size:14px;
-  color:#63745f;cursor:pointer;transition:all .18s}
-.tab.on{background:var(--pine);color:var(--cream);border-color:var(--pine)}
+.tabs{display:flex;gap:0;padding:4px 4px 2px;background:var(--parchment);flex:none;
+  border-top:1.5px solid rgba(53,84,59,.14);box-shadow:0 -3px 12px rgba(46,58,51,.07)}
+.tab{flex:1;border:none;background:none;padding:5px 0 3px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+  font-family:'Nunito Sans';font-weight:800;font-size:10px;color:#8b967f;transition:color .15s;position:relative}
+.tab i{font-size:19px;font-style:normal;line-height:1.15;filter:grayscale(.45) opacity(.75);transition:all .15s}
+.tab.on{color:var(--pine-deep)}
+.tab.on i{filter:none;transform:translateY(-1px)}
+.tab.on::before{content:'';position:absolute;top:0;left:26%;right:26%;height:3px;border-radius:2px;background:var(--pine)}
 .tab:focus-visible{outline:3px solid var(--rosa);outline-offset:2px}
 
 /* ============ PANELS ============ */
@@ -114,14 +117,14 @@ body.wx-open .legend,body.wx-open .leaflet-control-layers,body.wx-open .leaflet-
 .wxglow b{color:var(--pine-deep)}
 .wxfreeze{margin-top:4px;font-size:11.5px;font-weight:800;text-align:center;color:var(--pine)}
 .wxfreeze.cold{color:#B4483A}
-.rose{position:absolute;right:12px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:800;width:40px;height:40px;
+.rose{position:absolute;right:12px;bottom:96px;z-index:800;width:40px;height:40px;
   background:rgba(253,248,234,.92);border:1.5px solid rgba(53,84,59,.3);border-radius:50%;
   display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
 .toast{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:900;
   background:var(--pine-deep);color:var(--cream);border-radius:999px;padding:8px 18px;
   font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;max-width:88%;text-align:center}
 .toast.show{opacity:1}
-.mapbar{position:absolute;left:10px;right:10px;bottom:calc(12px + env(safe-area-inset-bottom));
+.mapbar{position:absolute;left:10px;right:10px;bottom:12px;
   z-index:810;display:flex;flex-direction:column;gap:8px;pointer-events:none}
 .mapbar>*{pointer-events:auto}
 .trackstats{display:none;background:rgba(253,248,234,.95);backdrop-filter:blur(4px);
@@ -145,7 +148,7 @@ body.wx-open .legend,body.wx-open .leaflet-control-layers,body.wx-open .leaflet-
 .sheet{position:absolute;left:0;right:0;bottom:0;z-index:850;background:var(--parchment);
   border-radius:22px 22px 0 0;box-shadow:0 -8px 30px rgba(46,58,51,.28);
   transform:translateY(110%);transition:transform .32s cubic-bezier(.4,0,.2,1);
-  padding:10px 16px calc(12px + env(safe-area-inset-bottom));height:42%;display:flex;flex-direction:column}
+  padding:10px 16px 12px;height:42%;display:flex;flex-direction:column}
 body.sheet-on .mapbar{bottom:calc(42% + 10px + env(safe-area-inset-bottom))}
 body.sheet-on .rose{display:none}
 body.sheet-on .trackstats{display:none}
@@ -185,7 +188,7 @@ body.sheet-on .trackstats.on{display:none}
 .panoLoad{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:800;
   font-size:14px;color:#7d8a78;animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
-.panoHint{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+.panoHint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
   background:rgba(253,248,234,.9);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;
   color:var(--pine);transition:opacity .5s;pointer-events:none}
 .panoMissing[hidden]{display:none}
@@ -196,18 +199,22 @@ body.sheet-on .trackstats.on{display:none}
 
 /* ============ CARDS ============ */
 .scroller{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;touch-action:pan-y;padding:16px 14px 68px}
+  overscroll-behavior:contain;touch-action:pan-y;padding:14px 14px 22px}
 .lede{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:#5f7060;
   margin:2px 4px 14px;line-height:1.45}
 .card{background:var(--parchment);border-radius:var(--r-lg);box-shadow:var(--shadow);
-  margin-bottom:14px;overflow:hidden;border:1.5px solid rgba(53,84,59,.1)}
+  margin-bottom:11px;overflow:hidden;border:1.5px solid rgba(53,84,59,.1)}
 .card .band{height:7px}
-.card .pad{padding:14px 16px 15px}
-.card h3{font-size:20px;font-weight:700;color:var(--pine-deep);font-variation-settings:'SOFT' 100}
+.card .pad{padding:12px 15px 13px}
+.card h3{font-size:18.5px;font-weight:700;color:var(--pine-deep);font-variation-settings:'SOFT' 100}
 .card .ladin{font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--rosa-deep);margin-top:1px}
 .meta{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 8px}
-.card p{font-size:14px;line-height:1.55;color:#4a584e}
-.card .eat{margin-top:8px;font-size:13.5px;color:#6a5a3f;background:#f7ecce;
+.card p{font-size:13.5px;line-height:1.5;color:#4a584e;display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.card.open p{-webkit-line-clamp:unset;overflow:visible}
+.card p::after{content:''}
+.card.clamped p{position:relative}
+.card .eat{margin-top:7px;font-size:13px;color:#6a5a3f;background:#f7ecce;
   border-radius:var(--r-sm);padding:8px 11px;line-height:1.45}
 .card .eat b{color:#4d4026}
 .cardbtns{display:flex;gap:8px;margin-top:11px}
@@ -216,7 +223,7 @@ body.sheet-on .trackstats.on{display:none}
 .cbtn.map{background:var(--pine);color:var(--cream)}
 .cbtn.ghost{background:transparent;border:1.5px solid rgba(53,84,59,.3);color:var(--pine)}
 .profile{margin-top:10px}
-.profile svg{width:100%;height:52px;display:block}
+.profile svg{width:100%;height:44px;display:block}
 .filters{display:flex;gap:7px;margin:0 2px 13px;flex-wrap:wrap}
 .fbtn{border:1.5px solid rgba(53,84,59,.22);background:var(--parchment);border-radius:999px;
   padding:6px 13px;font-family:'Nunito Sans';font-weight:800;font-size:12.5px;color:#63745f;cursor:pointer}
@@ -238,10 +245,8 @@ body.sheet-on .trackstats.on{display:none}
 .leaflet-popup-content .pop-sub{font-size:12px;color:var(--rosa-deep);font-style:italic}
 .leaflet-popup-content .pop-elev{font-size:12px;font-weight:700;color:#6d7d69;margin-top:3px}
 .leaflet-popup-tip{background:var(--pine)}
-footer{position:fixed;left:0;right:0;bottom:0;z-index:950;text-align:center;font-size:9.5px;color:#7d8a78;
-  line-height:1;white-space:nowrap;overflow:hidden;pointer-events:none;
-  padding:2px 0 calc(1px + env(safe-area-inset-bottom)/2);background:rgba(247,240,220,.82);backdrop-filter:blur(2px)}
-footer a{pointer-events:auto}
+footer{flex:none;text-align:center;font-size:9px;color:#8b967f;line-height:1;white-space:nowrap;overflow:hidden;
+  padding:0 0 calc(3px + env(safe-area-inset-bottom));background:var(--parchment)}
 </style>
 </head>
 <body class="hero-min">
@@ -277,13 +282,7 @@ footer a{pointer-events:auto}
   <button class="bondi" id="bellBtn">Bon di! 🔔</button>
 </header>
 
-<nav class="tabs" role="tablist">
-  <button class="tab on" data-panel="trails" role="tab">Trails</button>
-  <button class="tab" data-panel="map" role="tab">Live map</button>
-  <button class="tab" data-panel="huts" role="tab">Huts</button>
-  <button class="tab" data-panel="walks" role="tab">My walks</button>
-  <button class="tab" data-panel="pano" role="tab">Panorama</button>
-</nav>
+
 
 <section class="panel" id="panel-map">
   <div id="map"></div>
@@ -344,7 +343,6 @@ footer a{pointer-events:auto}
 
 <section class="panel on" id="panel-trails">
   <div class="scroller">
-    <div class="lede">Five routes on real OSM trail geometry, easy to ferrata. Times are amble pace — kaiserschmarrn stops extra, and not optional.</div>
     <div class="filters" id="trailFilters">
       <button class="fbtn on" data-df="all">All</button>
       <button class="fbtn" data-df="easy">Easy</button>
@@ -357,7 +355,6 @@ footer a{pointer-events:auto}
 
 <section class="panel" id="panel-huts">
   <div class="scroller">
-    <div class="lede">All 23 baites of the Seceda–Cisles–Col Raiser web, positions verified against OpenStreetMap. Beds marked as refuges.</div>
     <div class="filters" id="hutFilters">
       <button class="fbtn on" data-f="all">All</button>
       <button class="fbtn" data-f="refuge">Refuges (beds)</button>
@@ -369,12 +366,18 @@ footer a{pointer-events:auto}
 
 <section class="panel" id="panel-walks">
   <div class="scroller">
-    <div class="lede">Every walk you track gets kept here, on this phone. Export any of them as GPX.</div>
     <div id="walkList"></div>
   </div>
 </section>
 
-<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="resciesa.html" style="color:#8b967f">⇄ Resciesa</a> · Alvan maps · v4.8</footer>
+<nav class="tabs" role="tablist">
+  <button class="tab on" data-panel="trails" role="tab"><i>🥾</i><span>Trails</span></button>
+  <button class="tab" data-panel="map" role="tab"><i>🗺</i><span>Map</span></button>
+  <button class="tab" data-panel="huts" role="tab"><i>🛖</i><span>Huts</span></button>
+  <button class="tab" data-panel="walks" role="tab"><i>👣</i><span>Walks</span></button>
+  <button class="tab" data-panel="pano" role="tab"><i>🖼</i><span>Panorama</span></button>
+</nav>
+<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="resciesa.html" style="color:#8b967f">⇄ Resciesa</a> · Alvan maps · v5.0</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -779,6 +782,7 @@ document.querySelectorAll('.tab').forEach(b=>{
     b.classList.add('on');
     const pnl=$('panel-'+b.dataset.panel);pnl.classList.add('on');
     const sc=pnl.querySelector('.scroller');if(sc)sc.scrollTop=0;
+    document.body.classList.remove('hero-gone');
     if(b.dataset.panel==='map'){ensureMap();setTimeout(()=>{map.invalidateSize();introFly();},120);}
     if(b.dataset.panel==='pano') panoFit();
   });
@@ -933,6 +937,7 @@ function viewWalk(i){
 
 /* ===================== delegated clicks ===================== */
 document.body.addEventListener('click',e=>{
+  if(e.target.tagName==='P'&&e.target.closest('.card')){e.target.closest('.card').classList.toggle('open');return;}
   const tb=e.target.closest('[data-trail]');
   if(tb){selectTrail(tb.dataset.trail);return;}
   const gb=e.target.closest('[data-gpx]');
@@ -1316,6 +1321,16 @@ $('bellBtn').addEventListener('click',()=>{
     });
     toast('🎵 do re mi fa sol la si do');
   }catch(e){}
+});
+
+document.querySelectorAll('.scroller').forEach(sc=>{
+  let last=0;
+  sc.addEventListener('scroll',()=>{
+    const y=sc.scrollTop;
+    if(y>70&&y>last)document.body.classList.add('hero-gone');
+    else if(y<24)document.body.classList.remove('hero-gone');
+    last=y;
+  },{passive:true});
 });
 
 /* boot */
