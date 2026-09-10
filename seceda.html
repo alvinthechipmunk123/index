@@ -150,9 +150,12 @@ body.sheet-on .trackstats.on{display:none}
 .profwrap svg{width:100%;height:100%;display:block}
 
 /* ============ PANORAMA (one screen, pinch to zoom) ============ */
-.panoWrap{flex:1;overflow:hidden;background:#0f2033;position:relative;touch-action:none}
+.panoWrap{flex:1;overflow:hidden;background:var(--cream);position:relative;touch-action:none}
 .panoWrap img{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform;
   user-select:none;-webkit-user-drag:none;max-width:none}
+.panoLoad{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:800;
+  font-size:14px;color:#7d8a78;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
 .panoHint{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
   background:rgba(253,248,234,.9);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;
   color:var(--pine);transition:opacity .5s;pointer-events:none}
@@ -242,14 +245,14 @@ footer{flex:none;text-align:center;font-size:11px;color:#8b967f;padding:6px 0 ca
 </header>
 
 <nav class="tabs" role="tablist">
-  <button class="tab on" data-panel="map" role="tab">Live map</button>
-  <button class="tab" data-panel="pano" role="tab">Panorama</button>
+  <button class="tab on" data-panel="pano" role="tab">Panorama</button>
   <button class="tab" data-panel="trails" role="tab">Trails</button>
+  <button class="tab" data-panel="map" role="tab">Live map</button>
   <button class="tab" data-panel="huts" role="tab">Huts</button>
   <button class="tab" data-panel="walks" role="tab">My walks</button>
 </nav>
 
-<section class="panel on" id="panel-map">
+<section class="panel" id="panel-map">
   <div id="map"></div>
   <div class="legend">
     <div><i style="background:#6B9350"></i>easy</div>
@@ -288,8 +291,9 @@ footer{flex:none;text-align:center;font-size:11px;color:#8b967f;padding:6px 0 ca
   </div>
 </section>
 
-<section class="panel" id="panel-pano">
+<section class="panel on" id="panel-pano">
   <div class="panoWrap" id="panoWrap">
+    <div class="panoLoad" id="panoLoad">🗺 loading the wanderkarte…</div>
     <img id="panoImg" src="seceda-map.jpg" alt="Official Seceda summer trail panorama" draggable="false">
     <div class="panoMissing" id="panoMissing" hidden>
       <h3>Drop in the official map</h3>
@@ -468,7 +472,7 @@ DATA.trails.forEach(t=>{
 const MARQUEE=new Set(['troier','firenze','sofie','odles']);
 
 /* ===================== MAP ===================== */
-let map=null, hutMarkers={}, trailLines={}, SEL=null, chevs=[], badges=[];
+let map=null, hutMarkers={}, trailLines={}, SEL=null, chevs=[], badges=[], endMk=[];
 function pinSvg(h){
   if(h.type==='refuge')
     return `<svg class="pin" width="30" height="36" viewBox="0 0 30 36">
@@ -494,8 +498,8 @@ function ensureMap(){
     L.tileLayer(esri+'Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:15,opacity:.25,...RT})]);
   const topo=L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{maxZoom:17,attribution:'© OpenStreetMap, SRTM | © OpenTopoMap (CC-BY-SA)'});
   const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap',...RT});
-  relief.addTo(map);
-  L.control.layers({'Alpine relief':relief,'Satellite':sat,'Trail numbers (topo)':topo,'Streets':osm},null,{position:'topright'}).addTo(map);
+  sat.addTo(map);
+  L.control.layers({'Satellite':sat,'Alpine relief':relief,'Trail numbers (topo)':topo,'Streets':osm},null,{position:'topright'}).addTo(map);
   const style={'hillshade-tiles':'mix-blend-mode:multiply'};
   const css=document.createElement('style');css.textContent='.hillshade-tiles{mix-blend-mode:multiply}';document.head.appendChild(css);
 
@@ -514,7 +518,14 @@ function ensureMap(){
   });
   const setZoomClass=()=>document.body.classList.toggle('zoomed-out',map.getZoom()<14.2);
   map.on('zoomend',setZoomClass); setZoomClass();
-  map.fitBounds(L.featureGroup(Object.values(trailLines)).getBounds().pad(0.1));
+}
+let DID_INTRO=false;
+function introFly(){
+  if(DID_INTRO)return; DID_INTRO=true;
+  map.setView([46.59794,11.72435],16,{animate:false});
+  setTimeout(()=>{
+    map.flyToBounds(L.featureGroup(Object.values(trailLines)).getBounds().pad(0.1),{duration:2.6,easeLinearity:.15});
+  },700);
 }
 
 /* ===================== TRAIL DETAIL STATE ===================== */
@@ -559,20 +570,34 @@ function selectTrail(id){
     badges.push(L.marker(p,{interactive:false,zIndexOffset:260,
       icon:L.divIcon({className:'',html:`<div class="refbadge">${r[0]}</div>`,iconSize:[28,18],iconAnchor:[14,9]})}).addTo(map));
   });
+  // start & finish markers
+  const p0=t.pts[0], pN=t.pts[t.pts.length-1];
+  endMk.push(L.marker([p0[0],p0[1]],{interactive:false,zIndexOffset:280,icon:L.divIcon({className:'',
+    html:'<svg class="pin" width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="6.5" fill="#6B9350" stroke="#fff" stroke-width="2.5"/></svg>',
+    iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map));
+  endMk.push(L.marker([pN[0],pN[1]],{interactive:false,zIndexOffset:280,icon:L.divIcon({className:'',
+    html:'<svg class="pin" width="22" height="26" viewBox="0 0 22 26"><line x1="4" y1="2" x2="4" y2="25" stroke="#243B2A" stroke-width="2.4"/><path d="M5 3 L19 6 L5 11 Z" fill="#C9483B" stroke="#fff" stroke-width="1.2"/></svg>',
+    iconSize:[22,26],iconAnchor:[4,25]})}).addTo(map));
   // sheet
   $('shName').textContent=t.name;
   $('shChips').innerHTML=`<span class="chip">${t.km} km</span><span class="chip">↑${t.up} ↓${t.down} m</span>
     <span class="chip">${t.hrs}</span><span class="chip diff-${t.diff}">${diffLabel[t.diff]}</span>`;
   $('shProf').innerHTML=bigProfile(t);
   $('sheet').classList.add('on');document.body.classList.add('sheet-on');
-  map.fitBounds(trailLines[id].getBounds().pad(0.12),{paddingBottomRight:[0,180]});
   goMap();
+  DID_INTRO=true;
+  const tgt=trailLines[id].getBounds().pad(0.12);
+  setTimeout(()=>{
+    map.flyTo([t.pts[0][0],t.pts[0][1]],15.5,{duration:1.1});
+    map.once('moveend',()=>{ if(SEL===id) map.flyToBounds(tgt,{duration:1.7,paddingBottomRight:[0,180],easeLinearity:.18}); });
+  },150);
   updateStats();
 }
 function clearSel(refit=true){
   SEL=null;
   chevs.forEach(c=>c.remove()); chevs=[];
   badges.forEach(b=>b.remove()); badges=[];
+  endMk.forEach(m=>m.remove()); endMk=[];
   Object.entries(trailLines).forEach(([k,l])=>l.setStyle({color:trailById[k].color,weight:4,opacity:.85}));
   $('sheet').classList.remove('on');document.body.classList.remove('sheet-on');
   $('shLive').classList.remove('on');
@@ -616,7 +641,7 @@ document.querySelectorAll('.tab').forEach(b=>{
     document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
     b.classList.add('on');
     $('panel-'+b.dataset.panel).classList.add('on');
-    if(b.dataset.panel==='map'){ensureMap();setTimeout(()=>map.invalidateSize(),120);}
+    if(b.dataset.panel==='map'){ensureMap();setTimeout(()=>{map.invalidateSize();introFly();},120);}
     if(b.dataset.panel==='pano') panoFit();
   });
 });
@@ -899,10 +924,10 @@ const panoImg=$('panoImg'),panoWrap=$('panoWrap');
 panoImg.addEventListener('error',function(){
   if(!this.dataset.tried){this.dataset.tried='1';this.src='seceda-map.jpeg';return;}
   if(this.dataset.tried==='1'){this.dataset.tried='2';this.src='seceda-map.png';return;}
-  this.hidden=true;$('panoMissing').hidden=false;$('panoHint').hidden=true;
+  this.hidden=true;$('panoMissing').hidden=false;$('panoHint').hidden=true;const l=$('panoLoad');if(l)l.hidden=true;
 });
-panoImg.addEventListener('load',()=>{PV.iw=panoImg.naturalWidth;PV.ih=panoImg.naturalHeight;panoFit();});
-if(panoImg.complete&&panoImg.naturalWidth>0){PV.iw=panoImg.naturalWidth;PV.ih=panoImg.naturalHeight;}
+panoImg.addEventListener('load',()=>{PV.iw=panoImg.naturalWidth;PV.ih=panoImg.naturalHeight;const l=$('panoLoad');if(l)l.hidden=true;panoFit();});
+if(panoImg.complete&&panoImg.naturalWidth>0){PV.iw=panoImg.naturalWidth;PV.ih=panoImg.naturalHeight;const l=$('panoLoad');if(l)l.hidden=true;}
 function panoApply(){panoImg.style.transform=`translate(${PV.tx}px,${PV.ty}px) scale(${PV.s})`;}
 function panoClamp(){
   const cw=panoWrap.clientWidth,ch=panoWrap.clientHeight;
@@ -989,7 +1014,6 @@ $('bellBtn').addEventListener('click',()=>{
 });
 
 /* boot */
-ensureMap();
 renderWalks();
 if('serviceWorker' in navigator&&location.protocol==='https:'){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
