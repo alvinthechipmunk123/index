@@ -21,7 +21,8 @@
   --r-lg:22px; --r-sm:12px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overscroll-behavior:none}
+html,body{height:100%}
+body{overscroll-behavior-y:contain}
 body{font-family:'Nunito Sans',system-ui,sans-serif;color:var(--ink);background:var(--cream);
   display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
 h1,h2,h3,.frn{font-family:'Fraunces',serif}
@@ -68,7 +69,7 @@ body.hero-min .hero .bondi{top:14px}
 
 /* ============ PANELS ============ */
 .panel{flex:1;overflow:hidden;display:none;position:relative}
-.panel.on{display:flex;flex-direction:column}
+.panel.on{display:flex;flex-direction:column;min-height:0}
 #map{flex:1;background:#dfe9dc}
 .leaflet-container{font-family:'Nunito Sans'}
 
@@ -185,7 +186,8 @@ body.sheet-on .trackstats.on{display:none}
 .panoMissing p{font-size:14.5px;line-height:1.6;color:#57655a;max-width:340px}
 
 /* ============ CARDS ============ */
-.scroller{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px 40px}
+.scroller{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;touch-action:pan-y;padding:16px 14px 52px}
 .lede{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:#5f7060;
   margin:2px 4px 14px;line-height:1.45}
 .card{background:var(--parchment);border-radius:var(--r-lg);box-shadow:var(--shadow);
@@ -227,8 +229,10 @@ body.sheet-on .trackstats.on{display:none}
 .leaflet-popup-content .pop-sub{font-size:12px;color:var(--rosa-deep);font-style:italic}
 .leaflet-popup-content .pop-elev{font-size:12px;font-weight:700;color:#6d7d69;margin-top:3px}
 .leaflet-popup-tip{background:var(--pine)}
-footer{flex:none;text-align:center;font-size:10px;color:#8b967f;line-height:1;white-space:nowrap;overflow:hidden;
-  padding:3px 0 calc(2px + env(safe-area-inset-bottom));background:var(--cream)}
+footer{position:fixed;left:0;right:0;bottom:0;z-index:950;text-align:center;font-size:9.5px;color:#7d8a78;
+  line-height:1;white-space:nowrap;overflow:hidden;pointer-events:none;
+  padding:2px 0 calc(1px + env(safe-area-inset-bottom)/2);background:rgba(247,240,220,.82);backdrop-filter:blur(2px)}
+footer a{pointer-events:auto}
 </style>
 </head>
 <body class="hero-min">
@@ -362,7 +366,7 @@ footer{flex:none;text-align:center;font-size:10px;color:#8b967f;line-height:1;wh
   </div>
 </section>
 
-<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="seceda.html" style="color:#8b967f">⇄ Seceda</a> · Alvan maps · v4.3</footer>
+<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="seceda.html" style="color:#8b967f">⇄ Seceda</a> · Alvan maps · v4.4</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
