@@ -366,7 +366,7 @@ footer a{pointer-events:auto}
   </div>
 </section>
 
-<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="seceda.html" style="color:#8b967f">⇄ Seceda</a> · Alvan maps · v4.4</footer>
+<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="seceda.html" style="color:#8b967f">⇄ Seceda</a> · Alvan maps · v4.5</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -475,7 +475,7 @@ function pinSvg(h){
 }
 function ensureMap(){
   if(map) return;
-  map=L.map('map',{zoomControl:false}).setView(DATA.center,13.5);
+  map=L.map('map',{zoomControl:false,zoomSnap:0,zoomDelta:.5,wheelPxPerZoomLevel:90}).setView(DATA.center,13.5);
   L.control.zoom({position:'topright'}).addTo(map);
   const esri='https://server.arcgisonline.com/ArcGIS/rest/services/';
   const RT={detectRetina:true};
@@ -507,19 +507,47 @@ function ensureMap(){
   map.on('zoomend',setZoomClass); setZoomClass();
 }
 let DID_INTRO=false;
-function settleHigh(){
-  const bl=L.featureGroup(Object.values(trailLines)).getBounds();
-  const top=Math.min(map.latLngToContainerPoint(bl.getNorthWest()).y,
-                     map.latLngToContainerPoint(bl.getNorthEast()).y);
-  if(top>90) map.panBy([0,top-64],{animate:true,duration:.45});
+const CORE=['rhut','chalet','cason','brogles'];
+function coreBounds(){
+  // the trail network itself, shaped to the portrait screen
+  return portrait(L.featureGroup(Object.values(trailLines)).getBounds().pad(0.05),0.80);
 }
+function clearZone(){ // px of map not covered by the bottom controls / sheet
+  const sheetOn=document.body.classList.contains('sheet-on');
+  return sheetOn? document.getElementById('sheet').clientHeight+8 : 74;
+}
+function portrait(b,frac){
+  const H=map.getSize().y,W=map.getSize().x;
+  const want=(H*(frac||0.82))/W;
+  const latSpan=b.getNorth()-b.getSouth(),lngSpan=b.getEast()-b.getWest();
+  const have=(latSpan/Math.cos(b.getCenter().lat*Math.PI/180))/lngSpan;
+  if(have<want){const grow=(want/have-1)*latSpan/2;
+    return L.latLngBounds([b.getSouth()-grow,b.getWest()],[b.getNorth()+grow,b.getEast()]);}
+  return b;
+}
+function fitClear(bounds,fly){
+  // Fit so the content fills the VISIBLE band (below tabs, above the controls/sheet),
+  // then offset the centre so it sits inside that band rather than the container middle.
+  const H=map.getSize().y, W=map.getSize().x;
+  const bottom=clearZone(), topPad=10;
+  const visH=Math.max(120,H-bottom-topPad);
+  // exact zoom so bounds fill the visible band in BOTH axes
+  const nw=map.project(bounds.getNorthWest(),0), se=map.project(bounds.getSouthEast(),0);
+  const bw=Math.abs(se.x-nw.x), bh=Math.abs(se.y-nw.y);
+  const zx=Math.log2((W-24)/bw), zy=Math.log2((visH-16)/bh);
+  const z2=Math.max(11,Math.min(17,Math.min(zx,zy)));
+  const c=map.project(bounds.getCenter(),z2);
+  c.y+=(bottom-topPad)/2;   // centre inside the visible band, not the container
+  const target=map.unproject(c,z2);
+  if(fly) map.flyTo(target,z2,{duration:1.5,easeLinearity:.2});
+  else map.setView(target,z2);
+}
+function settleHigh(){}
 function introFly(){
   if(DID_INTRO)return; DID_INTRO=true;
   map.setView([46.60045,11.66215],15,{animate:false});
   setTimeout(()=>{
-    map.flyToBounds(L.featureGroup(Object.values(trailLines)).getBounds().pad(0.08),
-      {duration:1.8,easeLinearity:.2,paddingTopLeft:[0,4],paddingBottomRight:[0,120]});
-    map.once('moveend',settleHigh);
+    fitClear(coreBounds(),true);
   },300);
 }
 
@@ -583,10 +611,7 @@ function selectTrail(id){
   $('sheet').classList.add('on');document.body.classList.add('sheet-on');
   goMap();
   DID_INTRO=true;
-  setTimeout(()=>{
-    map.flyToBounds(trailLines[id].getBounds().pad(0.1),
-      {duration:1.5,paddingTopLeft:[0,10],paddingBottomRight:[0,Math.round(innerHeight*0.40)],easeLinearity:.2});
-  },150);
+  setTimeout(()=>fitClear(portrait(trailLines[id].getBounds().pad(0.04),0.52),true),180);
   updateStats();
 }
 function clearSel(refit=true){
@@ -597,7 +622,7 @@ function clearSel(refit=true){
   Object.entries(trailLines).forEach(([k,l])=>l.setStyle({color:trailById[k].color,weight:4,opacity:.85}));
   $('sheet').classList.remove('on');document.body.classList.remove('sheet-on');
   $('shLive').classList.remove('on');
-  if(refit&&map) map.fitBounds(L.featureGroup(Object.values(trailLines)).getBounds().pad(0.1));
+  if(refit&&map) fitClear(coreBounds(),false);
 }
 $('shClose').addEventListener('click',()=>clearSel());
 
@@ -1002,7 +1027,7 @@ $('camBtn').addEventListener('click',()=>{
   spotMk.push(m);
   toast('Spot pinned 📷');
 });
-$('homeBtn').addEventListener('click',()=>{follow=false;$('followBtn').classList.remove('on');clearSel();if(map){map.fitBounds(L.featureGroup(Object.values(trailLines)).getBounds().pad(0.08),{paddingBottomRight:[0,120]});settleHigh();}});
+$('homeBtn').addEventListener('click',()=>{follow=false;$('followBtn').classList.remove('on');clearSel();if(map)fitClear(coreBounds(),false);});
 
 /* ===================== PANORAMA — one-screen pinch viewer ===================== */
 const PV={s:1,fit:1,tx:0,ty:0,iw:0,ih:0,pointers:new Map(),lastTap:0,pinch:null};
