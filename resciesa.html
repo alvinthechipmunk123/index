@@ -562,10 +562,9 @@ function selectTrail(id){
   $('sheet').classList.add('on');document.body.classList.add('sheet-on');
   goMap();
   DID_INTRO=true;
-  const tgt=trailLines[id].getBounds().pad(0.12);
   setTimeout(()=>{
-    map.flyTo([t.pts[0][0],t.pts[0][1]],15.5,{duration:1.1});
-    map.once('moveend',()=>{ if(SEL===id) map.flyToBounds(tgt,{duration:1.7,paddingBottomRight:[0,180],easeLinearity:.18}); });
+    map.flyToBounds(trailLines[id].getBounds().pad(0.1),
+      {duration:1.5,paddingTopLeft:[0,10],paddingBottomRight:[0,Math.round(innerHeight*0.40)],easeLinearity:.2});
   },150);
   updateStats();
 }
@@ -995,9 +994,9 @@ function panoFit(){
   const cw=panoWrap.clientWidth,ch=panoWrap.clientHeight;
   if(!cw||!ch)return;
   PV.fit=Math.min(cw/PV.iw,ch/PV.ih);
-  // detail pane opens on the terrain band, focused on the hut cluster
-  PV.s=Math.max(PV.fit, ch/(0.60*PV.ih));
-  PV.ty=-0.40*PV.ih*PV.s;
+  // whole painting fits the pane vertically; pan left–right, centered on the huts
+  PV.s=ch/PV.ih;
+  PV.ty=0;
   PV.tx=cw/2 - PANO_FOCUS*PV.iw*PV.s;
   panoClamp();panoApply();
 }
