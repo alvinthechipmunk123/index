@@ -150,8 +150,12 @@ body.sheet-on .trackstats.on{display:none}
 .profwrap svg{width:100%;height:100%;display:block}
 
 /* ============ PANORAMA (one screen, pinch to zoom) ============ */
-.panoWrap{flex:1;overflow:hidden;background:var(--cream);position:relative;touch-action:none}
-.panoWrap img{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform;
+.panoWrap{flex:1;overflow:hidden;background:var(--cream);position:relative;display:flex;flex-direction:column}
+.panoOv{position:relative;flex:none;background:#dfe9dc;border-bottom:2.5px solid var(--pine);cursor:pointer}
+.panoOv img{width:100%;display:block}
+.ovBox{position:absolute;border:2.5px solid #C9483B;border-radius:3px;box-shadow:0 0 0 1px #fff,inset 0 0 0 1px #fff;pointer-events:none}
+.panoDetail{position:relative;flex:1;overflow:hidden;touch-action:none}
+.panoDetail>img{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform;
   user-select:none;-webkit-user-drag:none;max-width:none}
 .wkdot{position:absolute;z-index:5;font-size:11px;font-weight:800;color:#1d4e89;
   transform:translate(-50%,-120%);pointer-events:none;text-shadow:0 0 4px #fff,0 0 4px #fff}
@@ -301,14 +305,17 @@ footer{flex:none;text-align:center;font-size:11px;color:#8b967f;padding:6px 0 ca
 
 <section class="panel on" id="panel-pano">
   <div class="panoWrap" id="panoWrap">
+    <div class="panoOv" id="panoOv"><img id="ovImg" src="seceda-map.jpg" alt="" draggable="false"><div class="ovBox" id="ovBox"></div></div>
+    <div class="panoDetail" id="panoDetail">
     <div class="panoLoad" id="panoLoad">🗺 loading the wanderkarte…</div>
     <img id="panoImg" src="seceda-map.jpg" alt="Official Seceda summer trail panorama" draggable="false">
+    <div class="wkdot" id="wkdot" hidden><div class="wkpulse"></div>≈ you</div>
+    </div>
     <div class="panoMissing" id="panoMissing" hidden>
       <h3>Drop in the official map</h3>
       <p>Save the Seceda summer panorama from <b>seceda.it</b> and upload it to the repo next to this file as <b>seceda-map.jpg</b> (.jpeg / .png also work).</p>
     </div>
-    <div class="wkdot" id="wkdot" hidden><div class="wkpulse"></div>≈ you</div>
-    <div class="panoHint" id="panoHint">pinch to zoom · drag to pan · double-tap</div>
+    <div class="panoHint" id="panoHint">tap the strip to jump · pinch & drag below</div>
   </div>
 </section>
 
@@ -636,14 +643,14 @@ function bigProfile(t){
   let path='';
   t.pts.forEach((p,i)=>{path+=(i?'L':'M')+X(t.cum[i]/1000).toFixed(1)+','+Y(p[2]).toFixed(1)});
   const area=path+` L${X(t.km)},${H-pb} L${pl},${H-pb} Z`;
-  let huts='';
+  let huts='';let lastLx=-99;
   (t.hutkm||[]).forEach(([hid,km])=>{
     const h=hutById[hid]; if(!h)return;
     const x=X(km), y=Y(h.elev<mn?mn:(h.elev>mx?mx:h.elev));
     const short=h.name.replace(/^(Baita|Rifugio|Café|Malga)\s+/,'').split(' ')[0];
     huts+=`<line x1="${x}" y1="${y}" x2="${x}" y2="${H-pb}" stroke="#35543B" stroke-width="1" stroke-dasharray="2 3" opacity=".45"/>
-      <circle cx="${x}" cy="${y}" r="4" fill="${h.type==='refuge'?'#35543B':'#D9A13B'}" stroke="#FDF8EA" stroke-width="1.6"/>
-      <text x="${x}" y="${y-7}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#35543B">${short}</text>`;
+      <circle cx="${x}" cy="${y}" r="4" fill="${h.type==='refuge'?'#35543B':'#D9A13B'}" stroke="#FDF8EA" stroke-width="1.6"/>`;
+    if(x-lastLx>30){huts+=`<text x="${x}" y="${y-7}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#35543B">${short}</text>`;lastLx=x;}
   });
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
     <path d="${area}" fill="#E39A8B" opacity=".22"/>
@@ -708,7 +715,8 @@ document.querySelectorAll('.tab').forEach(b=>{
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
     document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
     b.classList.add('on');
-    $('panel-'+b.dataset.panel).classList.add('on');
+    const pnl=$('panel-'+b.dataset.panel);pnl.classList.add('on');
+    const sc=pnl.querySelector('.scroller');if(sc)sc.scrollTop=0;
     if(b.dataset.panel==='map'){ensureMap();setTimeout(()=>{map.invalidateSize();introFly();},120);}
     if(b.dataset.panel==='pano') panoFit();
   });
@@ -993,7 +1001,8 @@ $('homeBtn').addEventListener('click',()=>{follow=false;$('followBtn').classList
 
 /* ===================== PANORAMA — one-screen pinch viewer ===================== */
 const PV={s:1,fit:1,tx:0,ty:0,iw:0,ih:0,pointers:new Map(),lastTap:0,pinch:null};
-const panoImg=$('panoImg'),panoWrap=$('panoWrap');
+const panoImg=$('panoImg'),panoWrap=$('panoDetail'),panoOv=$('panoOv'),ovBox=$('ovBox');
+const PANO_FOCUS=0.615;
 panoImg.addEventListener('error',function(){
   if(!this.dataset.tried){this.dataset.tried='1';this.src='seceda-map.jpeg';return;}
   if(this.dataset.tried==='1'){this.dataset.tried='2';this.src='seceda-map.png';return;}
@@ -1016,22 +1025,32 @@ function wkDot(){
   d.style.top=(v*PV.ih*PV.s+PV.ty)+'px';
   d.hidden=false;
 }
-function panoApply(){panoImg.style.transform=`translate(${PV.tx}px,${PV.ty}px) scale(${PV.s})`;wkDot();}
+function panoApply(){
+  panoImg.style.transform=`translate(${PV.tx}px,${PV.ty}px) scale(${PV.s})`;
+  if(PV.iw&&ovBox){
+    const cw=panoWrap.clientWidth,ch=panoWrap.clientHeight,w=PV.iw*PV.s,h=PV.ih*PV.s;
+    ovBox.style.left=Math.max(0,-PV.tx/w*100)+'%';
+    ovBox.style.width=Math.min(100,cw/w*100)+'%';
+    ovBox.style.top=Math.max(0,-PV.ty/h*100)+'%';
+    ovBox.style.height=Math.min(100,ch/h*100)+'%';
+  }
+  wkDot();
+}
 function panoClamp(){
   const cw=panoWrap.clientWidth,ch=panoWrap.clientHeight;
   const w=PV.iw*PV.s,h=PV.ih*PV.s;
   PV.tx=w<=cw?(cw-w)/2:Math.min(0,Math.max(cw-w,PV.tx));
-  PV.ty=h<=ch?(ch-h)/2:Math.min(0,Math.max(ch-h,PV.ty));
+  PV.ty=h<=ch?Math.min(0,Math.max(0,PV.ty)):Math.min(0,Math.max(ch-h,PV.ty));
 }
 function panoFit(){
   if(!PV.iw)return;
   const cw=panoWrap.clientWidth,ch=panoWrap.clientHeight;
   if(!cw||!ch)return;
-  PV.fit=Math.min(cw/PV.iw,ch/PV.ih);        // full-strip view = min zoom
-  // open on the terrain band (skip the painted sky), top of screen, Seceda-centered
+  PV.fit=Math.min(cw/PV.iw,ch/PV.ih);
+  // detail pane opens on the terrain band, focused on the hut cluster
   PV.s=Math.max(PV.fit, ch/(0.60*PV.ih));
   PV.ty=-0.40*PV.ih*PV.s;
-  PV.tx=cw/2 - 0.615*PV.iw*PV.s;
+  PV.tx=cw/2 - PANO_FOCUS*PV.iw*PV.s;
   panoClamp();panoApply();
 }
 window.addEventListener('resize',panoFit);
@@ -1082,6 +1101,15 @@ const panoUp=e=>{PV.pointers.delete(e.pointerId);if(PV.pointers.size<2)PV.pinch=
 panoWrap.addEventListener('pointerup',panoUp);
 panoWrap.addEventListener('pointercancel',panoUp);
 setTimeout(()=>{const h=$('panoHint');if(h)h.style.opacity=0;},6000);
+panoOv.addEventListener('pointerdown',e=>{
+  if(!PV.iw)return;
+  const r=panoOv.getBoundingClientRect();
+  const u=(e.clientX-r.left)/r.width, v=(e.clientY-r.top)/r.height;
+  PV.tx=panoWrap.clientWidth/2 - u*PV.iw*PV.s;
+  PV.ty=panoWrap.clientHeight/2 - v*PV.ih*PV.s;
+  panoClamp();panoApply();
+});
+document.getElementById('ovImg').addEventListener('error',function(){panoOv.style.display='none';});
 
 /* ===================== BELLS ===================== */
 $('bellBtn').addEventListener('click',()=>{
