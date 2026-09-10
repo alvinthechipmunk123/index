@@ -21,8 +21,8 @@
   --r-lg:22px; --r-sm:12px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{height:100%}
-body{height:100vh;height:100dvh;overscroll-behavior-y:contain}
+html{height:100%;overflow:hidden}
+body{position:fixed;inset:0;height:100vh;height:100dvh;overflow:hidden;overscroll-behavior:none}
 body{font-family:'Nunito Sans',system-ui,sans-serif;color:var(--ink);background:var(--cream);
   display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
 h1,h2,h3,.frn{font-family:'Fraunces',serif}
@@ -66,7 +66,17 @@ body.mpick-on .hero .caret{transform:rotate(180deg)}
 
 /* ============ TABS ============ */
 .tabs{display:flex;gap:0;padding:4px 4px 2px;background:var(--parchment);flex:none;
-  border-top:1.5px solid rgba(53,84,59,.14);box-shadow:0 -3px 12px rgba(46,58,51,.07)}
+  border-top:1.5px solid rgba(53,84,59,.14);box-shadow:0 -3px 12px rgba(46,58,51,.07);
+  overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1),padding .28s;max-height:70px}
+body.bar-hidden .tabs{max-height:0;padding-top:0;padding-bottom:0;border-top-width:0}
+body.bar-hidden footer{display:none}
+.barToggle{position:absolute;left:50%;transform:translateX(-50%);z-index:960;
+  width:52px;height:22px;border:1.5px solid rgba(53,84,59,.28);border-bottom:none;
+  border-radius:12px 12px 0 0;background:var(--parchment);color:var(--pine);
+  font-size:13px;font-weight:900;line-height:1;cursor:pointer;padding:0;
+  box-shadow:0 -2px 8px rgba(46,58,51,.12);transition:transform .28s}
+.barToggle{bottom:calc(70px + env(safe-area-inset-bottom))}
+body.bar-hidden .barToggle{bottom:calc(0px + env(safe-area-inset-bottom));transform:translateX(-50%) rotate(180deg)}
 .tab{flex:1;border:none;background:none;padding:5px 0 3px;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:1px;
   font-family:'Nunito Sans';font-weight:800;font-size:10px;color:#8b967f;transition:color .15s;position:relative}
@@ -356,6 +366,7 @@ footer{flex:none;text-align:center;font-size:9px;color:#8b967f;line-height:1;whi
   </div>
 </section>
 
+<button class="barToggle" id="barToggle" aria-label="hide menu">▾</button>
 <nav class="tabs" role="tablist">
   <button class="tab on" data-panel="trails" role="tab"><i>🥾</i><span>Trails</span></button>
   <button class="tab" data-panel="map" role="tab"><i>🗺</i><span>Map</span></button>
@@ -363,7 +374,7 @@ footer{flex:none;text-align:center;font-size:9px;color:#8b967f;line-height:1;whi
   <button class="tab" data-panel="walks" role="tab"><i>👣</i><span>Walks</span></button>
   <button class="tab" data-panel="pano" role="tab"><i>🖼</i><span>Panorama</span></button>
 </nav>
-<footer>trails © OSM · Alvan Maps · Val Gherdëina · v6.0</footer>
+<footer>trails © OSM · Alvan Maps · Val Gherdëina · v6.1</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -1549,6 +1560,17 @@ $('mpick').addEventListener('click',e=>{
   rebuildIndexes();
   applyMountain();
   toast('Now on '+M.name);
+});
+
+// belt and braces: if Safari ever scrolls the shell, snap it back
+['scroll','resize','orientationchange','pageshow'].forEach(ev=>
+  window.addEventListener(ev,()=>{if(window.scrollY||window.scrollX)window.scrollTo(0,0);},{passive:true}));
+if('scrollRestoration' in history)history.scrollRestoration='manual';
+
+$('barToggle').addEventListener('click',()=>{
+  const hidden=document.body.classList.toggle('bar-hidden');
+  $('barToggle').setAttribute('aria-label',hidden?'show menu':'hide menu');
+  setTimeout(()=>{if(map)map.invalidateSize();panoFit&&panoFit();},320);
 });
 
 /* boot */
