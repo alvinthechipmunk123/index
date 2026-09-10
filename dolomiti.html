@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#35543B">
+<title>Alvan Maps · Dolomiti</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,600;9..144,700,100&family=Nunito+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--pine:#35543B;--pine-deep:#243B2A;--cream:#F7F0DC;--parchment:#FDF8EA;--rosa:#E39A8B;--amber:#D9A13B;--ease:#6B9350}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Nunito Sans',sans-serif;background:linear-gradient(180deg,#A8D5CE,#CDE8E2 30%,#F3E3C8 65%,var(--cream));
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:calc(30px + env(safe-area-inset-top)) 18px 40px;color:#2E3A33}
+h1{font-family:'Fraunces',serif;font-variation-settings:'SOFT' 100;font-size:38px;color:var(--pine-deep);text-shadow:0 1px 0 rgba(255,255,255,.5)}
+.sub{font-family:'Fraunces',serif;font-style:italic;color:#5c7261;margin:6px 0 30px;font-size:15px}
+.card{display:block;text-decoration:none;color:inherit;width:100%;max-width:430px;background:var(--parchment);
+  border-radius:24px;box-shadow:0 6px 20px rgba(46,58,51,.18);margin-bottom:18px;overflow:hidden;
+  border:1.5px solid rgba(53,84,59,.12);transition:transform .15s}
+.card:active{transform:scale(.98)}
+.band{height:9px}
+.pad{padding:18px 20px 17px}
+.card h2{font-family:'Fraunces',serif;font-variation-settings:'SOFT' 100;font-size:24px;color:var(--pine-deep)}
+.ladin{font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:#C97A6C;margin:2px 0 9px}
+.card p{font-size:14px;line-height:1.55;color:#4a584e}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+.chip{background:var(--cream);border:1.5px solid rgba(53,84,59,.16);border-radius:999px;padding:3px 11px;font-size:12px;font-weight:700;color:var(--pine)}
+.soon{opacity:.55}
+.soon .chip{border-style:dashed}
+footer{margin-top:auto;padding-top:26px;font-size:11px;color:#8b967f}
+.mtn{font-size:36px;line-height:1;float:right;margin-left:10px}
+</style>
+</head>
+<body>
+<h1>Alvan Maps</h1>
+<div class="sub">the hills are alive — Val Gherdëina, one mountain at a time</div>
+
+<a class="card" href="seceda.html">
+  <div class="band" style="background:linear-gradient(90deg,#6B9350,#D9A13B,#B4483A)"></div>
+  <div class="pad"><span class="mtn">⛰️</span>
+    <h2>Seceda</h2><div class="ladin">Secëda · the sunny side · 2 519 m</div>
+    <p>The famous ridge. 23 huts with call buttons, five trails on real geometry from the Pieralongia stroll to the Sass Rigais ferrata, live tracking with hut countdowns, offline packs, and your dot on the painted wanderkarte.</p>
+    <div class="chips"><span class="chip">23 huts</span><span class="chip">5 trails</span><span class="chip">lifts to 02.11</span></div>
+  </div>
+</a>
+
+<a class="card" href="resciesa.html">
+  <div class="band" style="background:linear-gradient(90deg,#6B9350,#D9A13B,#B4483A)"></div>
+  <div class="pad"><span class="mtn">🌲</span>
+    <h2>Resciesa</h2><div class="ladin">Raschötz · the quiet side · 2 317 m</div>
+    <p>The plateau of crosses and empty balconies. Eight huts, the lonely Brogles basin, the 15 km High Link over to Seceda, and the 21 km Grand Circuit for a legend day.</p>
+    <div class="chips"><span class="chip">8 huts</span><span class="chip">5 trails</span><span class="chip">funicular to 11.10</span></div>
+  </div>
+</a>
+
+<div class="card soon">
+  <div class="band" style="background:#B8AFB4"></div>
+  <div class="pad"><span class="mtn">🏔</span>
+    <h2>Next mountain</h2><div class="ladin">one of many</div>
+    <p>Same pipeline, new valley — say the word.</p>
+    <div class="chips"><span class="chip">Alpe di Siusi?</span><span class="chip">Puez?</span><span class="chip">Sella?</span></div>
+  </div>
+</div>
+
+<footer>huts & trails © OpenStreetMap · Alvan maps</footer>
+</body>
+</html>
