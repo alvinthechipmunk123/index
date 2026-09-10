@@ -21,7 +21,7 @@
   --r-lg:22px; --r-sm:12px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{height:100%;overflow:hidden}
+html{height:100%;overflow:hidden;background:var(--parchment)}
 body{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;height:var(--vvh,100dvh);
   overflow:hidden;overscroll-behavior:none}
 body{font-family:'Nunito Sans',system-ui,sans-serif;color:var(--ink);background:var(--cream);
@@ -386,7 +386,7 @@ footer{flex:none;text-align:center;font-size:9px;color:#8b967f;line-height:1;whi
   <button class="tab" data-panel="walks" role="tab"><i>👣</i><span>Walks</span></button>
   <button class="tab" data-panel="pano" role="tab"><i>🖼</i><span>Panorama</span></button>
 </nav>
-<footer>trails © OSM · Alvan Maps · Val Gherdëina · v6.3</footer>
+<footer>trails © OSM · Alvan Maps · Val Gherdëina · v6.4</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -1597,9 +1597,18 @@ $('mpick').addEventListener('click',e=>{
 });
 
 // iOS reports a viewport taller than what you can see; measure the real one
+let lastVH=0;
 function syncVH(){
   const vv=window.visualViewport;
-  const h=vv?Math.round(vv.height):window.innerHeight;
+  // keyboard open => trust visualViewport (small). Otherwise take the largest sane measure,
+  // because sizing short is what leaves a dead band under the tab bar.
+  const kb = vv && (window.innerHeight - vv.height) > 140;
+  const h = kb ? Math.round(vv.height)
+               : Math.round(Math.max(window.innerHeight,
+                                     document.documentElement.clientHeight||0,
+                                     vv?vv.height:0));
+  if(Math.abs(h-lastVH)<2)return;
+  lastVH=h;
   document.documentElement.style.setProperty('--vvh',h+'px');
   setTimeout(()=>{try{if(typeof map!=='undefined'&&map)map.invalidateSize();}catch(e){}
     try{if(typeof panoFit==='function')panoFit();}catch(e){}},60);
@@ -1610,7 +1619,9 @@ if(window.visualViewport){
 }
 window.addEventListener('resize',syncVH);
 window.addEventListener('orientationchange',()=>setTimeout(syncVH,250));
-syncVH();setTimeout(syncVH,300);setTimeout(syncVH,1200);
+syncVH();[60,200,500,1000,2000].forEach(t=>setTimeout(syncVH,t));
+setInterval(syncVH,1500);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(syncVH,120);});
 
 // belt and braces: if Safari ever scrolls the shell, snap it back
 ['scroll','resize','orientationchange','pageshow'].forEach(ev=>
