@@ -95,6 +95,15 @@ body.zoomed-out .pin.minor{opacity:0;pointer-events:none}
   border:1.5px solid rgba(53,84,59,.25);border-radius:999px;padding:7px 13px;font-size:12px;
   font-weight:800;color:#4a584e;display:none;max-width:58%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wxchip.warn{border-color:var(--rosa-deep);color:var(--rosa-deep)}
+.wxpanel{position:absolute;top:46px;right:10px;left:10px;z-index:820;background:rgba(253,248,234,.97);
+  border:2px solid var(--pine);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:10px 6px 8px;display:none}
+.wxpanel.on{display:block}
+.wxrow{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:2px;scrollbar-width:none}
+.wxrow::-webkit-scrollbar{display:none}
+.wxh{flex:0 0 46px;text-align:center;font-size:11px;font-weight:700;color:#4a584e;line-height:1.5}
+.wxh b{display:block;font-size:13.5px;color:var(--pine-deep)}
+.wxh .pr{color:#3b82c4}
+.wxh.storm{background:#f6ded7;border-radius:8px}
 .rose{position:absolute;right:12px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:800;width:40px;height:40px;
   background:rgba(253,248,234,.92);border:1.5px solid rgba(53,84,59,.3);border-radius:50%;
   display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
@@ -271,6 +280,7 @@ footer{flex:none;text-align:center;font-size:10px;color:#8b967f;line-height:1;wh
     <div><i style="background:#B4483A"></i>hard / ferrata</div>
   </div>
   <div class="wxchip" id="wxchip"></div>
+  <div class="wxpanel" id="wxpanel"><div class="wxrow" id="wxrow"></div></div>
   <div class="rose" aria-hidden="true">
     <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="none" stroke="#35543B" stroke-width="1.4"/>
       <path d="M13 3 L15.5 13 L13 11 L10.5 13 Z" fill="#C9483B"/><path d="M13 23 L15.5 13 L13 15 L10.5 13 Z" fill="#8b967f"/>
@@ -289,7 +299,7 @@ footer{flex:none;text-align:center;font-size:10px;color:#8b967f;line-height:1;wh
     <div class="trackstats" id="trackstats">
       <div class="row">
         <div class="stat"><b id="stDist">0.0</b><span>km</span></div>
-        <div class="stat"><b id="stTime">0:00</b><span>time</span></div>
+        <div class="stat"><b id="stTime">0:00</b><span>moving</span></div>
         <div class="stat"><b id="stElev">—</b><span>elev m</span></div>
         <div class="stat"><b id="stPace">—</b><span>min/km</span></div>
       </div>
@@ -299,6 +309,7 @@ footer{flex:none;text-align:center;font-size:10px;color:#8b967f;line-height:1;wh
       <button class="mbtn go" id="trackBtn">▶ Start tracking</button>
       <button class="mbtn sec" id="followBtn">🧭 Follow</button>
       <button class="mbtn sec" id="homeBtn">⛰ Seceda</button>
+      <button class="mbtn sec" id="camBtn" style="display:none">📷 Spot</button>
     </div>
   </div>
 </section>
@@ -351,7 +362,7 @@ footer{flex:none;text-align:center;font-size:10px;color:#8b967f;line-height:1;wh
   </div>
 </section>
 
-<footer>trails © OSM · <a href="resciesa.html" style="color:#8b967f">⇄ Resciesa</a> · Alvan maps · v4.2</footer>
+<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="resciesa.html" style="color:#8b967f">⇄ Resciesa</a> · Alvan maps · v4.3</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -791,8 +802,18 @@ $('hutFilters').addEventListener('click',e=>{
 const WX={sunset:null};
 (async function(){
   try{
-    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=46.598&longitude=11.724&elevation=2500&current=temperature_2m,wind_speed_10m,weather_code&hourly=weather_code&daily=sunset&forecast_days=1&timezone=auto');
+    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=46.598&longitude=11.724&elevation=2500&current=temperature_2m,wind_speed_10m,weather_code&hourly=weather_code,temperature_2m,precipitation_probability,wind_speed_10m&daily=sunset&forecast_days=2&timezone=auto');
     const j=await r.json();
+    const nowH=new Date();nowH.setMinutes(0,0,0);
+    let cells='';
+    j.hourly.time.forEach((tm,i)=>{
+      const d=new Date(tm);
+      if(d<nowH||cells.split('wxh').length>13)return;
+      const wc=j.hourly.weather_code[i];
+      cells+=`<div class="wxh${wc>=95?' storm':''}">${String(d.getHours()).padStart(2,'0')}<b>${Math.round(j.hourly.temperature_2m[i])}°</b><span class="pr">${j.hourly.precipitation_probability[i]}%</span><br>${Math.round(j.hourly.wind_speed_10m[i])}</div>`;
+    });
+    document.getElementById('wxrow').innerHTML=cells;
+    document.getElementById('wxchip').addEventListener('click',()=>document.getElementById('wxpanel').classList.toggle('on'));
     WX.sunset=new Date(j.daily.sunset[0]);
     let storm=null;
     j.hourly.time.forEach((tm,i)=>{if(storm===null&&new Date(tm)>new Date()&&j.hourly.weather_code[i]>=95)storm=new Date(tm);});
@@ -825,11 +846,20 @@ function renderWalks(){
       <span>${w.km} km · ${fmtTime(w.ms)}</span></div>
       <button class="wbtn" data-wview="${i}">Map</button><button class="wbtn" data-wgpx="${i}">GPX</button><button class="wbtn" data-wdel="${i}">✕</button></div>`;}).join('');
 }
+let savedSpots=[];
 function viewWalk(i){
   const w=loadWalks()[i];if(!w)return;
   goMap();
   if(savedLine)savedLine.remove();
+  savedSpots.forEach(m=>m.remove());savedSpots=[];
   savedLine=L.polyline(w.pts.map(p=>[p[0],p[1]]),{color:'#3b82c4',weight:4,opacity:.9}).addTo(map);
+  (w.spots||[]).forEach(sp=>{
+    const tm=new Date(sp.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const m=L.marker([sp.lat,sp.lng],{icon:L.divIcon({className:'',
+      html:'<div style="font-size:17px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))">📷</div>',iconSize:[20,20],iconAnchor:[10,10]})}).addTo(map);
+    m.bindPopup(`<div class="pop-name">📷 ${tm}</div>`);
+    savedSpots.push(m);
+  });
   map.fitBounds(savedLine.getBounds().pad(.15));
 }
 
@@ -855,6 +885,8 @@ document.body.addEventListener('click',e=>{
 
 /* ===================== TRACKING + COMPASS ===================== */
 let watching=null,follow=false,track=[],trackLine=null,meMarker=null,coneMarker=null,t0=null,tickT=null,wakeLock=null,heading=null;
+let movingMs=0,lastTick=null,lastAnchor=null,lastMoveTs=0,spots=[],spotMk=[];
+const isPaused=()=>lastMoveTs&&(Date.now()-lastMoveTs>90000);
 function nearestHut(pos){
   let best=null,bd=1e12;
   DATA.huts.forEach(h=>{const d=hav(pos,[h.lat,h.lng]);if(d<bd){bd=d;best=h;}});
@@ -899,12 +931,14 @@ function daylight(){
   return` · ☀️ ${h?h+'h':''}${String(m).padStart(2,'0')} light`;
 }
 function updateStats(){
+  const now=Date.now();
+  if(lastTick&&watching!=null&&!isPaused())movingMs+=now-lastTick;
+  lastTick=now;
   let dist=0;for(let i=1;i<track.length;i++)dist+=hav(track[i-1],track[i]);
   $('stDist').textContent=(dist/1000).toFixed(2);
-  const el=t0?Date.now()-t0:0;
-  $('stTime').textContent=fmtTime(el);
+  $('stTime').textContent=fmtTime(movingMs)+(isPaused()?' ⏸':'');
   const km=dist/1000;
-  $('stPace').textContent=km>0.05?Math.round((el/60000)/km):'—';
+  $('stPace').textContent=km>0.05?Math.round((movingMs/60000)/km):'—';
   if(!track.length)return;
   const here=track[track.length-1];
   if(SEL){
@@ -946,6 +980,7 @@ function onPos(p){
   if(p.coords.altitude!=null)$('stElev').textContent=Math.round(p.coords.altitude);
   track.push(pt);
   lastFix=pt;
+  if(!lastAnchor||hav(pt,lastAnchor)>12){lastAnchor=pt;lastMoveTs=Date.now();}
   wkDot();
   drawMe(pt);
   if(!trackLine)trackLine=L.polyline(track.map(q=>[q[0],q[1]]),{color:'#3b82c4',weight:4,opacity:.9}).addTo(map);
@@ -969,6 +1004,9 @@ async function startTrack(){
   if(!navigator.geolocation){toast('No GPS available on this device');return;}
   armCompass();
   track=[];if(trackLine){trackLine.remove();trackLine=null;}
+  spots=[];spotMk.forEach(m=>m.remove());spotMk=[];
+  movingMs=0;lastTick=Date.now();lastAnchor=null;lastMoveTs=Date.now();
+  $('camBtn').style.display='flex';
   t0=Date.now();
   watching=navigator.geolocation.watchPosition(onPos,
     err=>{toast(err.code===1?'Location blocked — allow it in Settings › Safari':'GPS signal lost, still trying');},
@@ -986,12 +1024,13 @@ function stopTrack(){
   clearInterval(tickT);tickT=null;
   if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null;}
   const b=$('trackBtn');b.textContent='▶ Start tracking';b.classList.remove('rec');
+  $('camBtn').style.display='none';
   let dist=0;for(let i=1;i<track.length;i++)dist+=hav(track[i-1],track[i]);
   if(dist>100){
     const step=Math.max(1,Math.ceil(track.length/400));
     const ws=loadWalks();
-    ws.unshift({t:Date.now(),km:+(dist/1000).toFixed(2),ms:Date.now()-t0,
-      pts:track.filter((_,i)=>i%step===0||i===track.length-1).map(p=>[+p[0].toFixed(5),+p[1].toFixed(5)])});
+    ws.unshift({t:Date.now(),km:+(dist/1000).toFixed(2),ms:movingMs,total:Date.now()-t0,spots:spots,
+      pts:track.filter((_,i)=>i%step===0||i===track.length-1).map(p=>[+p[0].toFixed(5),+p[1].toFixed(5),p[2]!=null?Math.round(p[2]):null])});
     if(ws.length>30)ws.pop();
     saveWalks(ws);renderWalks();
     toast(`Walk saved: ${(dist/1000).toFixed(2)} km, ${fmtTime(Date.now()-t0)} — it's in My walks`);
@@ -1001,6 +1040,16 @@ $('trackBtn').addEventListener('click',()=>watching==null?startTrack():stopTrack
 $('followBtn').addEventListener('click',function(){
   follow=!follow;this.classList.toggle('on',follow);
   if(follow&&track.length)map.setView(track[track.length-1].slice(0,2),15);
+});
+$('camBtn').addEventListener('click',()=>{
+  if(!track.length)return;
+  const p=track[track.length-1];
+  const sp={lat:+p[0].toFixed(5),lng:+p[1].toFixed(5),t:Date.now()};
+  spots.push(sp);
+  const m=L.marker([sp.lat,sp.lng],{interactive:false,zIndexOffset:350,
+    icon:L.divIcon({className:'',html:'<div style="font-size:17px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))">📷</div>',iconSize:[20,20],iconAnchor:[10,10]})}).addTo(map);
+  spotMk.push(m);
+  toast('Spot pinned 📷');
 });
 $('homeBtn').addEventListener('click',()=>{follow=false;$('followBtn').classList.remove('on');clearSel();if(map){map.fitBounds(L.featureGroup(Object.values(trailLines)).getBounds().pad(0.08),{paddingBottomRight:[0,120]});settleHigh();}});
 
