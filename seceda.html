@@ -159,6 +159,7 @@ body.sheet-on .trackstats.on{display:none}
 .panoHint{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
   background:rgba(253,248,234,.9);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;
   color:var(--pine);transition:opacity .5s;pointer-events:none}
+.panoMissing[hidden]{display:none}
 .panoMissing{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
   align-items:center;text-align:center;padding:30px;gap:10px;background:var(--parchment)}
 .panoMissing h3{font-size:22px;color:var(--pine-deep)}
@@ -928,6 +929,8 @@ panoImg.addEventListener('error',function(){
 });
 panoImg.addEventListener('load',()=>{PV.iw=panoImg.naturalWidth;PV.ih=panoImg.naturalHeight;const l=$('panoLoad');if(l)l.hidden=true;panoFit();});
 if(panoImg.complete&&panoImg.naturalWidth>0){PV.iw=panoImg.naturalWidth;PV.ih=panoImg.naturalHeight;const l=$('panoLoad');if(l)l.hidden=true;}
+else if(panoImg.complete&&panoImg.naturalWidth===0){panoImg.dataset.tried='1';panoImg.src='seceda-map.jpeg';}
+if(PV.iw)panoFit();
 function panoApply(){panoImg.style.transform=`translate(${PV.tx}px,${PV.ty}px) scale(${PV.s})`;}
 function panoClamp(){
   const cw=panoWrap.clientWidth,ch=panoWrap.clientHeight;
@@ -939,8 +942,12 @@ function panoFit(){
   if(!PV.iw)return;
   const cw=panoWrap.clientWidth,ch=panoWrap.clientHeight;
   if(!cw||!ch)return;
-  PV.fit=Math.min(cw/PV.iw,ch/PV.ih);
-  PV.s=PV.fit;panoClamp();panoApply();
+  PV.fit=Math.min(cw/PV.iw,ch/PV.ih);        // full-strip view = min zoom
+  // open on the terrain band (skip the painted sky), top of screen, Seceda-centered
+  PV.s=Math.max(PV.fit, ch/(0.60*PV.ih));
+  PV.ty=-0.40*PV.ih*PV.s;
+  PV.tx=cw/2 - 0.615*PV.iw*PV.s;
+  panoClamp();panoApply();
 }
 window.addEventListener('resize',panoFit);
 panoWrap.addEventListener('pointerdown',e=>{
