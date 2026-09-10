@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#35543B">
+<title>Urtijëi · Resciesa</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2335543B'/><text y='68' x='50' text-anchor='middle' font-size='56'>⛰️</text></svg>">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400;9..144,600;9..144,700,100&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --meadow:#7FA65A; --pine:#35543B; --pine-deep:#243B2A;
+  --cream:#F7F0DC; --parchment:#FDF8EA; --sky:#C9E4DF;
+  --rosa:#E39A8B; --rosa-deep:#C97A6C; --ink:#2E3A33;
+  --straw:#F2D98D; --amber:#D9A13B; --ease:#6B9350; --hardc:#B4483A;
+  --shadow:0 4px 14px rgba(46,58,51,.16);
+  --r-lg:22px; --r-sm:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overscroll-behavior:none}
+body{font-family:'Nunito Sans',system-ui,sans-serif;color:var(--ink);background:var(--cream);
+  display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+h1,h2,h3,.frn{font-family:'Fraunces',serif}
+
+/* ============ HERO ============ */
+.hero{position:relative;height:196px;overflow:hidden;flex:none;cursor:pointer;
+  background:linear-gradient(180deg,#A8D5CE 0%,#CDE8E2 38%,#F3E3C8 72%,#F7EFD3 100%);
+  transition:height .45s cubic-bezier(.5,0,.2,1)}
+.hero svg{position:absolute;bottom:0;left:0;width:100%;height:100%}
+.hero .title{position:absolute;top:16px;left:20px;z-index:5}
+.hero h1{font-size:34px;font-weight:700;color:var(--pine-deep);line-height:1;letter-spacing:.5px;
+  font-variation-settings:'SOFT' 100;text-shadow:0 1px 0 rgba(255,255,255,.5)}
+.hero .sub{font-family:'Fraunces',serif;font-style:italic;font-size:14.5px;color:#5c7261;margin-top:5px}
+.hero .bondi{position:absolute;top:18px;right:16px;z-index:5;background:rgba(255,255,255,.72);
+  backdrop-filter:blur(3px);border-radius:999px;padding:6px 13px;font-size:13px;font-weight:700;
+  color:var(--pine);border:1.5px solid rgba(53,84,59,.25)}
+.cloud{animation:drift linear infinite}
+.cloud.c1{animation-duration:58s}.cloud.c2{animation-duration:84s;animation-delay:-30s}
+.cloud.c3{animation-duration:70s;animation-delay:-52s}
+@keyframes drift{from{transform:translateX(-30%)}to{transform:translateX(115%)}}
+.gondel{animation:ride 26s ease-in-out infinite alternate}
+@keyframes ride{from{transform:translateX(0)}to{transform:translateX(210px)}}
+.grass-sway{transform-origin:bottom center;animation:sway 4.5s ease-in-out infinite alternate}
+.grass-sway.g2{animation-delay:-1.6s;animation-duration:5.4s}
+.grass-sway.g3{animation-delay:-3s;animation-duration:3.9s}
+@keyframes sway{from{transform:rotate(-2.4deg)}to{transform:rotate(2.4deg)}}
+.glow{animation:enrosadira 9s ease-in-out infinite alternate}
+@keyframes enrosadira{from{opacity:.35}to{opacity:.8}}
+body.hero-min .hero{height:74px}
+body.hero-min .hero h1{font-size:24px}
+body.hero-min .hero .sub{display:none}
+body.hero-min .hero .bondi{top:14px}
+@media (prefers-reduced-motion:reduce){.cloud,.gondel,.grass-sway,.glow{animation:none}.hero{transition:none}}
+
+/* ============ TABS ============ */
+.tabs{display:flex;gap:8px;padding:10px 14px;background:var(--cream);flex:none;
+  border-bottom:1.5px solid rgba(53,84,59,.12);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1.5px solid rgba(53,84,59,.18);background:var(--parchment);
+  border-radius:999px;padding:9px 16px;font-family:'Nunito Sans';font-weight:800;font-size:14px;
+  color:#63745f;cursor:pointer;transition:all .18s}
+.tab.on{background:var(--pine);color:var(--cream);border-color:var(--pine)}
+.tab:focus-visible{outline:3px solid var(--rosa);outline-offset:2px}
+
+/* ============ PANELS ============ */
+.panel{flex:1;overflow:hidden;display:none;position:relative}
+.panel.on{display:flex;flex-direction:column}
+#map{flex:1;background:#dfe9dc}
+.leaflet-container{font-family:'Nunito Sans'}
+
+/* ---- browse-state pins ---- */
+.pin{filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+.pin.minor{transition:opacity .25s}
+body.zoomed-out .pin.minor{opacity:0;pointer-events:none}
+.chev{color:#fff;font-size:13px;font-weight:900;text-shadow:0 0 3px rgba(0,0,0,.55);line-height:1}
+.refbadge{background:#fff;border:2px solid #c8372d;color:#c8372d;border-radius:6px;
+  font-weight:900;font-size:11px;padding:1px 5px;box-shadow:0 1px 3px rgba(0,0,0,.3);white-space:nowrap}
+.mepin{width:16px;height:16px;background:#3b82c4;border:3px solid #fff;border-radius:50%;
+  box-shadow:0 0 0 5px rgba(59,130,196,.25);position:relative;z-index:2}
+.cone{width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;
+  border-bottom:34px solid rgba(59,130,196,.35);transform-origin:50% 100%;
+  position:absolute;left:-8px;top:-32px;border-radius:4px}
+.conewrap{position:relative;width:16px;height:16px}
+
+/* ---- map overlays ---- */
+.legend{position:absolute;top:10px;left:10px;z-index:800;background:rgba(253,248,234,.92);
+  border:1.5px solid rgba(53,84,59,.25);border-radius:var(--r-sm);padding:6px 10px;font-size:11px;
+  font-weight:700;color:#4a584e;line-height:1.65}
+.legend i{display:inline-block;width:18px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.wxchip{position:absolute;top:10px;right:56px;z-index:800;background:rgba(253,248,234,.92);
+  border:1.5px solid rgba(53,84,59,.25);border-radius:999px;padding:7px 13px;font-size:12px;
+  font-weight:800;color:#4a584e;display:none;max-width:58%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wxchip.warn{border-color:var(--rosa-deep);color:var(--rosa-deep)}
+.rose{position:absolute;right:12px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:800;width:40px;height:40px;
+  background:rgba(253,248,234,.92);border:1.5px solid rgba(53,84,59,.3);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+.toast{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:900;
+  background:var(--pine-deep);color:var(--cream);border-radius:999px;padding:8px 18px;
+  font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;max-width:88%;text-align:center}
+.toast.show{opacity:1}
+.mapbar{position:absolute;left:10px;right:10px;bottom:calc(12px + env(safe-area-inset-bottom));
+  z-index:810;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.mapbar>*{pointer-events:auto}
+.trackstats{display:none;background:rgba(253,248,234,.95);backdrop-filter:blur(4px);
+  border:2px solid var(--pine);border-radius:var(--r-lg);padding:9px 14px;box-shadow:var(--shadow)}
+.trackstats.on{display:block}
+.trackstats .row{display:flex;justify-content:space-between;gap:8px}
+.stat{text-align:center;flex:1}
+.stat b{display:block;font-family:'Fraunces',serif;font-size:20px;color:var(--pine-deep);line-height:1.1}
+.stat span{font-size:10px;font-weight:700;color:#7d8a78;letter-spacing:.4px}
+.nearhut{margin-top:6px;padding-top:6px;border-top:1.5px dashed rgba(53,84,59,.25);
+  font-size:12.5px;font-weight:700;color:var(--pine);text-align:center;line-height:1.45}
+.mapbtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.mbtn{border:none;border-radius:999px;padding:11px 16px;font-family:'Nunito Sans';font-weight:800;
+  font-size:13.5px;cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;gap:6px}
+.mbtn.go{background:var(--pine);color:var(--cream)}
+.mbtn.go.rec{background:var(--rosa-deep);color:#fff}
+.mbtn.sec{background:rgba(253,248,234,.94);color:var(--pine);border:1.5px solid rgba(53,84,59,.3)}
+.mbtn.sec.on{background:var(--straw);border-color:#c9a94f}
+
+/* ---- trail detail sheet ---- */
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:850;background:var(--parchment);
+  border-radius:22px 22px 0 0;box-shadow:0 -8px 30px rgba(46,58,51,.28);
+  transform:translateY(110%);transition:transform .32s cubic-bezier(.4,0,.2,1);
+  padding:10px 16px calc(12px + env(safe-area-inset-bottom));height:42%;display:flex;flex-direction:column}
+body.sheet-on .mapbar{bottom:calc(42% + 10px + env(safe-area-inset-bottom))}
+body.sheet-on .rose{display:none}
+body.sheet-on .trackstats{display:none}
+body.sheet-on .trackstats.on{display:none}
+.sheet.on{transform:translateY(0)}
+.sheet .grab{width:44px;height:4.5px;border-radius:3px;background:rgba(53,84,59,.25);margin:0 auto 8px;flex:none}
+.sheet .shead{display:flex;align-items:flex-start;gap:10px;flex:none}
+.sheet h3{font-size:19px;color:var(--pine-deep);font-variation-settings:'SOFT' 100;line-height:1.15;flex:1}
+.sheet .close{border:none;background:var(--cream);border:1.5px solid rgba(53,84,59,.25);
+  border-radius:50%;width:30px;height:30px;font-size:15px;font-weight:800;color:var(--pine);cursor:pointer;flex:none}
+.sheet .chips{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0 4px;flex:none}
+.chip{background:var(--cream);border:1.5px solid rgba(53,84,59,.16);border-radius:999px;
+  padding:3px 11px;font-size:12px;font-weight:700;color:var(--pine)}
+.chip.diff-easy{background:#e4efd6;border-color:#9dbb77}
+.chip.diff-mod{background:#fbeecb;border-color:#d9b95e}
+.chip.diff-hard{background:#f6ded7;border-color:#d99a88}
+.sheet .liveline{display:none;font-size:12.5px;font-weight:800;color:var(--pine);text-align:center;
+  padding:5px 0 2px;border-top:1.5px dashed rgba(53,84,59,.2);margin-top:5px}
+.sheet .liveline.on{display:block}
+.profwrap{flex:1;min-height:96px;overflow:hidden}
+.profwrap svg{width:100%;height:100%;display:block}
+
+/* ============ PANORAMA (one screen, pinch to zoom) ============ */
+.panoWrap{flex:1;overflow:hidden;background:var(--cream);position:relative;touch-action:none}
+.panoWrap img{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform;
+  user-select:none;-webkit-user-drag:none;max-width:none}
+.wkdot{position:absolute;z-index:5;font-size:11px;font-weight:800;color:#1d4e89;
+  transform:translate(-50%,-120%);pointer-events:none;text-shadow:0 0 4px #fff,0 0 4px #fff}
+.wkdot[hidden]{display:none}
+.wkpulse{width:14px;height:14px;margin:0 auto 2px;background:#3b82c4;border:2.5px solid #fff;
+  border-radius:50%;box-shadow:0 0 0 5px rgba(59,130,196,.3);animation:wkp 2s ease-out infinite}
+@keyframes wkp{0%{box-shadow:0 0 0 3px rgba(59,130,196,.4)}70%{box-shadow:0 0 0 11px rgba(59,130,196,0)}100%{box-shadow:0 0 0 3px rgba(59,130,196,0)}}
+.panoLoad{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:800;
+  font-size:14px;color:#7d8a78;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+.panoHint{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  background:rgba(253,248,234,.9);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;
+  color:var(--pine);transition:opacity .5s;pointer-events:none}
+.panoMissing[hidden]{display:none}
+.panoMissing{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+  align-items:center;text-align:center;padding:30px;gap:10px;background:var(--parchment)}
+.panoMissing h3{font-size:22px;color:var(--pine-deep)}
+.panoMissing p{font-size:14.5px;line-height:1.6;color:#57655a;max-width:340px}
+
+/* ============ CARDS ============ */
+.scroller{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px 40px}
+.lede{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:#5f7060;
+  margin:2px 4px 14px;line-height:1.45}
+.card{background:var(--parchment);border-radius:var(--r-lg);box-shadow:var(--shadow);
+  margin-bottom:14px;overflow:hidden;border:1.5px solid rgba(53,84,59,.1)}
+.card .band{height:7px}
+.card .pad{padding:14px 16px 15px}
+.card h3{font-size:20px;font-weight:700;color:var(--pine-deep);font-variation-settings:'SOFT' 100}
+.card .ladin{font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--rosa-deep);margin-top:1px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 8px}
+.card p{font-size:14px;line-height:1.55;color:#4a584e}
+.card .eat{margin-top:8px;font-size:13.5px;color:#6a5a3f;background:#f7ecce;
+  border-radius:var(--r-sm);padding:8px 11px;line-height:1.45}
+.card .eat b{color:#4d4026}
+.cardbtns{display:flex;gap:8px;margin-top:11px}
+.cbtn{flex:1;border:none;border-radius:999px;padding:9px 0;font-family:'Nunito Sans';
+  font-weight:800;font-size:13px;cursor:pointer}
+.cbtn.map{background:var(--pine);color:var(--cream)}
+.cbtn.ghost{background:transparent;border:1.5px solid rgba(53,84,59,.3);color:var(--pine)}
+.profile{margin-top:10px}
+.profile svg{width:100%;height:52px;display:block}
+.filters{display:flex;gap:7px;margin:0 2px 13px;flex-wrap:wrap}
+.fbtn{border:1.5px solid rgba(53,84,59,.22);background:var(--parchment);border-radius:999px;
+  padding:6px 13px;font-family:'Nunito Sans';font-weight:800;font-size:12.5px;color:#63745f;cursor:pointer}
+.fbtn.on{background:var(--rosa);border-color:var(--rosa-deep);color:#fff}
+.walkrow{display:flex;align-items:center;gap:10px;background:var(--parchment);border:1.5px solid rgba(53,84,59,.12);
+  border-radius:var(--r-lg);box-shadow:var(--shadow);padding:13px 15px;margin-bottom:12px}
+.walkrow .info{flex:1;min-width:0}
+.walkrow b{font-family:'Fraunces',serif;font-size:16.5px;color:var(--pine-deep);display:block}
+.walkrow span{font-size:12.5px;color:#6d7d69;font-weight:700}
+.walkrow .wbtn{border:none;background:var(--cream);border:1.5px solid rgba(53,84,59,.25);border-radius:999px;
+  padding:7px 11px;font-family:'Nunito Sans';font-weight:800;font-size:12px;color:var(--pine);cursor:pointer;flex:none}
+.walkempty{text-align:center;padding:44px 26px;color:#6d7d69;font-size:14.5px;line-height:1.6}
+.walkempty .frn{font-size:21px;color:var(--pine-deep);display:block;margin-bottom:8px}
+
+.leaflet-popup-content-wrapper{background:var(--parchment);border-radius:16px;
+  border:2px solid var(--pine);box-shadow:var(--shadow)}
+.leaflet-popup-content{margin:11px 15px;font-family:'Nunito Sans'}
+.leaflet-popup-content .pop-name{font-family:'Fraunces',serif;font-weight:700;font-size:16px;color:var(--pine-deep)}
+.leaflet-popup-content .pop-sub{font-size:12px;color:var(--rosa-deep);font-style:italic}
+.leaflet-popup-content .pop-elev{font-size:12px;font-weight:700;color:#6d7d69;margin-top:3px}
+.leaflet-popup-tip{background:var(--pine)}
+footer{flex:none;text-align:center;font-size:11px;color:#8b967f;padding:6px 0 calc(6px + env(safe-area-inset-bottom));
+  background:var(--cream)}
+</style>
+</head>
+<body class="hero-min">
+
+<header class="hero" id="hero" title="tap to toggle">
+  <svg viewBox="0 0 400 196" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <circle cx="330" cy="42" r="20" fill="#F9E7A8" opacity=".9"/><circle cx="330" cy="42" r="30" fill="#F9E7A8" opacity=".25"/>
+    <g>
+      <path d="M0,120 L28,74 L44,96 L62,52 L74,90 L96,40 L112,86 L134,58 L150,96 L172,48 L186,88 L210,62 L228,100 L252,56 L268,92 L292,70 L312,104 L340,80 L362,110 L400,92 L400,196 L0,196 Z" fill="#B8AFB4"/>
+      <path class="glow" d="M0,120 L28,74 L44,96 L62,52 L74,90 L96,40 L112,86 L134,58 L150,96 L172,48 L186,88 L210,62 L228,100 L252,56 L268,92 L292,70 L312,104 L340,80 L362,110 L400,92 L400,196 L0,196 Z" fill="#E39A8B" opacity=".5"/>
+      <path d="M62,52 L58,62 L67,60 Z M96,40 L91,52 L102,50 Z M172,48 L167,59 L178,57 Z M252,56 L247,66 L258,64 Z" fill="#fff" opacity=".85"/>
+    </g>
+    <path d="M0,142 Q60,112 120,132 T240,126 T360,138 L400,132 L400,196 L0,196 Z" fill="#5E7F55"/>
+    <line x1="70" y1="150" x2="330" y2="96" stroke="#4a4038" stroke-width="1.4"/>
+    <g class="gondel"><g transform="translate(84,148)">
+      <line x1="0" y1="-6" x2="0" y2="2" stroke="#4a4038" stroke-width="1.6"/>
+      <rect x="-8" y="2" width="16" height="13" rx="3.5" fill="#C9483B"/>
+      <rect x="-5.5" y="4.5" width="11" height="5" rx="1.5" fill="#EAF3F0"/></g></g>
+    <path d="M0,168 Q80,150 170,164 T400,158 L400,196 L0,196 Z" fill="#7FA65A"/>
+    <path d="M0,182 Q110,168 220,180 T400,174 L400,196 L0,196 Z" fill="#6B9350"/>
+    <g transform="translate(292,152)"><rect x="2" y="7" width="20" height="11" fill="#8A6844"/>
+      <path d="M-1,8 L12,-2 L25,8 Z" fill="#5C4632"/><rect x="9" y="11" width="6" height="7" fill="#3d2f22"/></g>
+    <g class="grass-sway" transform="translate(40,186)"><path d="M0,0 Q-3,-10 -1,-16 M0,0 Q2,-11 5,-15 M0,0 Q-6,-8 -8,-12" stroke="#4e7a3e" stroke-width="2" fill="none" stroke-linecap="round"/></g>
+    <g class="grass-sway g2" transform="translate(150,190)"><path d="M0,0 Q-3,-12 0,-18 M0,0 Q4,-10 7,-14 M0,0 Q-7,-7 -10,-11" stroke="#4e7a3e" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <g transform="translate(6,-16)"><circle r="2" fill="#F5F1E3"/><circle cx="3" cy="-1" r="2" fill="#F5F1E3"/><circle cx="-3" cy="-1" r="2" fill="#F5F1E3"/><circle cx="0" cy="-3" r="2" fill="#F5F1E3"/><circle r="1.2" fill="#E8C24A"/></g></g>
+    <g class="grass-sway g3" transform="translate(255,188)"><path d="M0,0 Q-2,-9 0,-14 M0,0 Q3,-9 6,-12" stroke="#4e7a3e" stroke-width="2" fill="none" stroke-linecap="round"/></g>
+    <g class="cloud c1" transform="translate(0,26)"><g fill="#fff" opacity=".92"><ellipse cx="30" cy="10" rx="26" ry="10"/><ellipse cx="14" cy="6" rx="13" ry="8"/><ellipse cx="46" cy="5" rx="15" ry="9"/></g></g>
+    <g class="cloud c2" transform="translate(-60,58)"><g fill="#fff" opacity=".8"><ellipse cx="26" cy="8" rx="22" ry="8"/><ellipse cx="40" cy="4" rx="12" ry="7"/></g></g>
+    <g class="cloud c3" transform="translate(-30,10)"><g fill="#fff" opacity=".7"><ellipse cx="20" cy="7" rx="17" ry="7"/><ellipse cx="32" cy="4" rx="10" ry="6"/></g></g>
+  </svg>
+  <div class="title"><h1>Urtijëi · Resciesa</h1>
+    <div class="sub">the quiet side — Raschötz, 2 317 m</div></div>
+  <button class="bondi" id="bellBtn">Bon di! 🔔</button>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab on" data-panel="pano" role="tab">Panorama</button>
+  <button class="tab" data-panel="trails" role="tab">Trails</button>
+  <button class="tab" data-panel="map" role="tab">Live map</button>
+  <button class="tab" data-panel="huts" role="tab">Huts</button>
+  <button class="tab" data-panel="walks" role="tab">My walks</button>
+</nav>
+
+<section class="panel" id="panel-map">
+  <div id="map"></div>
+  <div class="legend">
+    <div><i style="background:#6B9350"></i>easy</div>
+    <div><i style="background:#D9A13B"></i>moderate</div>
+    <div><i style="background:#B4483A"></i>hard / ferrata</div>
+  </div>
+  <div class="wxchip" id="wxchip"></div>
+  <div class="rose" aria-hidden="true">
+    <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="none" stroke="#35543B" stroke-width="1.4"/>
+      <path d="M13 3 L15.5 13 L13 11 L10.5 13 Z" fill="#C9483B"/><path d="M13 23 L15.5 13 L13 15 L10.5 13 Z" fill="#8b967f"/>
+      <text x="13" y="2" text-anchor="middle" font-size="6" font-weight="800" fill="#35543B">N</text></svg>
+  </div>
+  <div class="toast" id="toast"></div>
+  <div class="sheet" id="sheet">
+    <div class="grab"></div>
+    <div class="shead"><h3 id="shName"></h3><button class="close" id="shClose">✕</button></div>
+    <div class="chips" id="shChips"></div>
+    <button class="mbtn sec" id="dlBtn" style="align-self:center;margin:2px 0 4px;padding:8px 14px;font-size:12.5px">⬇ Save trail offline</button>
+    <div class="profwrap" id="shProf"></div>
+    <div class="liveline" id="shLive"></div>
+  </div>
+  <div class="mapbar">
+    <div class="trackstats" id="trackstats">
+      <div class="row">
+        <div class="stat"><b id="stDist">0.0</b><span>km</span></div>
+        <div class="stat"><b id="stTime">0:00</b><span>time</span></div>
+        <div class="stat"><b id="stElev">—</b><span>elev m</span></div>
+        <div class="stat"><b id="stPace">—</b><span>min/km</span></div>
+      </div>
+      <div class="nearhut" id="nearhut">finding you…</div>
+    </div>
+    <div class="mapbtns">
+      <button class="mbtn go" id="trackBtn">▶ Start tracking</button>
+      <button class="mbtn sec" id="followBtn">🧭 Follow</button>
+      <button class="mbtn sec" id="homeBtn">⛰ Seceda</button>
+    </div>
+  </div>
+</section>
+
+<section class="panel on" id="panel-pano">
+  <div class="panoWrap" id="panoWrap">
+    <div class="panoLoad" id="panoLoad">🗺 loading the wanderkarte…</div>
+    <img id="panoImg" src="seceda-map.jpg" alt="Official Seceda summer trail panorama" draggable="false">
+    <div class="panoMissing" id="panoMissing" hidden>
+      <h3>Drop in the official map</h3>
+      <p>Save the Seceda summer panorama from <b>seceda.it</b> and upload it to the repo next to this file as <b>seceda-map.jpg</b> (.jpeg / .png also work).</p>
+    </div>
+    <div class="wkdot" id="wkdot" hidden><div class="wkpulse"></div>≈ you</div>
+    <div class="panoHint" id="panoHint">pinch to zoom · drag to pan · double-tap</div>
+  </div>
+</section>
+
+<section class="panel" id="panel-trails">
+  <div class="scroller">
+    <div class="lede">Five routes on real OSM geometry, from pram-grade to the 21 km Grand Circuit. This is the quiet mountain — huts are the point, crowds are not.</div>
+    <div class="filters" id="trailFilters">
+      <button class="fbtn on" data-df="all">All</button>
+      <button class="fbtn" data-df="easy">Easy</button>
+      <button class="fbtn" data-df="mod">Moderate</button>
+      <button class="fbtn" data-df="hard">Hard</button>
+    </div>
+    <div id="trailCards"></div>
+  </div>
+</section>
+
+<section class="panel" id="panel-huts">
+  <div class="scroller">
+    <div class="lede">The huts of the Raschötz plateau and Brogles basin, positions verified against OpenStreetMap.</div>
+    <div class="filters" id="hutFilters">
+      <button class="fbtn on" data-f="all">All</button>
+      <button class="fbtn" data-f="refuge">Refuges (beds)</button>
+      <button class="fbtn" data-f="restaurant">Food only</button>
+    </div>
+    <div id="hutCards"></div>
+  </div>
+</section>
+
+<section class="panel" id="panel-walks">
+  <div class="scroller">
+    <div class="lede">Every walk you track gets kept here, on this phone. Export any of them as GPX.</div>
+    <div id="walkList"></div>
+  </div>
+</section>
+
+<footer>huts & trails from OpenStreetMap · <a href="seceda.html" style="color:#63745f">⇄ Seceda side</a> · Alvan maps</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const DATA = {
+  center: [46.602, 11.675],
+  huts: [
+    { id:"rhut", name:"Utia de Resciesa", ladin:"Rifugio Resciesa", type:"refuge", phone:"+393283345986",
+      lat:46.60045, lng:11.66215, elev:2170,
+      desc:"Five minutes above the funicular top station, the refuge of the Raschötz high plateau — breathtaking panorama across to the Odle wall, beds for the sunrise crowd. The natural basecamp of this side." },
+    { id:"chalet", name:"Bergchalet Resciesa", ladin:"Chalet Raschötz", type:"refuge", phone:"+393355630007",
+      lat:46.59768, lng:11.67887, elev:2103,
+      desc:"On the sunny southern lip of the plateau, big sun terrace over the whole Val Gardena. Rooms available — ask for Marlene. The gentler sleepover option to the Utia." },
+    { id:"cason", name:"Malga Cason Saltner", ladin:"Cason Hütte", type:"restaurant", phone:"+393488223647",
+      lat:46.59862, lng:11.68174, elev:2137,
+      desc:"Working malga just east of the chalet on the panorama path. Warm kitchen all day, no gaps — rare up here.",
+      eat:"Typical alm products, hot plates through the afternoon." },
+    { id:"brogles", name:"Brogles Alm", ladin:"Utia de Brogles · Schutzhaus", type:"refuge", phone:"+393384600101",
+      lat:46.61025, lng:11.72735, elev:2045,
+      desc:"The lonely alm in the Brogles basin right under the north Odle wall — the quietest hut of the whole valley system. Simple beds; call ahead to confirm the overnight.",
+      eat:"Tirolean home cooking — dumplings, speck, buttermilk from the alm." },
+    { id:"ramitzler", name:"Ramitzler Schwaige", ladin:"Malga Ramitzler", type:"restaurant", phone:"+390471655927",
+      lat:46.61128, lng:11.63419, elev:1834,
+      desc:"On the western meadows below the Outer Cross, on the walking lines up from Laion. Farm-run, well off any lift." },
+    { id:"pedrutsch", name:"Pedrutscherhof", ladin:"Gasthaus Pedrutscherhof", type:"restaurant", phone:"+393381480986",
+      lat:46.59813, lng:11.62695, elev:1265,
+      desc:"Old farmhouse gasthaus on the low western slope — a valley-walk destination, not a summit stop. Closed Thursdays." },
+    { id:"costamula", name:"Costamula", ladin:"Ristorante Costamula", type:"restaurant", phone:"+393715676548",
+      lat:46.58470, lng:11.69433, elev:1542,
+      desc:"Medieval farmhouse turned refined local kitchen, mid-slope above Ortisei — the classy finish if you descend the Cuecenes woods.",
+      eat:"Historic stube, fine South Tyrolean cooking. Book for dinner." },
+    { id:"valdanna", name:"Café Val d'Anna", ladin:"Utia Val d'Ana", type:"restaurant", phone:"+390471798643",
+      lat:46.58016, lng:11.68706, elev:1380,
+      desc:"In the larch woods of the Annatal — the traditional last stop before Ortisei's streets on any big descent from either mountain.",
+      eat:"The finish-line beer and a slice of strudel." }
+  ],
+  trails: [
+    { id:"crosses", name:"Raschötz Cross Walk", ladin:"La Crëusc dl Raschötz",
+      km:1.3, up:55, down:55, hrs:"45 min–1 h", diff:"easy", color:"#6B9350",
+      refs:[], hutkm:[["rhut", 0.0]],
+      desc:"The gentle opener: funicular top → Utia de Resciesa → out along the plateau to the Outer Cross at 2 283 m, with the whole Odle wall across the void, and back. Pram-and-grandparents grade, sunset-walk grade.",
+      pts:[[46.60052,11.66219,2176],[46.6005,11.66238,2190],[46.60126,11.66094,2203],[46.60196,11.66024,2230],[46.60323,11.6585,2231],[46.60341,11.65673,2231],[46.60367,11.6563,2231],[46.60341,11.65673,2231],[46.60323,11.6585,2231],[46.60196,11.66024,2230],[46.60126,11.66094,2203],[46.6005,11.66238,2190],[46.60052,11.66219,2176]] },
+    { id:"stroll", name:"Panorama Terrace Stroll", ladin:"Trëi utii, un pomeriggio",
+      km:3.3, up:110, down:115, hrs:"1–1.5 h", diff:"easy", color:"#6B9350",
+      refs:[], hutkm:[["rhut", 0.0], ["chalet", 1.51], ["cason", 1.72]],
+      desc:"Three huts, one balcony: Utia de Resciesa → Bergchalet's sun terrace → Cason for the warm kitchen, loop back over the meadows. This is the do-nothing-well day, and Resciesa is the right mountain for it.",
+      pts:[[46.60052,11.66219,2176],[46.6005,11.66238,2176],[46.60023,11.66228,2176],[46.59953,11.6638,2162],[46.5984,11.66709,2131],[46.59775,11.66986,2099],[46.59708,11.67151,2062],[46.59618,11.67311,2062],[46.59644,11.6753,2062],[46.59697,11.6778,2096],[46.59762,11.67944,2115],[46.59814,11.68016,2117],[46.59847,11.68136,2137],[46.59869,11.68169,2145],[46.59847,11.68136,2145],[46.59852,11.67796,2152],[46.59902,11.67587,2153],[46.59943,11.67167,2162],[46.59962,11.67093,2173],[46.59997,11.66689,2176],[46.60014,11.66275,2176],[46.60023,11.66228,2176],[46.6005,11.66238,2176],[46.60052,11.66219,2176]] },
+    { id:"ridge", name:"High Line to Brogles", ladin:"Sun l crëp vers Brogles",
+      km:7.0, up:115, down:210, hrs:"2.5–3 h one-way", diff:"mod", color:"#D9A13B",
+      refs:[], hutkm:[["rhut", 0.0], ["chalet", 1.26], ["cason", 1.52], ["brogles", 6.99]],
+      desc:"The quiet classic: from the Utia along the Raschötz high line past Innerraschötz toward the lonely Brogles basin under the north Odle wall. No lift at the far end — return the same way (double it) or continue on one of the big routes. Solitude is the product here.",
+      pts:[[46.60052,11.66219,2176],[46.6005,11.66238,2176],[46.60023,11.66228,2176],[46.60014,11.66275,2176],[46.59997,11.66689,2176],[46.59962,11.67093,2173],[46.59943,11.67167,2162],[46.59902,11.67587,2153],[46.59852,11.67796,2152],[46.59847,11.68136,2145],[46.59918,11.68257,2132],[46.59976,11.68267,2132],[46.60084,11.68271,2088],[46.6025,11.68187,2088],[46.60367,11.68174,2088],[46.60394,11.68204,2088],[46.60493,11.68432,2094],[46.60542,11.68448,2097],[46.60663,11.68456,2103],[46.60663,11.6864,2103],[46.60721,11.68711,2116],[46.60735,11.68759,2116],[46.60802,11.68856,2137],[46.60839,11.6902,2165],[46.6094,11.69317,2165],[46.6095,11.69449,2168],[46.60901,11.69551,2168],[46.60895,11.69653,2168],[46.60911,11.69793,2168],[46.60967,11.69974,2178],[46.60996,11.69954,2178],[46.61065,11.69961,2204],[46.61366,11.69884,2204],[46.61065,11.69961,2204],[46.60996,11.69954,2178],[46.60967,11.69974,2178],[46.60989,11.7038,2170],[46.6097,11.70829,2167],[46.60988,11.70892,2167],[46.61065,11.71039,2168],[46.61094,11.71139,2168],[46.61132,11.71331,2168],[46.61173,11.71756,2168],[46.61138,11.72152,2129],[46.61126,11.72194,2117],[46.61064,11.72251,2102],[46.61041,11.72304,2102],[46.6106,11.72394,2093],[46.61024,11.72725,2084]] },
+    { id:"link", name:"The Resciesa–Seceda High Link", ladin:"Da Raschötz a Secëda",
+      km:15.4, up:825, down:575, hrs:"5.5–6.5 h", diff:"hard", color:"#B4483A",
+      refs:[], hutkm:[["rhut", 0.0], ["chalet", 1.26], ["cason", 1.52], ["brogles", 6.99]],
+      desc:"The connector between this app's mountain and its sibling: Resciesa plateau → Brogles Alm → up over the Pana saddle under the Odle → Seceda top station, cable car down to Ortisei. 15.4 km with 825 m of climbing, the full quiet-to-famous traverse. Start early; Brogles is the only kitchen for hours.",
+      pts:[[46.60052,11.66219,2176],[46.6005,11.66238,2176],[46.60023,11.66228,2176],[46.60014,11.66275,2176],[46.59997,11.66689,2176],[46.59962,11.67093,2173],[46.59943,11.67167,2162],[46.59902,11.67587,2153],[46.59852,11.67796,2152],[46.59847,11.68136,2145],[46.59918,11.68257,2132],[46.59976,11.68267,2132],[46.60084,11.68271,2088],[46.6025,11.68187,2088],[46.60367,11.68174,2088],[46.60394,11.68204,2088],[46.60493,11.68432,2094],[46.60542,11.68448,2097],[46.60663,11.68456,2103],[46.60663,11.6864,2103],[46.60721,11.68711,2116],[46.60735,11.68759,2116],[46.60802,11.68856,2137],[46.60839,11.6902,2165],[46.6094,11.69317,2165],[46.6095,11.69449,2168],[46.60901,11.69551,2168],[46.60895,11.69653,2168],[46.60911,11.69793,2168],[46.60967,11.69974,2178],[46.60996,11.69954,2178],[46.61065,11.69961,2204],[46.61366,11.69884,2204],[46.61065,11.69961,2204],[46.60996,11.69954,2178],[46.60967,11.69974,2178],[46.60989,11.7038,2170],[46.6097,11.70829,2167],[46.60988,11.70892,2167],[46.61065,11.71039,2168],[46.61094,11.71139,2168],[46.61132,11.71331,2168],[46.61173,11.71756,2168],[46.61138,11.72152,2129],[46.61126,11.72194,2117],[46.61064,11.72251,2102],[46.61041,11.72304,2102],[46.6106,11.72394,2084],[46.61024,11.72725,2084],[46.6106,11.72394,2084],[46.61041,11.72304,2102],[46.61064,11.72251,2102],[46.61126,11.72194,2107],[46.61139,11.72129,2109],[46.61057,11.71909,2109],[46.61046,11.71802,2107],[46.60846,11.71485,2075],[46.6081,11.7129,2069],[46.6077,11.7121,2060],[46.60653,11.71103,2019],[46.6064,11.71127,2019],[46.60549,11.71059,2003],[46.60484,11.70947,1983],[46.60362,11.70822,1969],[46.60277,11.70653,1947],[46.6027,11.70622,1947],[46.60282,11.70607,1947],[46.60262,11.70583,1947],[46.60216,11.70624,1914],[46.60214,11.70666,1912],[46.60163,11.70791,1877],[46.60072,11.70674,1854],[46.60026,11.70668,1848],[46.60002,11.70614,1848],[46.59974,11.70609,1824],[46.59958,11.70551,1823],[46.59873,11.70417,1809],[46.59817,11.70404,1808],[46.59772,11.70359,1808],[46.59698,11.70331,1802],[46.59656,11.70337,1786],[46.59598,11.7031,1782],[46.59441,11.70204,1763],[46.59303,11.70176,1748],[46.59241,11.70095,1736],[46.59195,11.70064,1734],[46.59163,11.70054,1725],[46.59121,11.70066,1725],[46.59097,11.70033,1725],[46.59037,11.70008,1727],[46.58995,11.70053,1731],[46.58986,11.70211,1731],[46.59013,11.70279,1731],[46.58986,11.70294,1728],[46.58962,11.70373,1722],[46.58935,11.70401,1722],[46.5895,11.70515,1722],[46.5892,11.705,1722],[46.58917,11.70518,1722],[46.5896,11.70625,1722],[46.58905,11.70638,1739],[46.58907,11.7068,1741],[46.58931,11.70718,1741],[46.58925,11.70746,1768],[46.58897,11.70746,1768],[46.58895,11.70822,1789],[46.58931,11.70866,1797],[46.5896,11.70874,1797],[46.58968,11.709,1797],[46.58949,11.70907,1797],[46.58917,11.70891,1797],[46.58899,11.70923,1814],[46.58923,11.71016,1839],[46.58959,11.71083,1864],[46.58985,11.71101,1864],[46.59017,11.71224,1873],[46.59057,11.71306,1892],[46.59058,11.71463,1938],[46.59026,11.71608,1992],[46.59102,11.71614,1995],[46.59149,11.7175,2034],[46.59183,11.7177,2045],[46.59146,11.71792,2045],[46.59081,11.718,2052],[46.59037,11.7184,2077],[46.58958,11.71968,2106],[46.58917,11.71996,2106],[46.58862,11.72101,2151],[46.58786,11.72189,2151],[46.58813,11.72195,2157],[46.59012,11.72351,2238],[46.5904,11.72337,2238],[46.59068,11.72232,2239],[46.59077,11.72238,2239],[46.59107,11.72292,2294],[46.59181,11.72552,2300],[46.59242,11.72676,2309],[46.59292,11.72685,2323],[46.59306,11.72655,2326],[46.59391,11.72641,2342],[46.59468,11.72656,2364],[46.59627,11.72855,2366],[46.5969,11.72875,2378],[46.5974,11.72944,2391],[46.59782,11.72945,2398],[46.5979,11.72934,2398],[46.59783,11.72831,2426],[46.59755,11.72717,2433],[46.59773,11.72634,2441],[46.5981,11.72621,2441],[46.59813,11.72541,2441],[46.59779,11.72446,2437],[46.59794,11.72435,2433]] },
+    { id:"descent", name:"The Grand Circuit", ladin:"L gran anel",
+      km:21.3, up:595, down:1515, hrs:"7–8 h", diff:"hard", color:"#B4483A",
+      refs:[], hutkm:[["rhut", 0.0], ["chalet", 1.26], ["cason", 1.52], ["brogles", 6.99], ["valdanna", 13.24], ["costamula", 14.41]],
+      desc:"The whole west side in one monster day: high line to Brogles, then the long descent through the Cuecenes woods to the Annatal, Val d'Anna beer, and into Ortisei on foot. 21 km, ↓1 500 m — a knees-and-legend route. The funicular got you up; nothing helps you down.",
+      pts:[[46.60052,11.66219,2176],[46.6005,11.66238,2176],[46.60023,11.66228,2176],[46.60014,11.66275,2176],[46.59997,11.66689,2176],[46.59962,11.67093,2173],[46.59943,11.67167,2162],[46.59902,11.67587,2153],[46.59852,11.67796,2152],[46.59847,11.68136,2145],[46.59918,11.68257,2132],[46.59976,11.68267,2132],[46.60084,11.68271,2088],[46.6025,11.68187,2088],[46.60367,11.68174,2088],[46.60394,11.68204,2088],[46.60493,11.68432,2094],[46.60542,11.68448,2097],[46.60663,11.68456,2103],[46.60663,11.6864,2103],[46.60721,11.68711,2116],[46.60735,11.68759,2116],[46.60802,11.68856,2137],[46.60839,11.6902,2165],[46.6094,11.69317,2165],[46.6095,11.69449,2168],[46.60901,11.69551,2168],[46.60895,11.69653,2168],[46.60911,11.69793,2168],[46.60967,11.69974,2178],[46.60996,11.69954,2178],[46.61065,11.69961,2204],[46.61366,11.69884,2204],[46.61065,11.69961,2204],[46.60996,11.69954,2178],[46.60967,11.69974,2178],[46.60989,11.7038,2170],[46.6097,11.70829,2167],[46.60988,11.70892,2167],[46.61065,11.71039,2168],[46.61094,11.71139,2168],[46.61132,11.71331,2168],[46.61173,11.71756,2168],[46.61138,11.72152,2129],[46.61126,11.72194,2117],[46.61064,11.72251,2102],[46.61041,11.72304,2102],[46.6106,11.72394,2084],[46.61024,11.72725,2084],[46.6106,11.72394,2084],[46.61041,11.72304,2102],[46.61064,11.72251,2102],[46.61126,11.72194,2107],[46.61139,11.72129,2109],[46.61057,11.71909,2109],[46.61046,11.71802,2107],[46.60846,11.71485,2075],[46.6081,11.7129,2069],[46.6077,11.7121,2060],[46.60653,11.71103,2019],[46.6064,11.71127,2019],[46.60549,11.71059,2003],[46.60484,11.70947,1983],[46.60362,11.70822,1969],[46.60277,11.70653,1947],[46.6027,11.70622,1947],[46.60282,11.70607,1947],[46.60262,11.70583,1947],[46.60216,11.70624,1914],[46.60214,11.70666,1912],[46.60163,11.70791,1877],[46.60072,11.70674,1854],[46.60026,11.70668,1848],[46.60002,11.70614,1848],[46.59974,11.70609,1824],[46.59958,11.70551,1823],[46.59873,11.70417,1809],[46.59817,11.70404,1808],[46.59772,11.70359,1808],[46.59698,11.70331,1802],[46.59656,11.70337,1786],[46.59598,11.7031,1782],[46.59441,11.70204,1763],[46.59303,11.70176,1748],[46.5923,11.70084,1736],[46.5911,11.70026,1725],[46.59049,11.69962,1722],[46.59039,11.69942,1722],[46.59049,11.69886,1718],[46.59019,11.69825,1717],[46.58947,11.69807,1700],[46.58866,11.69748,1699],[46.58839,11.69797,1673],[46.58796,11.69711,1667],[46.58808,11.69649,1673],[46.58791,11.69645,1642],[46.5875,11.69671,1642],[46.58742,11.69627,1637],[46.58666,11.69532,1620],[46.58635,11.69374,1590],[46.58546,11.6923,1554],[46.58492,11.69209,1552],[46.58459,11.69286,1552],[46.58451,11.69354,1551],[46.58503,11.69437,1551],[46.5847,11.69404,1551],[46.58429,11.69417,1542],[46.58401,11.69508,1523],[46.58348,11.69527,1523],[46.58304,11.69299,1487],[46.58245,11.69202,1451],[46.58214,11.69275,1447],[46.58103,11.69318,1418],[46.58091,11.69311,1418],[46.58084,11.69093,1415],[46.58033,11.68838,1388],[46.58006,11.68785,1386],[46.58008,11.68696,1386],[46.58006,11.68785,1386],[46.58033,11.68838,1388],[46.58084,11.69093,1415],[46.58091,11.69311,1418],[46.58103,11.69318,1418],[46.58214,11.69275,1447],[46.58245,11.69202,1451],[46.58304,11.69299,1486],[46.58306,11.69347,1487],[46.5834,11.69448,1519],[46.58341,11.69525,1523],[46.58401,11.69508,1523],[46.58429,11.69417,1542],[46.58478,11.69408,1551],[46.58513,11.69452,1578],[46.58517,11.69505,1578],[46.58552,11.69562,1578],[46.58553,11.69628,1578],[46.58584,11.69665,1578],[46.58565,11.69731,1607],[46.58626,11.69882,1612],[46.58629,11.6999,1612],[46.5866,11.70138,1640],[46.58649,11.70186,1648],[46.5867,11.70219,1651],[46.58682,11.70361,1672],[46.58669,11.70744,1726],[46.58737,11.70972,1751],[46.58676,11.71089,1754],[46.58661,11.7108,1754],[46.58653,11.71034,1754],[46.58587,11.71064,1754],[46.5857,11.71058,1757],[46.58553,11.71015,1757],[46.58568,11.7094,1757],[46.58533,11.70939,1757],[46.58539,11.7088,1758],[46.58488,11.70902,1758],[46.58476,11.70923,1780],[46.58424,11.7093,1780],[46.58406,11.70918,1780],[46.58399,11.70889,1780],[46.58421,11.70829,1779],[46.58421,11.70743,1779],[46.58395,11.70681,1777],[46.58373,11.70676,1779],[46.58289,11.70746,1779],[46.58222,11.70755,1777],[46.58199,11.70732,1760],[46.58171,11.70746,1760],[46.58122,11.70703,1756],[46.58081,11.70609,1756],[46.58094,11.70535,1756],[46.57972,11.70314,1756],[46.57937,11.70275,1734],[46.5792,11.70213,1756],[46.57934,11.70181,1756],[46.57856,11.70007,1760],[46.57796,11.69925,1766],[46.57755,11.69838,1779],[46.57704,11.69811,1779],[46.5769,11.6983,1779],[46.57673,11.69824,1779],[46.57666,11.69847,1802],[46.57609,11.69851,1802],[46.57595,11.6988,1802],[46.57572,11.69869,1773],[46.57571,11.69809,1765],[46.57612,11.69759,1736],[46.57643,11.69603,1707],[46.5757,11.69527,1703],[46.5752,11.69592,1690],[46.57496,11.6957,1669],[46.57454,11.69567,1669],[46.57429,11.69388,1639],[46.57436,11.6933,1622],[46.57425,11.69321,1622],[46.57374,11.69373,1611],[46.57351,11.69425,1601],[46.57346,11.69356,1601],[46.57483,11.68918,1550],[46.57547,11.688,1498],[46.57607,11.6874,1469],[46.57657,11.68582,1446],[46.57624,11.68496,1434],[46.5766,11.68267,1400],[46.57637,11.68172,1383],[46.57655,11.68177,1383],[46.57735,11.68311,1342],[46.57739,11.68288,1342],[46.57813,11.68377,1319],[46.57829,11.68379,1319],[46.57862,11.68337,1318],[46.579,11.6838,1317],[46.57856,11.68284,1317],[46.57814,11.6797,1300],[46.57785,11.67952,1300],[46.57757,11.67891,1297],[46.57757,11.67786,1296],[46.57717,11.67688,1272],[46.57702,11.67523,1267],[46.57696,11.67512,1267],[46.57681,11.6752,1267],[46.57664,11.67473,1262],[46.57642,11.67507,1256]] }
+  ]
+};
+
+/* ===================== helpers ===================== */
+const $=id=>document.getElementById(id);
+const toast=(msg)=>{const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);};
+const hav=(a,b)=>{const R=6371000,rad=x=>x*Math.PI/180;
+  const dLat=rad(b[0]-a[0]),dLng=rad(b[1]-a[1]);
+  const s=Math.sin(dLat/2)**2+Math.cos(rad(a[0]))*Math.cos(rad(b[0]))*Math.sin(dLng/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s));};
+const fmtTime=ms=>{const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60);
+  return h? h+':'+String(m).padStart(2,'0') : m+':'+String(Math.floor(s%60)).padStart(2,'0');};
+const diffLabel={easy:'easy',mod:'moderate',hard:'hard'};
+const hutById={}; DATA.huts.forEach(h=>hutById[h.id]=h);
+const trailById={}; DATA.trails.forEach(t=>trailById[t.id]=t);
+/* cumulative km per trail */
+DATA.trails.forEach(t=>{
+  t.cum=[0];
+  for(let i=1;i<t.pts.length;i++) t.cum.push(t.cum[i-1]+hav(t.pts[i-1],t.pts[i]));
+});
+const WK=null;
+let lastFix=null;
+const MARQUEE=new Set(['rhut','chalet','brogles']);
+const LIFTS={resciesa:{name:'Resciesa funicular',to:'2026-10-11'},seceda:{name:'Seceda cable car',to:'2026-11-02'}};
+function liftChip(key){
+  const l=LIFTS[key];if(!l)return'';
+  const days=Math.ceil((new Date(l.to)-Date.now())/86400000);
+  if(days<0)return`<span class="chip" style="background:#f6ded7;border-color:#d99a88">⚠ ${l.name} closed for season</span>`;
+  if(days<=21)return`<span class="chip" style="background:#fbeecb;border-color:#d9b95e">⚠ ${l.name} closes in ${days}d</span>`;
+  return`<span class="chip">🚠 ${l.name} to ${l.to.slice(8,10)}.${l.to.slice(5,7)}</span>`;
+}
+
+/* ===================== MAP ===================== */
+let map=null, hutMarkers={}, trailLines={}, SEL=null, chevs=[], badges=[], endMk=[];
+function pinSvg(h){
+  if(h.type==='refuge')
+    return `<svg class="pin" width="30" height="36" viewBox="0 0 30 36">
+      <path d="M15 35 C15 35 3 22 3 13 a12 12 0 1 1 24 0 C27 22 15 35 15 35Z" fill="#35543B" stroke="#FDF8EA" stroke-width="2"/>
+      <rect x="8" y="12" width="14" height="2.6" rx="1.3" fill="#FDF8EA"/>
+      <rect x="8" y="8.5" width="5" height="3" rx="1.5" fill="#FDF8EA"/>
+      <rect x="8" y="14.6" width="2.6" height="4" fill="#FDF8EA"/><rect x="19.4" y="14.6" width="2.6" height="4" fill="#FDF8EA"/></svg>`;
+  const minor=MARQUEE.has(h.id)?'':' minor';
+  return `<svg class="pin${minor}" width="16" height="16" viewBox="0 0 16 16">
+      <circle cx="8" cy="8" r="6" fill="#D9A13B" stroke="#FDF8EA" stroke-width="2.2"/></svg>`;
+}
+function ensureMap(){
+  if(map) return;
+  map=L.map('map',{zoomControl:false}).setView(DATA.center,13.5);
+  L.control.zoom({position:'topright'}).addTo(map);
+  const esri='https://server.arcgisonline.com/ArcGIS/rest/services/';
+  const RT={detectRetina:true};
+  const relief=L.layerGroup([
+    L.tileLayer(esri+'World_Topo_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri, USGS',...RT}),
+    L.tileLayer(esri+'Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:15,opacity:.55,className:'hillshade-tiles',...RT})]);
+  const sat=L.layerGroup([
+    L.tileLayer(esri+'World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri, Maxar',...RT}),
+    L.tileLayer(esri+'Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:15,opacity:.25,...RT})]);
+  const topo=L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{maxZoom:17,attribution:'© OpenStreetMap, SRTM | © OpenTopoMap (CC-BY-SA)'});
+  const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap',...RT});
+  sat.addTo(map);
+  L.control.layers({'Satellite':sat,'Alpine relief':relief,'Trail numbers (topo)':topo,'Streets':osm},null,{position:'topright'}).addTo(map);
+  const style={'hillshade-tiles':'mix-blend-mode:multiply'};
+  const css=document.createElement('style');css.textContent='.hillshade-tiles{mix-blend-mode:multiply}';document.head.appendChild(css);
+
+  DATA.huts.forEach(h=>{
+    const isRef=h.type==='refuge';
+    const icon=L.divIcon({className:'',html:pinSvg(h),
+      iconSize:isRef?[30,36]:[16,16],iconAnchor:isRef?[15,34]:[8,8]});
+    const m=L.marker([h.lat,h.lng],{icon,zIndexOffset:isRef?300:(MARQUEE.has(h.id)?200:0)}).addTo(map);
+    m.bindPopup(`<div class="pop-name">${h.name}</div><div class="pop-sub">${h.ladin}</div><div class="pop-elev">${h.elev} m · ${isRef?'refuge — beds':'food & terrace'}</div>${h.phone?`<div class="pop-elev">☎ <a href="tel:${h.phone}">${h.phone.replace('+39','+39 ')}</a></div>`:''}`);
+    hutMarkers[h.id]=m;
+  });
+  DATA.trails.forEach(t=>{
+    const line=L.polyline(t.pts.map(p=>[p[0],p[1]]),{color:t.color,weight:4,opacity:.85,lineCap:'round'}).addTo(map);
+    line.on('click',()=>selectTrail(t.id));
+    trailLines[t.id]=line;
+  });
+  const setZoomClass=()=>document.body.classList.toggle('zoomed-out',map.getZoom()<14.2);
+  map.on('zoomend',setZoomClass); setZoomClass();
+}
+let DID_INTRO=false;
+function introFly(){
+  if(DID_INTRO)return; DID_INTRO=true;
+  map.setView([46.60045,11.66215],16,{animate:false});
+  setTimeout(()=>{
+    map.flyToBounds(L.featureGroup(Object.values(trailLines)).getBounds().pad(0.1),{duration:2.6,easeLinearity:.15});
+  },700);
+}
+
+/* ===================== TRAIL DETAIL STATE ===================== */
+function bearing(a,b){
+  const rad=x=>x*Math.PI/180;
+  const y=Math.sin(rad(b[1]-a[1]))*Math.cos(rad(b[0]));
+  const x=Math.cos(rad(a[0]))*Math.sin(rad(b[0]))-Math.sin(rad(a[0]))*Math.cos(rad(b[0]))*Math.cos(rad(b[1]-a[1]));
+  return (Math.atan2(y,x)*180/Math.PI+360)%360;
+}
+function ptAtKm(t,km){
+  const m=km*1000;
+  for(let i=1;i<t.cum.length;i++){
+    if(t.cum[i]>=m){
+      const f=(m-t.cum[i-1])/((t.cum[i]-t.cum[i-1])||1);
+      return [t.pts[i-1][0]+f*(t.pts[i][0]-t.pts[i-1][0]), t.pts[i-1][1]+f*(t.pts[i][1]-t.pts[i-1][1])];
+    }
+  }
+  return [t.pts[t.pts.length-1][0],t.pts[t.pts.length-1][1]];
+}
+function selectTrail(id){
+  ensureMap();
+  clearSel(false);
+  SEL=id;
+  const t=trailById[id];
+  Object.entries(trailLines).forEach(([k,l])=>{
+    if(k===id) l.setStyle({color:t.color,weight:6,opacity:1});
+    else l.setStyle({color:'#9aa79a',weight:2.5,opacity:.35});
+  });
+  trailLines[id].bringToFront();
+  // direction chevrons
+  const n=Math.min(9,Math.max(4,Math.round(t.km/1.6)));
+  for(let i=1;i<=n;i++){
+    const km=t.km*i/(n+1);
+    const p=ptAtKm(t,km), p2=ptAtKm(t,Math.min(t.km,km+0.12));
+    const b=bearing(p,p2);
+    chevs.push(L.marker(p,{interactive:false,zIndexOffset:250,
+      icon:L.divIcon({className:'',html:`<div class="chev" style="transform:rotate(${b}deg)">▲</div>`,iconSize:[14,14],iconAnchor:[7,7]})}).addTo(map));
+  }
+  // signpost number badges
+  (t.refs||[]).forEach(r=>{
+    const p=ptAtKm(t,Math.min(r[1],t.km-0.05));
+    badges.push(L.marker(p,{interactive:false,zIndexOffset:260,
+      icon:L.divIcon({className:'',html:`<div class="refbadge">${r[0]}</div>`,iconSize:[28,18],iconAnchor:[14,9]})}).addTo(map));
+  });
+  // start & finish markers
+  const p0=t.pts[0], pN=t.pts[t.pts.length-1];
+  endMk.push(L.marker([p0[0],p0[1]],{interactive:false,zIndexOffset:280,icon:L.divIcon({className:'',
+    html:'<svg class="pin" width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="6.5" fill="#6B9350" stroke="#fff" stroke-width="2.5"/></svg>',
+    iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map));
+  endMk.push(L.marker([pN[0],pN[1]],{interactive:false,zIndexOffset:280,icon:L.divIcon({className:'',
+    html:'<svg class="pin" width="22" height="26" viewBox="0 0 22 26"><line x1="4" y1="2" x2="4" y2="25" stroke="#243B2A" stroke-width="2.4"/><path d="M5 3 L19 6 L5 11 Z" fill="#C9483B" stroke="#fff" stroke-width="1.2"/></svg>',
+    iconSize:[22,26],iconAnchor:[4,25]})}).addTo(map));
+  // sheet
+  $('shName').textContent=t.name;
+  const TL={crosses:['resciesa'],stroll:['resciesa'],ridge:['resciesa'],link:['resciesa','seceda'],descent:['resciesa']};
+  $('shChips').innerHTML=`<span class="chip">${t.km} km</span><span class="chip">↑${t.up} ↓${t.down} m</span>
+    <span class="chip">${t.hrs}</span><span class="chip diff-${t.diff}">${diffLabel[t.diff]}</span>`
+    +(TL[t.id]||[]).map(liftChip).join('');
+  $('shProf').innerHTML=bigProfile(t);
+  $('sheet').classList.add('on');document.body.classList.add('sheet-on');
+  goMap();
+  DID_INTRO=true;
+  const tgt=trailLines[id].getBounds().pad(0.12);
+  setTimeout(()=>{
+    map.flyTo([t.pts[0][0],t.pts[0][1]],15.5,{duration:1.1});
+    map.once('moveend',()=>{ if(SEL===id) map.flyToBounds(tgt,{duration:1.7,paddingBottomRight:[0,180],easeLinearity:.18}); });
+  },150);
+  updateStats();
+}
+function clearSel(refit=true){
+  SEL=null;
+  chevs.forEach(c=>c.remove()); chevs=[];
+  badges.forEach(b=>b.remove()); badges=[];
+  endMk.forEach(m=>m.remove()); endMk=[];
+  Object.entries(trailLines).forEach(([k,l])=>l.setStyle({color:trailById[k].color,weight:4,opacity:.85}));
+  $('sheet').classList.remove('on');document.body.classList.remove('sheet-on');
+  $('shLive').classList.remove('on');
+  if(refit&&map) map.fitBounds(L.featureGroup(Object.values(trailLines)).getBounds().pad(0.1));
+}
+$('shClose').addEventListener('click',()=>clearSel());
+
+function bigProfile(t){
+  const W=360,H=120,pl=30,pr=10,pt=14,pb=20;
+  const els=t.pts.map(p=>p[2]);
+  const mn=Math.min(...els),mx=Math.max(...els),span=(mx-mn)||1;
+  const X=km=>pl+(km/t.km)*(W-pl-pr);
+  const Y=e=>pt+(1-(e-mn)/span)*(H-pt-pb);
+  let path='';
+  t.pts.forEach((p,i)=>{path+=(i?'L':'M')+X(t.cum[i]/1000).toFixed(1)+','+Y(p[2]).toFixed(1)});
+  const area=path+` L${X(t.km)},${H-pb} L${pl},${H-pb} Z`;
+  let huts='';
+  (t.hutkm||[]).forEach(([hid,km])=>{
+    const h=hutById[hid]; if(!h)return;
+    const x=X(km), y=Y(h.elev<mn?mn:(h.elev>mx?mx:h.elev));
+    const short=h.name.replace(/^(Baita|Rifugio|Café|Malga)\s+/,'').split(' ')[0];
+    huts+=`<line x1="${x}" y1="${y}" x2="${x}" y2="${H-pb}" stroke="#35543B" stroke-width="1" stroke-dasharray="2 3" opacity=".45"/>
+      <circle cx="${x}" cy="${y}" r="4" fill="${h.type==='refuge'?'#35543B':'#D9A13B'}" stroke="#FDF8EA" stroke-width="1.6"/>
+      <text x="${x}" y="${y-7}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#35543B">${short}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <path d="${area}" fill="#E39A8B" opacity=".22"/>
+    <path d="${path}" fill="none" stroke="#C97A6C" stroke-width="2.6" stroke-linecap="round"/>
+    ${huts}
+    <circle id="liveDot" cx="-10" cy="-10" r="5" fill="#3b82c4" stroke="#fff" stroke-width="2"/>
+    <text x="${pl}" y="${pt-4}" font-size="9" fill="#8b967f" font-weight="700">${mx} m</text>
+    <text x="${pl}" y="${H-pb+12}" font-size="9" fill="#8b967f" font-weight="700">${mn} m</text>
+    <text x="${W-pr}" y="${H-pb+12}" text-anchor="end" font-size="9" fill="#8b967f" font-weight="700">${t.km} km</text>
+  </svg>`;
+}
+
+/* ===================== OFFLINE TRAIL PACK ===================== */
+function tileXY(lat,lng,z){
+  const n=2**z;
+  const x=Math.floor((lng+180)/360*n);
+  const la=lat*Math.PI/180;
+  const y=Math.floor((1-Math.log(Math.tan(la)+1/Math.cos(la))/Math.PI)/2*n);
+  return[x,y];
+}
+function corridorTiles(t){
+  const esri='https://server.arcgisonline.com/ArcGIS/rest/services/';
+  const urls=new Set();
+  for(let z=13;z<=16;z++){
+    const seen=new Set();
+    // sample along the line every ~120 m
+    for(let i=0;i<t.pts.length-1;i++){
+      const segs=Math.max(1,Math.round(hav(t.pts[i],t.pts[i+1])/120));
+      for(let k=0;k<=segs;k++){
+        const la=t.pts[i][0]+(t.pts[i+1][0]-t.pts[i][0])*k/segs;
+        const ln=t.pts[i][1]+(t.pts[i+1][1]-t.pts[i][1])*k/segs;
+        const[x,y]=tileXY(la,ln,z);
+        for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++)seen.add((x+dx)+'_'+(y+dy));
+      }
+    }
+    seen.forEach(k=>{
+      const[x,y]=k.split('_');
+      urls.add(esri+`World_Imagery/MapServer/tile/${z}/${y}/${x}`);
+      if(z<=15)urls.add(esri+`Elevation/World_Hillshade/MapServer/tile/${z}/${y}/${x}`);
+    });
+  }
+  return[...urls];
+}
+async function downloadTrail(t,btn){
+  const urls=corridorTiles(t);
+  btn.disabled=true;
+  let done=0,fail=0;
+  const CHUNK=8;
+  for(let i=0;i<urls.length;i+=CHUNK){
+    await Promise.all(urls.slice(i,i+CHUNK).map(u=>fetch(u,{mode:'no-cors'}).then(()=>done++).catch(()=>fail++)));
+    btn.textContent=`⬇ ${Math.round(100*(done+fail)/urls.length)}% · ${done} tiles`;
+  }
+  btn.textContent=fail>urls.length*0.15?'⚠ partial — retry on wifi':'✓ saved offline';
+  setTimeout(()=>{btn.textContent='⬇ Save trail offline';btn.disabled=false;},4000);
+  toast(`${t.name}: ${done} map tiles cached for offline`);
+}
+$('dlBtn').addEventListener('click',()=>{if(SEL)downloadTrail(trailById[SEL],$('dlBtn'));});
+
+/* ===================== TABS ===================== */
+document.querySelectorAll('.tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    $('panel-'+b.dataset.panel).classList.add('on');
+    if(b.dataset.panel==='map'){ensureMap();setTimeout(()=>{map.invalidateSize();introFly();},120);}
+    if(b.dataset.panel==='pano') panoFit();
+  });
+});
+function goMap(){const b=document.querySelector('.tab[data-panel="map"]');if(!b.classList.contains('on'))b.click();}
+$('hero').addEventListener('click',e=>{
+  if(e.target.id==='bellBtn')return;
+  document.body.classList.toggle('hero-min');
+  setTimeout(()=>map&&map.invalidateSize(),480);
+});
+
+/* ===================== CARDS ===================== */
+function miniSpark(t){
+  const els=t.pts.map(p=>p[2]);
+  const mn=Math.min(...els),mx=Math.max(...els),span=(mx-mn)||1;
+  const W=300,H=52,pad=4;
+  const xy=els.map((e,i)=>[pad+(t.cum[i]/1000/t.km)*(W-2*pad),H-pad-((e-mn)/span)*(H-2*pad)]);
+  const p=xy.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ');
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <path d="${p} L${W-pad},${H} L${pad},${H} Z" fill="#E39A8B" opacity=".25"/>
+    <path d="${p}" fill="none" stroke="#C97A6C" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="${pad}" y="10" font-size="9" fill="#8b967f" font-weight="700">${mx} m</text>
+    <text x="${pad}" y="${H-6}" font-size="9" fill="#8b967f" font-weight="700">${mn} m</text></svg>`;
+}
+const diffOrder={easy:0,mod:1,hard:2};
+$('trailCards').innerHTML=[...DATA.trails].sort((a,b)=>diffOrder[a.diff]-diffOrder[b.diff]).map(t=>`
+  <article class="card" data-diff="${t.diff}">
+    <div class="band" style="background:${t.color}"></div>
+    <div class="pad">
+      <h3>${t.name}</h3><div class="ladin">${t.ladin}</div>
+      <div class="meta"><span class="chip">${t.km} km</span><span class="chip">↑${t.up} ↓${t.down} m</span>
+        <span class="chip">${t.hrs}</span><span class="chip diff-${t.diff}">${diffLabel[t.diff]}</span></div>
+      <p>${t.desc}</p>
+      <div class="profile">${miniSpark(t)}</div>
+      <div class="cardbtns"><button class="cbtn map" data-trail="${t.id}">Show on map</button><button class="cbtn ghost" data-gpx="${t.id}">GPX</button></div>
+    </div>
+  </article>`).join('');
+$('trailFilters').addEventListener('click',e=>{
+  const b=e.target.closest('.fbtn');if(!b)return;
+  document.querySelectorAll('#trailFilters .fbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  const f=b.dataset.df;
+  document.querySelectorAll('#trailCards .card').forEach(c=>c.style.display=(f==='all'||c.dataset.diff===f)?'':'none');
+});
+function hutCard(h){
+  return `<article class="card" data-type="${h.type}">
+    <div class="band" style="background:${h.type==='refuge'?'#35543B':'#7FA65A'}"></div>
+    <div class="pad">
+      <h3>${h.type==='refuge'?'🛏 ':''}${h.name}</h3><div class="ladin">${h.ladin} · ${h.elev} m</div>
+      <p style="margin-top:8px">${h.desc}</p>
+      ${h.eat?`<div class="eat"><b>Eat:</b> ${h.eat}</div>`:''}
+      <div class="cardbtns"><button class="cbtn map" data-hut="${h.id}">Show on map</button>
+        ${h.phone?`<button class="cbtn ghost" data-call="${h.phone}">☎ Call</button>`:''}
+        <button class="cbtn ghost" data-nav="${h.lat},${h.lng}">Maps</button></div>
+    </div></article>`;
+}
+$('hutCards').innerHTML=DATA.huts.map(hutCard).join('');
+$('hutFilters').addEventListener('click',e=>{
+  const b=e.target.closest('.fbtn');if(!b)return;
+  document.querySelectorAll('#hutFilters .fbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  const f=b.dataset.f;
+  document.querySelectorAll('#hutCards .card').forEach(c=>c.style.display=(f==='all'||c.dataset.type===f)?'':'none');
+});
+
+/* ===================== WEATHER + SUNSET ===================== */
+const WX={sunset:null};
+(async function(){
+  try{
+    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=46.598&longitude=11.724&elevation=2500&current=temperature_2m,wind_speed_10m,weather_code&hourly=weather_code&daily=sunset&forecast_days=1&timezone=auto');
+    const j=await r.json();
+    WX.sunset=new Date(j.daily.sunset[0]);
+    let storm=null;
+    j.hourly.time.forEach((tm,i)=>{if(storm===null&&new Date(tm)>new Date()&&j.hourly.weather_code[i]>=95)storm=new Date(tm);});
+    const chip=$('wxchip');
+    chip.textContent=`⛰ ${Math.round(j.current.temperature_2m)}° · wind ${Math.round(j.current.wind_speed_10m)} km/h`+(storm?` · ⛈ after ${storm.getHours()}:00`:'');
+    if(storm)chip.classList.add('warn');
+    chip.style.display='block';
+  }catch(e){}
+})();
+
+/* ===================== GPX + WALKS ===================== */
+function downloadGpx(name,pts){
+  const seg=pts.map(p=>`<trkpt lat="${p[0]}" lon="${p[1]}">${p[2]!=null?`<ele>${p[2]}</ele>`:''}</trkpt>`).join('\n');
+  const x=`<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="Alvan maps" xmlns="http://www.topografix.com/GPX/1/1">\n<trk><name>${name}</name><trkseg>\n${seg}\n</trkseg></trk></gpx>`;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([x],{type:'application/gpx+xml'}));
+  a.download=name.replace(/[^\w-]+/g,'-')+'.gpx';
+  document.body.appendChild(a);a.click();a.remove();
+  toast('GPX ready — check downloads / share sheet');
+}
+const WKEY='seceda-walks';
+let savedLine=null;
+function loadWalks(){try{return JSON.parse(localStorage.getItem(WKEY))||[]}catch(e){return[]}}
+function saveWalks(w){try{localStorage.setItem(WKEY,JSON.stringify(w))}catch(e){toast('Could not save — phone storage said no');}}
+function renderWalks(){
+  const ws=loadWalks(),el=$('walkList');
+  if(!ws.length){el.innerHTML=`<div class="walkempty"><span class="frn">No walks yet</span>Press “Start tracking” on the Live map when you set off. Finished walks land here automatically.</div>`;return;}
+  el.innerHTML=ws.map((w,i)=>{const d=new Date(w.t);
+    return `<div class="walkrow"><div class="info"><b>${d.toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'})}</b>
+      <span>${w.km} km · ${fmtTime(w.ms)}</span></div>
+      <button class="wbtn" data-wview="${i}">Map</button><button class="wbtn" data-wgpx="${i}">GPX</button><button class="wbtn" data-wdel="${i}">✕</button></div>`;}).join('');
+}
+function viewWalk(i){
+  const w=loadWalks()[i];if(!w)return;
+  goMap();
+  if(savedLine)savedLine.remove();
+  savedLine=L.polyline(w.pts.map(p=>[p[0],p[1]]),{color:'#3b82c4',weight:4,opacity:.9}).addTo(map);
+  map.fitBounds(savedLine.getBounds().pad(.15));
+}
+
+/* ===================== delegated clicks ===================== */
+document.body.addEventListener('click',e=>{
+  const tb=e.target.closest('[data-trail]');
+  if(tb){selectTrail(tb.dataset.trail);return;}
+  const gb=e.target.closest('[data-gpx]');
+  if(gb){const t=trailById[gb.dataset.gpx];downloadGpx(t.name,t.pts);return;}
+  const hb=e.target.closest('[data-hut]');
+  if(hb){goMap();const m=hutMarkers[hb.dataset.hut];map.setView(m.getLatLng(),15.5);m.openPopup();return;}
+  const cb=e.target.closest('[data-call]');
+  if(cb){location.href='tel:'+cb.dataset.call;return;}
+  const nb=e.target.closest('[data-nav]');
+  if(nb){window.open('https://maps.apple.com/?daddr='+nb.dataset.nav+'&dirflg=w');return;}
+  const wv=e.target.closest('[data-wview]');
+  if(wv){viewWalk(+wv.dataset.wview);return;}
+  const wg=e.target.closest('[data-wgpx]');
+  if(wg){const w=loadWalks()[+wg.dataset.wgpx];if(w)downloadGpx('walk-'+new Date(w.t).toISOString().slice(0,10),w.pts);return;}
+  const wd=e.target.closest('[data-wdel]');
+  if(wd){const ws=loadWalks();ws.splice(+wd.dataset.wdel,1);saveWalks(ws);renderWalks();toast('Walk removed');return;}
+});
+
+/* ===================== TRACKING + COMPASS ===================== */
+let watching=null,follow=false,track=[],trackLine=null,meMarker=null,coneMarker=null,t0=null,tickT=null,wakeLock=null,heading=null;
+function nearestHut(pos){
+  let best=null,bd=1e12;
+  DATA.huts.forEach(h=>{const d=hav(pos,[h.lat,h.lng]);if(d<bd){bd=d;best=h;}});
+  return{hut:best,d:bd};
+}
+function nearestTrail(pos){
+  const ky=110540,kx=111320*Math.cos(pos[0]*Math.PI/180);
+  let best={d:1e12,id:null,km:0};
+  DATA.trails.forEach(t=>{
+    const P=t.pts;
+    for(let i=0;i<P.length-1;i++){
+      const ax=(P[i][1]-pos[1])*kx,ay=(P[i][0]-pos[0])*ky;
+      const bx=(P[i+1][1]-pos[1])*kx,by=(P[i+1][0]-pos[0])*ky;
+      const dx=bx-ax,dy=by-ay,L2=dx*dx+dy*dy;
+      let u=L2?-(ax*dx+ay*dy)/L2:0;u=Math.max(0,Math.min(1,u));
+      const d=Math.hypot(ax+u*dx,ay+u*dy);
+      if(d<best.d)best={d,id:t.id,name:t.name,km:(t.cum[i]+u*(t.cum[i+1]-t.cum[i]))/1000};
+    }
+  });
+  return best;
+}
+function alongSel(pos){
+  const t=trailById[SEL];if(!t)return null;
+  const ky=110540,kx=111320*Math.cos(pos[0]*Math.PI/180);
+  let best={d:1e12,km:0};
+  for(let i=0;i<t.pts.length-1;i++){
+    const P=t.pts;
+    const ax=(P[i][1]-pos[1])*kx,ay=(P[i][0]-pos[0])*ky;
+    const bx=(P[i+1][1]-pos[1])*kx,by=(P[i+1][0]-pos[0])*ky;
+    const dx=bx-ax,dy=by-ay,L2=dx*dx+dy*dy;
+    let u=L2?-(ax*dx+ay*dy)/L2:0;u=Math.max(0,Math.min(1,u));
+    const d=Math.hypot(ax+u*dx,ay+u*dy);
+    if(d<best.d)best={d,km:(t.cum[i]+u*(t.cum[i+1]-t.cum[i]))/1000};
+  }
+  return best;
+}
+function daylight(){
+  if(!WX.sunset)return'';
+  const ms=WX.sunset-Date.now();
+  if(ms<=0)return' · 🌙 after sunset';
+  const h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000);
+  return` · ☀️ ${h?h+'h':''}${String(m).padStart(2,'0')} light`;
+}
+function updateStats(){
+  let dist=0;for(let i=1;i<track.length;i++)dist+=hav(track[i-1],track[i]);
+  $('stDist').textContent=(dist/1000).toFixed(2);
+  const el=t0?Date.now()-t0:0;
+  $('stTime').textContent=fmtTime(el);
+  const km=dist/1000;
+  $('stPace').textContent=km>0.05?Math.round((el/60000)/km):'—';
+  if(!track.length)return;
+  const here=track[track.length-1];
+  if(SEL){
+    const t=trailById[SEL],a=alongSel(here);
+    let line;
+    if(a.d>120){line=`${a.d<950?Math.round(a.d)+' m':(a.d/1000).toFixed(1)+' km'} from ${t.name}`;}
+    else{
+      const rem=Math.max(0,t.km-a.km);
+      const next=(t.hutkm||[]).map(([hid,km])=>({h:hutById[hid],km})).find(x=>x.km>a.km+0.05);
+      line=`km ${a.km.toFixed(1)} of ${t.km} · ${rem.toFixed(1)} to go`+(next?` · next: ${next.h.name.replace(/^(Baita|Rifugio|Café|Malga)\s+/,'')} in ${(next.km-a.km).toFixed(1)} km`:'');
+      const dot=document.getElementById('liveDot');
+      if(dot){const W=360,pl=30,pr=10;dot.setAttribute('cx',pl+(a.km/t.km)*(W-pl-pr));
+        const t2=trailById[SEL];const els=t2.pts.map(p=>p[2]);const mn=Math.min(...els),mx=Math.max(...els),span=(mx-mn)||1;
+        const e=here.length>2&&here[2]?here[2]:null;
+        const p=ptAtKm(t2,a.km);let ei=0;for(let i=1;i<t2.cum.length;i++){if(t2.cum[i]>=a.km*1000){ei=i;break;}}
+        dot.setAttribute('cy',14+(1-((t2.pts[ei][2])-mn)/span)*(120-14-20));}
+    }
+    $('shLive').textContent=line+daylight();
+    $('shLive').classList.add('on');
+    $('nearhut').textContent=line;
+  } else {
+    const n=nearestHut(here),tr=nearestTrail(here);
+    let line=`🛏 ${n.hut.name} — ${n.d<950?Math.round(n.d)+' m':(n.d/1000).toFixed(1)+' km'}`;
+    if(tr.id)line+=tr.d<60?` · on ${tr.name}`:` · ${tr.d<950?Math.round(tr.d)+' m':(tr.d/1000).toFixed(1)+' km'} off-trail`;
+    $('nearhut').textContent=line+daylight();
+  }
+}
+function drawMe(pt){
+  if(!meMarker){
+    coneMarker=L.marker(pt,{interactive:false,zIndexOffset:390,
+      icon:L.divIcon({className:'',html:`<div class="conewrap"><div class="cone" id="coneEl"></div></div>`,iconSize:[16,16],iconAnchor:[8,8]})}).addTo(map);
+    meMarker=L.marker(pt,{interactive:false,zIndexOffset:400,
+      icon:L.divIcon({className:'',html:'<div class="mepin"></div>',iconSize:[16,16],iconAnchor:[8,8]})}).addTo(map);
+  }else{meMarker.setLatLng(pt);coneMarker.setLatLng(pt);}
+  if(heading!=null){const c=document.getElementById('coneEl');if(c)c.style.transform=`rotate(${heading}deg)`;}
+}
+function onPos(p){
+  const pt=[p.coords.latitude,p.coords.longitude,p.coords.altitude];
+  if(p.coords.altitude!=null)$('stElev').textContent=Math.round(p.coords.altitude);
+  track.push(pt);
+  lastFix=pt;
+  wkDot();
+  drawMe(pt);
+  if(!trackLine)trackLine=L.polyline(track.map(q=>[q[0],q[1]]),{color:'#3b82c4',weight:4,opacity:.9}).addTo(map);
+  else trackLine.setLatLngs(track.map(q=>[q[0],q[1]]));
+  if(follow)map.setView(pt.slice(0,2),Math.max(map.getZoom(),15));
+  updateStats();
+}
+function armCompass(){
+  const go=()=>window.addEventListener('deviceorientation',ev=>{
+    if(ev.webkitCompassHeading!=null)heading=ev.webkitCompassHeading;
+    else if(ev.alpha!=null)heading=(360-ev.alpha)%360;
+    if(meMarker)drawMe(meMarker.getLatLng()?[meMarker.getLatLng().lat,meMarker.getLatLng().lng]:track[track.length-1]);
+  });
+  try{
+    if(typeof DeviceOrientationEvent!=='undefined'&&DeviceOrientationEvent.requestPermission)
+      DeviceOrientationEvent.requestPermission().then(s=>{if(s==='granted')go();}).catch(()=>{});
+    else go();
+  }catch(e){}
+}
+async function startTrack(){
+  if(!navigator.geolocation){toast('No GPS available on this device');return;}
+  armCompass();
+  track=[];if(trackLine){trackLine.remove();trackLine=null;}
+  t0=Date.now();
+  watching=navigator.geolocation.watchPosition(onPos,
+    err=>{toast(err.code===1?'Location blocked — allow it in Settings › Safari':'GPS signal lost, still trying');},
+    {enableHighAccuracy:true,maximumAge:3000,timeout:20000});
+  tickT=setInterval(updateStats,1000);
+  try{if('wakeLock' in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
+  follow=true;$('followBtn').classList.add('on');
+  $('trackstats').classList.add('on');
+  const b=$('trackBtn');b.textContent='■ Stop';b.classList.add('rec');
+  document.body.classList.add('hero-min');setTimeout(()=>map.invalidateSize(),480);
+  toast('Tracking — bon viac! (safe travels)');
+}
+function stopTrack(){
+  if(watching!=null){navigator.geolocation.clearWatch(watching);watching=null;}
+  clearInterval(tickT);tickT=null;
+  if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null;}
+  const b=$('trackBtn');b.textContent='▶ Start tracking';b.classList.remove('rec');
+  let dist=0;for(let i=1;i<track.length;i++)dist+=hav(track[i-1],track[i]);
+  if(dist>100){
+    const step=Math.max(1,Math.ceil(track.length/400));
+    const ws=loadWalks();
+    ws.unshift({t:Date.now(),km:+(dist/1000).toFixed(2),ms:Date.now()-t0,
+      pts:track.filter((_,i)=>i%step===0||i===track.length-1).map(p=>[+p[0].toFixed(5),+p[1].toFixed(5)])});
+    if(ws.length>30)ws.pop();
+    saveWalks(ws);renderWalks();
+    toast(`Walk saved: ${(dist/1000).toFixed(2)} km, ${fmtTime(Date.now()-t0)} — it's in My walks`);
+  }else toast('Stopped — too short to keep');
+}
+$('trackBtn').addEventListener('click',()=>watching==null?startTrack():stopTrack());
+$('followBtn').addEventListener('click',function(){
+  follow=!follow;this.classList.toggle('on',follow);
+  if(follow&&track.length)map.setView(track[track.length-1].slice(0,2),15);
+});
+$('homeBtn').addEventListener('click',()=>{follow=false;$('followBtn').classList.remove('on');clearSel();});
+
+/* ===================== PANORAMA — one-screen pinch viewer ===================== */
+const PV={s:1,fit:1,tx:0,ty:0,iw:0,ih:0,pointers:new Map(),lastTap:0,pinch:null};
+const panoImg=$('panoImg'),panoWrap=$('panoWrap');
+panoImg.addEventListener('error',function(){
+  if(!this.dataset.tried){this.dataset.tried='1';this.src='seceda-map.jpeg';return;}
+  if(this.dataset.tried==='1'){this.dataset.tried='2';this.src='seceda-map.png';return;}
+  this.hidden=true;$('panoMissing').hidden=false;$('panoHint').hidden=true;const l=$('panoLoad');if(l)l.hidden=true;
+});
+panoImg.addEventListener('load',()=>{PV.iw=panoImg.naturalWidth;PV.ih=panoImg.naturalHeight;const l=$('panoLoad');if(l)l.hidden=true;panoFit();});
+if(panoImg.complete&&panoImg.naturalWidth>0){PV.iw=panoImg.naturalWidth;PV.ih=panoImg.naturalHeight;const l=$('panoLoad');if(l)l.hidden=true;}
+else if(panoImg.complete&&panoImg.naturalWidth===0){panoImg.dataset.tried='1';panoImg.src='seceda-map.jpeg';}
+if(PV.iw)panoFit();
+function wkProject(lat,lng){
+  if(!WK)return{u:-1,v:-1};
+  const x=lat-WK.la0,y=lng-WK.ln0;
+  return{u:WK.CU[0]*x+WK.CU[1]*y+WK.CU[2],v:WK.CV[0]*x+WK.CV[1]*y+WK.CV[2]};
+}
+function wkDot(){
+  const d=$('wkdot');if(!d)return;
+  if(!WK||!lastFix||!PV.iw){d.hidden=true;return;}
+  const{u,v}=wkProject(lastFix[0],lastFix[1]);
+  if(u<0.02||u>0.98||v<0.05||v>0.98){d.hidden=true;return;}
+  d.style.left=(u*PV.iw*PV.s+PV.tx)+'px';
+  d.style.top=(v*PV.ih*PV.s+PV.ty)+'px';
+  d.hidden=false;
+}
+function panoApply(){panoImg.style.transform=`translate(${PV.tx}px,${PV.ty}px) scale(${PV.s})`;wkDot();}
+function panoClamp(){
+  const cw=panoWrap.clientWidth,ch=panoWrap.clientHeight;
+  const w=PV.iw*PV.s,h=PV.ih*PV.s;
+  PV.tx=w<=cw?(cw-w)/2:Math.min(0,Math.max(cw-w,PV.tx));
+  PV.ty=h<=ch?(ch-h)/2:Math.min(0,Math.max(ch-h,PV.ty));
+}
+function panoFit(){
+  if(!PV.iw)return;
+  const cw=panoWrap.clientWidth,ch=panoWrap.clientHeight;
+  if(!cw||!ch)return;
+  PV.fit=Math.min(cw/PV.iw,ch/PV.ih);        // full-strip view = min zoom
+  // open on the terrain band (skip the painted sky), top of screen, Seceda-centered
+  PV.s=Math.max(PV.fit, ch/(0.60*PV.ih));
+  PV.ty=-0.40*PV.ih*PV.s;
+  PV.tx=cw/2 - 0.360*PV.iw*PV.s;
+  panoClamp();panoApply();
+}
+window.addEventListener('resize',panoFit);
+panoWrap.addEventListener('pointerdown',e=>{
+  if(panoImg.hidden)return;
+  panoWrap.setPointerCapture(e.pointerId);
+  PV.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(PV.pointers.size===2){
+    const[a,b]=[...PV.pointers.values()];
+    PV.pinch={d:Math.hypot(a.x-b.x,a.y-b.y),s:PV.s,cx:(a.x+b.x)/2,cy:(a.y+b.y)/2,tx:PV.tx,ty:PV.ty};
+  }
+  // double tap
+  const now=Date.now();
+  if(PV.pointers.size===1){
+    if(now-PV.lastTap<300){
+      const r=panoWrap.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;
+      if(PV.s>PV.fit*1.4){PV.s=PV.fit;}
+      else{
+        const target=PV.fit*3;
+        PV.tx=px-(px-PV.tx)*(target/PV.s);PV.ty=py-(py-PV.ty)*(target/PV.s);PV.s=target;
+      }
+      panoClamp();panoApply();
+      $('panoHint').style.opacity=0;
+    }
+    PV.lastTap=now;
+  }
+});
+panoWrap.addEventListener('pointermove',e=>{
+  if(!PV.pointers.has(e.pointerId))return;
+  const prev=PV.pointers.get(e.pointerId);
+  PV.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(PV.pointers.size===2&&PV.pinch){
+    const[a,b]=[...PV.pointers.values()];
+    const d=Math.hypot(a.x-b.x,a.y-b.y);
+    const scale=Math.min(PV.fit*10,Math.max(PV.fit,PV.pinch.s*d/PV.pinch.d));
+    const r=panoWrap.getBoundingClientRect();
+    const cx=(a.x+b.x)/2-r.left,cy=(a.y+b.y)/2-r.top;
+    PV.tx=cx-(PV.pinch.cx-r.left-PV.pinch.tx)*(scale/PV.pinch.s);
+    PV.ty=cy-(PV.pinch.cy-r.top-PV.pinch.ty)*(scale/PV.pinch.s);
+    PV.s=scale;panoClamp();panoApply();
+    $('panoHint').style.opacity=0;
+  } else if(PV.pointers.size===1){
+    PV.tx+=e.clientX-prev.x;PV.ty+=e.clientY-prev.y;
+    panoClamp();panoApply();
+  }
+});
+const panoUp=e=>{PV.pointers.delete(e.pointerId);if(PV.pointers.size<2)PV.pinch=null;};
+panoWrap.addEventListener('pointerup',panoUp);
+panoWrap.addEventListener('pointercancel',panoUp);
+setTimeout(()=>{const h=$('panoHint');if(h)h.style.opacity=0;},6000);
+
+/* ===================== BELLS ===================== */
+$('bellBtn').addEventListener('click',()=>{
+  try{
+    const ac=new(window.AudioContext||window.webkitAudioContext)();
+    const scale=[523.25,587.33,659.25,698.46,783.99,880,987.77,1046.5];
+    scale.forEach((f,i)=>{
+      const t=ac.currentTime+i*0.22;
+      const o=ac.createOscillator(),g=ac.createGain();
+      o.type='sine';o.frequency.value=f;
+      const o2=ac.createOscillator(),g2=ac.createGain();
+      o2.type='sine';o2.frequency.value=f*2.76;g2.gain.value=.12;
+      g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(.28,t+.02);
+      g.gain.exponentialRampToValueAtTime(.001,t+.9);
+      g2.gain.setValueAtTime(.001,t);g2.gain.exponentialRampToValueAtTime(.08,t+.02);
+      g2.gain.exponentialRampToValueAtTime(.001,t+.5);
+      o.connect(g).connect(ac.destination);o2.connect(g2).connect(ac.destination);
+      o.start(t);o.stop(t+1);o2.start(t);o2.stop(t+.6);
+    });
+    toast('🎵 do re mi fa sol la si do');
+  }catch(e){}
+});
+
+/* boot */
+renderWalks();
+if('serviceWorker' in navigator&&location.protocol==='https:'){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
