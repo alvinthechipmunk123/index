@@ -218,8 +218,8 @@ body.sheet-on .trackstats.on{display:none}
 .leaflet-popup-content .pop-sub{font-size:12px;color:var(--rosa-deep);font-style:italic}
 .leaflet-popup-content .pop-elev{font-size:12px;font-weight:700;color:#6d7d69;margin-top:3px}
 .leaflet-popup-tip{background:var(--pine)}
-footer{flex:none;text-align:center;font-size:11px;color:#8b967f;padding:6px 0 calc(6px + env(safe-area-inset-bottom));
-  background:var(--cream)}
+footer{flex:none;text-align:center;font-size:10px;color:#8b967f;line-height:1;white-space:nowrap;overflow:hidden;
+  padding:3px 0 calc(2px + env(safe-area-inset-bottom));background:var(--cream)}
 </style>
 </head>
 <body class="hero-min">
@@ -351,7 +351,7 @@ footer{flex:none;text-align:center;font-size:11px;color:#8b967f;padding:6px 0 ca
   </div>
 </section>
 
-<footer>huts & trails from OpenStreetMap · <a href="resciesa.html" style="color:#63745f">⇄ Resciesa side</a> · Alvan maps</footer>
+<footer>trails © OSM · <a href="resciesa.html" style="color:#8b967f">⇄ Resciesa</a> · Alvan maps · v4.2</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -520,9 +520,7 @@ function ensureMap(){
   const relief=L.layerGroup([
     L.tileLayer(esri+'World_Topo_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri, USGS',...RT}),
     L.tileLayer(esri+'Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:15,opacity:.55,className:'hillshade-tiles',...RT})]);
-  const sat=L.layerGroup([
-    L.tileLayer(esri+'World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri, Maxar',...RT}),
-    L.tileLayer(esri+'Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:15,opacity:.25,...RT})]);
+  const sat=L.tileLayer(esri+'World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri, Maxar',...RT});
   const topo=L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{maxZoom:17,attribution:'© OpenStreetMap, SRTM | © OpenTopoMap (CC-BY-SA)'});
   const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap',...RT});
   sat.addTo(map);
@@ -547,12 +545,20 @@ function ensureMap(){
   map.on('zoomend',setZoomClass); setZoomClass();
 }
 let DID_INTRO=false;
+function settleHigh(){
+  const bl=L.featureGroup(Object.values(trailLines)).getBounds();
+  const top=Math.min(map.latLngToContainerPoint(bl.getNorthWest()).y,
+                     map.latLngToContainerPoint(bl.getNorthEast()).y);
+  if(top>90) map.panBy([0,top-64],{animate:true,duration:.45});
+}
 function introFly(){
   if(DID_INTRO)return; DID_INTRO=true;
-  map.setView([46.59794,11.72435],16,{animate:false});
+  map.setView([46.59794,11.72435],15,{animate:false});
   setTimeout(()=>{
-    map.flyToBounds(L.featureGroup(Object.values(trailLines)).getBounds().pad(0.1),{duration:2.6,easeLinearity:.15});
-  },700);
+    map.flyToBounds(L.featureGroup(Object.values(trailLines)).getBounds().pad(0.08),
+      {duration:1.8,easeLinearity:.2,paddingTopLeft:[0,4],paddingBottomRight:[0,120]});
+    map.once('moveend',settleHigh);
+  },300);
 }
 
 /* ===================== TRAIL DETAIL STATE ===================== */
@@ -996,7 +1002,7 @@ $('followBtn').addEventListener('click',function(){
   follow=!follow;this.classList.toggle('on',follow);
   if(follow&&track.length)map.setView(track[track.length-1].slice(0,2),15);
 });
-$('homeBtn').addEventListener('click',()=>{follow=false;$('followBtn').classList.remove('on');clearSel();});
+$('homeBtn').addEventListener('click',()=>{follow=false;$('followBtn').classList.remove('on');clearSel();if(map){map.fitBounds(L.featureGroup(Object.values(trailLines)).getBounds().pad(0.08),{paddingBottomRight:[0,120]});settleHigh();}});
 
 /* ===================== PANORAMA — one-screen pinch viewer ===================== */
 const PV={s:1,fit:1,tx:0,ty:0,iw:0,ih:0,pointers:new Map(),lastTap:0,pinch:null};
