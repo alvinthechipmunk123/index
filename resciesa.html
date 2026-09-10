@@ -28,17 +28,17 @@ body{font-family:'Nunito Sans',system-ui,sans-serif;color:var(--ink);background:
 h1,h2,h3,.frn{font-family:'Fraunces',serif}
 
 /* ============ HERO ============ */
-.hero{position:relative;height:196px;overflow:hidden;flex:none;cursor:pointer;
-  background:linear-gradient(180deg,#A8D5CE 0%,#CDE8E2 38%,#F3E3C8 72%,#F7EFD3 100%);
-  transition:height .45s cubic-bezier(.5,0,.2,1)}
-.hero svg{position:absolute;bottom:0;left:0;width:100%;height:100%}
-.hero .title{position:absolute;top:16px;left:20px;z-index:5}
-.hero h1{font-size:34px;font-weight:700;color:var(--pine-deep);line-height:1;letter-spacing:.5px;
-  font-variation-settings:'SOFT' 100;text-shadow:0 1px 0 rgba(255,255,255,.5)}
-.hero .sub{font-family:'Fraunces',serif;font-style:italic;font-size:14.5px;color:#5c7261;margin-top:5px}
-.hero .bondi{position:absolute;top:18px;right:16px;z-index:5;background:rgba(255,255,255,.72);
-  backdrop-filter:blur(3px);border-radius:999px;padding:6px 13px;font-size:13px;font-weight:700;
-  color:var(--pine);border:1.5px solid rgba(53,84,59,.25)}
+.hero{position:relative;height:44px;overflow:hidden;flex:none;
+  background:linear-gradient(90deg,#35543B,#3f6446 55%,#4a7050);
+  border-bottom:1.5px solid rgba(36,59,42,.6)}
+.hero svg{display:none}
+.hero .title{position:absolute;top:0;bottom:0;left:16px;display:flex;align-items:center;z-index:5}
+.hero h1{font-size:19px;font-weight:700;color:var(--cream);line-height:1;letter-spacing:.4px;
+  font-variation-settings:'SOFT' 100}
+.hero .sub{display:none}
+.hero .bondi{position:absolute;top:50%;transform:translateY(-50%);right:12px;z-index:5;
+  background:rgba(255,255,255,.16);border-radius:999px;padding:5px 11px;font-size:12px;font-weight:800;
+  color:var(--cream);border:1.5px solid rgba(255,255,255,.3)}
 .cloud{animation:drift linear infinite}
 .cloud.c1{animation-duration:58s}.cloud.c2{animation-duration:84s;animation-delay:-30s}
 .cloud.c3{animation-duration:70s;animation-delay:-52s}
@@ -51,11 +51,6 @@ h1,h2,h3,.frn{font-family:'Fraunces',serif}
 @keyframes sway{from{transform:rotate(-2.4deg)}to{transform:rotate(2.4deg)}}
 .glow{animation:enrosadira 9s ease-in-out infinite alternate}
 @keyframes enrosadira{from{opacity:.35}to{opacity:.8}}
-body.hero-min .hero{height:74px}
-body.hero-gone .hero{height:0}
-body.hero-min .hero h1{font-size:24px}
-body.hero-min .hero .sub{display:none}
-body.hero-min .hero .bondi{top:14px}
 @media (prefers-reduced-motion:reduce){.cloud,.gondel,.grass-sway,.glow{animation:none}.hero{transition:none}}
 
 /* ============ TABS ============ */
@@ -249,9 +244,9 @@ footer{flex:none;text-align:center;font-size:9px;color:#8b967f;line-height:1;whi
   padding:0 0 calc(3px + env(safe-area-inset-bottom));background:var(--parchment)}
 </style>
 </head>
-<body class="hero-min">
+<body>
 
-<header class="hero" id="hero" title="tap to toggle">
+<header class="hero" id="hero">
   <svg viewBox="0 0 400 196" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
     <circle cx="330" cy="42" r="20" fill="#F9E7A8" opacity=".9"/><circle cx="330" cy="42" r="30" fill="#F9E7A8" opacity=".25"/>
     <g>
@@ -377,7 +372,7 @@ footer{flex:none;text-align:center;font-size:9px;color:#8b967f;line-height:1;whi
   <button class="tab" data-panel="walks" role="tab"><i>👣</i><span>Walks</span></button>
   <button class="tab" data-panel="pano" role="tab"><i>🖼</i><span>Panorama</span></button>
 </nav>
-<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="seceda.html" style="color:#8b967f">⇄ Seceda</a> · Alvan maps · v5.0</footer>
+<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="seceda.html" style="color:#8b967f">⇄ Seceda</a> · Alvan maps · v5.1</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -729,17 +724,11 @@ document.querySelectorAll('.tab').forEach(b=>{
     b.classList.add('on');
     const pnl=$('panel-'+b.dataset.panel);pnl.classList.add('on');
     const sc=pnl.querySelector('.scroller');if(sc)sc.scrollTop=0;
-    document.body.classList.remove('hero-gone');
     if(b.dataset.panel==='map'){ensureMap();setTimeout(()=>{map.invalidateSize();introFly();},120);}
     if(b.dataset.panel==='pano') panoFit();
   });
 });
 function goMap(){const b=document.querySelector('.tab[data-panel="map"]');if(!b.classList.contains('on'))b.click();}
-$('hero').addEventListener('click',e=>{
-  if(e.target.id==='bellBtn')return;
-  document.body.classList.toggle('hero-min');
-  setTimeout(()=>map&&map.invalidateSize(),480);
-});
 
 /* ===================== CARDS ===================== */
 function miniSpark(t){
@@ -1108,7 +1097,6 @@ async function startTrack(){
   follow=true;$('followBtn').classList.add('on');
   $('trackstats').classList.add('on');
   const b=$('trackBtn');b.textContent='■ Stop';b.classList.add('rec');
-  document.body.classList.add('hero-min');setTimeout(()=>map.invalidateSize(),480);
   toast('Tracking — bon viac! (safe travels)');
 }
 function stopTrack(){
@@ -1269,16 +1257,6 @@ $('bellBtn').addEventListener('click',()=>{
     });
     toast('🎵 do re mi fa sol la si do');
   }catch(e){}
-});
-
-document.querySelectorAll('.scroller').forEach(sc=>{
-  let last=0;
-  sc.addEventListener('scroll',()=>{
-    const y=sc.scrollTop;
-    if(y>70&&y>last)document.body.classList.add('hero-gone');
-    else if(y<24)document.body.classList.remove('hero-gone');
-    last=y;
-  },{passive:true});
 });
 
 /* boot */
