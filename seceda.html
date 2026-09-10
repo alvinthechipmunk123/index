@@ -153,6 +153,12 @@ body.sheet-on .trackstats.on{display:none}
 .panoWrap{flex:1;overflow:hidden;background:var(--cream);position:relative;touch-action:none}
 .panoWrap img{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform;
   user-select:none;-webkit-user-drag:none;max-width:none}
+.wkdot{position:absolute;z-index:5;font-size:11px;font-weight:800;color:#1d4e89;
+  transform:translate(-50%,-120%);pointer-events:none;text-shadow:0 0 4px #fff,0 0 4px #fff}
+.wkdot[hidden]{display:none}
+.wkpulse{width:14px;height:14px;margin:0 auto 2px;background:#3b82c4;border:2.5px solid #fff;
+  border-radius:50%;box-shadow:0 0 0 5px rgba(59,130,196,.3);animation:wkp 2s ease-out infinite}
+@keyframes wkp{0%{box-shadow:0 0 0 3px rgba(59,130,196,.4)}70%{box-shadow:0 0 0 11px rgba(59,130,196,0)}100%{box-shadow:0 0 0 3px rgba(59,130,196,0)}}
 .panoLoad{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:800;
   font-size:14px;color:#7d8a78;animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
@@ -271,6 +277,7 @@ footer{flex:none;text-align:center;font-size:11px;color:#8b967f;padding:6px 0 ca
     <div class="grab"></div>
     <div class="shead"><h3 id="shName"></h3><button class="close" id="shClose">✕</button></div>
     <div class="chips" id="shChips"></div>
+    <button class="mbtn sec" id="dlBtn" style="align-self:center;margin:2px 0 4px;padding:8px 14px;font-size:12.5px">⬇ Save trail offline</button>
     <div class="profwrap" id="shProf"></div>
     <div class="liveline" id="shLive"></div>
   </div>
@@ -300,6 +307,7 @@ footer{flex:none;text-align:center;font-size:11px;color:#8b967f;padding:6px 0 ca
       <h3>Drop in the official map</h3>
       <p>Save the Seceda summer panorama from <b>seceda.it</b> and upload it to the repo next to this file as <b>seceda-map.jpg</b> (.jpeg / .png also work).</p>
     </div>
+    <div class="wkdot" id="wkdot" hidden><div class="wkpulse"></div>≈ you</div>
     <div class="panoHint" id="panoHint">pinch to zoom · drag to pan · double-tap</div>
   </div>
 </section>
@@ -343,84 +351,84 @@ footer{flex:none;text-align:center;font-size:11px;color:#8b967f;padding:6px 0 ca
 const DATA = {
   center: [46.590, 11.720],
   huts: [
-    { id:"secedarist", name:"Seceda Ristorante", ladin:"Utia Seceda · top station", type:"restaurant",
+    { id:"secedarist", name:"Seceda Ristorante", ladin:"Utia Seceda · top station", type:"restaurant", phone:"+393888743327",
       lat:46.59801, lng:11.72448, elev:2500,
       desc:"The self-service at the top station itself, big sun terrace. Zero walk required — coffee before the ridge, or shelter when the weather turns mid-hike.",
       eat:"Cafeteria standard. It's about the terrace, not the plate." },
-    { id:"sofie", name:"Sofie Hütte", ladin:"Baita Sofie", type:"restaurant",
+    { id:"sofie", name:"Sofie Hütte", ladin:"Baita Sofie", type:"restaurant", phone:"+393355271240",
       lat:46.59772, lng:11.72714, elev:2410,
-      desc:"Three minutes below the top station, glass wall pointed at Sassolungo. The polished one — white tablecloth energy at 2 400 m. +39 335 5271240.",
+      desc:"Three minutes below the top station, glass wall pointed at Sassolungo. The polished one — white tablecloth energy at 2 400 m.",
       eat:"Gourmet plates; the beef tartare and the wine list are the play here, not the schnitzel." },
-    { id:"troier", name:"Baita Troier", ladin:"Trojer Hütte", type:"restaurant",
+    { id:"troier", name:"Baita Troier", ladin:"Trojer Hütte", type:"restaurant", phone:"+393398212373",
       lat:46.59803, lng:11.73954, elev:2250,
-      desc:"The postcard hut under the Fermeda towers — the one in every Seceda photo with the tilted ridgeline behind. Gets busy 11:30–14:00; go early or late. +39 339 8212373.",
+      desc:"The postcard hut under the Fermeda towers — the one in every Seceda photo with the tilted ridgeline behind. Gets busy 11:30–14:00; go early or late.",
       eat:"Homemade dumpling tris (spinach, cheese, beet) and apple strudel. This is the mandatory stop." },
-    { id:"pieralongia", name:"Baita Pieralongia", ladin:"Pieralongia Alm", type:"restaurant",
+    { id:"pieralongia", name:"Baita Pieralongia", ladin:"Pieralongia Alm", type:"restaurant", phone:"+393203326321",
       lat:46.59750, lng:11.74777, elev:2290,
       desc:"Tiny stone hut wedged among the Pieralongia pinnacles — freestanding rock teeth in open meadow, very Ghibli. No road, everything comes up by hand.",
       eat:"Simple: speck plates, cheese from the alm, lemonade with mountain herbs." },
-    { id:"daniel", name:"Daniel Hütte", ladin:"Baita Daniel", type:"restaurant",
+    { id:"daniel", name:"Daniel Hütte", ladin:"Baita Daniel", type:"restaurant", phone:"+393356482660",
       lat:46.59485, lng:11.73351, elev:2196,
       desc:"Below the ridgeline on the S. Cristina side of the Seceda alp. Third-generation Demez family kitchen, big sun terrace, reachable off the Fermeda round.",
       eat:"Barley soup (panicia) and speck dumplings. Solid, not fancy." },
-    { id:"mastle", name:"Baita Mastlé", ladin:"Mastlé Alm", type:"restaurant",
+    { id:"mastle", name:"Baita Mastlé", ladin:"Mastlé Alm", type:"restaurant", phone:"+393773473480",
       lat:46.59487, lng:11.72981, elev:2285,
       desc:"On the Mastlé alp just below the top station, neighbor to Daniel. Quieter deck than anything on the ridge itself." },
-    { id:"curona", name:"Curona Hütte", ladin:"Baita Curona", type:"restaurant",
+    { id:"curona", name:"Curona Hütte", ladin:"Baita Curona", type:"restaurant", phone:"+393395208704",
       lat:46.58911, lng:11.72231, elev:2175,
       desc:"On the balcony path west of the ridge — the natural first stop of the descent toward Ortisei. Deck chairs facing Sassolungo.",
       eat:"Kaiserschmarrn benchmark for the mountain. Order it before you're hungry — it takes 20 min." },
-    { id:"lechsant", name:"Lech Sant", ladin:"Malga Lech Sant", type:"restaurant",
+    { id:"lechsant", name:"Lech Sant", ladin:"Malga Lech Sant", type:"restaurant", phone:"+393384914549",
       lat:46.58554, lng:11.72941, elev:2096,
       desc:"By the little Lech Sant lake on the meadows below Curona — the mirror-pond photo stop. On the web of paths between the balcony trail and Col Raiser." },
-    { id:"fermeda", name:"Fermeda Hütte", ladin:"Baita Fermeda", type:"refuge",
+    { id:"fermeda", name:"Fermeda Hütte", ladin:"Baita Fermeda", type:"refuge", phone:"+393357061089",
       lat:46.59110, lng:11.73681, elev:2111,
       desc:"On the Cisles meadows between the Seceda alp and Rifugio Firenze, rooms available — the quiet sleepover alternative to Firenze. Family-run.",
       eat:"Tirtlen (fried filled flatbread) and buttermilk. Under-ordered, excellent." },
-    { id:"firenze", name:"Rifugio Firenze", ladin:"Regensburger Hütte", type:"refuge",
+    { id:"firenze", name:"Rifugio Firenze", ladin:"Regensburger Hütte", type:"refuge", phone:"+3904711390077",
       lat:46.58752, lng:11.75829, elev:2040,
-      desc:"The grand old refuge of the Cisles alp, built 1888, ~90 beds, warm showers. Base camp for the Sass Rigais ferrata. Open June–mid Oct. +39 0471 796307.",
+      desc:"The grand old refuge of the Cisles alp, built 1888, ~90 beds, warm showers. Base camp for the Sass Rigais ferrata. Open June–mid Oct.",
       eat:"Full mountain kitchen; stay for dinner if you sleep over — sunrise on the Odle from the terrace is the payoff." },
-    { id:"odles", name:"Baita Odles", ladin:"Utia Odles", type:"restaurant",
+    { id:"odles", name:"Baita Odles", ladin:"Utia Odles", type:"restaurant", phone:"+393348221300",
       lat:46.58580, lng:11.74562, elev:2107,
       desc:"Right by the Col Raiser upper station — about 1h15 from the Seceda top station via Pieralongia. Farm-to-table kitchen, playground, trampoline, petting zoo: the designated stop if anyone in the party is under ten.",
       eat:"Their own farm's products — schlutzkrapfen, gulasch, tagliata, homemade desserts." },
-    { id:"colraiser", name:"Col Raiser", ladin:"Utia Col Raiser", type:"restaurant",
+    { id:"colraiser", name:"Col Raiser", ladin:"Utia Col Raiser", type:"restaurant", phone:"+390471796302",
       lat:46.58478, lng:11.74532, elev:2106,
       desc:"At the Col Raiser gondola top station — the bail-out ride down to S. Cristina if legs or weather quit. Big self-service terrace.",
       eat:"Functional. Eat at Odles next door or Firenze instead if you have 30 minutes." },
-    { id:"neidia", name:"Nëidia", ladin:"Malga Nëidia", type:"restaurant",
+    { id:"neidia", name:"Nëidia", ladin:"Malga Nëidia", type:"restaurant", phone:"+393387910872",
       lat:46.58595, lng:11.74012, elev:2035,
       desc:"Working malga on the slope just below the Col Raiser–Cisles path. Farm products from the pasture you're standing in." },
-    { id:"cuca", name:"Baita Cuca", ladin:"Cuca Hütte", type:"restaurant",
+    { id:"cuca", name:"Baita Cuca", ladin:"Cuca Hütte", type:"restaurant", phone:"+393358060345",
       lat:46.58778, lng:11.73987, elev:2020,
       desc:"On the meadows below Fermeda Hütte, mid-slope between the Seceda alp and Col Raiser. Small, rustic, off the main gondola stream." },
-    { id:"gamsblut", name:"Gamsblut Hütte", ladin:"Baita Gamsblut", type:"restaurant",
+    { id:"gamsblut", name:"Gamsblut Hütte", ladin:"Baita Gamsblut", type:"restaurant", phone:"+393388601244",
       lat:46.58124, lng:11.73991, elev:1952,
       desc:"In the woods on the climb from S. Cristina toward Col Raiser — the walkers'-approach hut, not a gondola stop." },
-    { id:"sangon", name:"Baita Sangon", ladin:"Sangon Hütte", type:"restaurant",
+    { id:"sangon", name:"Baita Sangon", ladin:"Sangon Hütte", type:"restaurant", phone:"+390471793191",
       lat:46.57642, lng:11.74730, elev:1823,
       desc:"Lower on the S. Cristina climb path, in larch forest. First (or last) refreshment if you walk the whole way up instead of riding." },
-    { id:"ciaulonch", name:"Baita Ciaulonch", ladin:"Ciaulonch Hütte", type:"restaurant",
+    { id:"ciaulonch", name:"Baita Ciaulonch", ladin:"Ciaulonch Hütte", type:"restaurant", phone:"+393387573150",
       lat:46.58284, lng:11.75306, elev:1954,
       desc:"On the eastern paths above S. Cristina toward the Cisles valley mouth. Regional kitchen, well off the crowd lines." },
-    { id:"seurasas", name:"Sëurasas", ladin:"Baita Sëurasas", type:"restaurant",
+    { id:"seurasas", name:"Sëurasas", ladin:"Baita Sëurasas", type:"restaurant", phone:"+393397069018",
       lat:46.57523, lng:11.71884, elev:2020,
       desc:"On the Pitschberg shoulder between Ortisei and S. Cristina — panoramic terrace over the whole valley, reached on the mid-slope paths." },
-    { id:"cason", name:"Cason", ladin:"Malga Cason", type:"restaurant",
+    { id:"cason", name:"Cason", ladin:"Malga Cason", type:"restaurant", phone:"+393488223647",
       lat:46.59862, lng:11.68174, elev:2137,
       desc:"High on the slope northwest of the Furnes mid-station, on the quieter walk-up lines from the Annatal. A working-alm stop, not a scene." },
-    { id:"costamula", name:"Costamula", ladin:"Ristorante Costamula", type:"restaurant",
+    { id:"costamula", name:"Costamula", ladin:"Ristorante Costamula", type:"restaurant", phone:"+393715676548",
       lat:46.58470, lng:11.69433, elev:1542,
       desc:"Mid-slope above Ortisei near the Val d'Anna woods — a lower-mountain lunch that doesn't need a lift at all." },
-    { id:"valdanna", name:"Café Val d'Anna", ladin:"Utia Val d'Ana", type:"restaurant",
+    { id:"valdanna", name:"Café Val d'Anna", ladin:"Utia Val d'Ana", type:"restaurant", phone:"+390471798643",
       lat:46.58016, lng:11.68706, elev:1380,
       desc:"In the larch woods of the Annatal, last stop of the classic descent before Ortisei's streets. Creek-side benches, cold Forst.",
       eat:"The finish-line beer and a slice of strudel. Tradition, not cuisine." },
-    { id:"juac", name:"Rifugio Juac", ladin:"Utia Juac", type:"refuge",
+    { id:"juac", name:"Rifugio Juac", ladin:"Utia Juac", type:"refuge", phone:"+393358082321",
       lat:46.57319, lng:11.74992, elev:1905,
       desc:"On the Juac meadows above Selva, south of the Cisles valley — beds and a kitchen on the quieter approach to the Stevia plateau." },
-    { id:"stevia", name:"Rifugio Stevia", ladin:"Utia Stevia", type:"refuge",
+    { id:"stevia", name:"Rifugio Stevia", ladin:"Utia Stevia", type:"refuge", phone:"+393473053879",
       lat:46.57308, lng:11.77137, elev:2312,
       desc:"Up on the Stevia plateau at 2 312 m — the rustic high hut of the area's southern wall, a stiff climb from Juac or the Silvester trail. Beds, simple kitchen, huge quiet." }
   ],
@@ -470,7 +478,18 @@ DATA.trails.forEach(t=>{
   t.cum=[0];
   for(let i=1;i<t.pts.length;i++) t.cum.push(t.cum[i-1]+hav(t.pts[i-1],t.pts[i]));
 });
+const WK={CU:[-2.923923,5.220698,0.563427],CV:[-7.601309,-1.21518,0.52136],la0:46.59,ln0:11.73};
+let lastFix=null;
 const MARQUEE=new Set(['troier','firenze','sofie','odles']);
+const LIFTS={seceda:{name:'Seceda cable car',to:'2026-11-02'},colraiser:{name:'Col Raiser gondola',to:'2026-11-01'},
+             fermedachair:{name:'Fermeda chair',to:'2026-09-20'}};
+function liftChip(key){
+  const l=LIFTS[key];if(!l)return'';
+  const days=Math.ceil((new Date(l.to)-Date.now())/86400000);
+  if(days<0)return`<span class="chip" style="background:#f6ded7;border-color:#d99a88">⚠ ${l.name} closed for season</span>`;
+  if(days<=21)return`<span class="chip" style="background:#fbeecb;border-color:#d9b95e">⚠ ${l.name} closes in ${days}d</span>`;
+  return`<span class="chip">🚠 ${l.name} to ${l.to.slice(8,10)}.${l.to.slice(5,7)}</span>`;
+}
 
 /* ===================== MAP ===================== */
 let map=null, hutMarkers={}, trailLines={}, SEL=null, chevs=[], badges=[], endMk=[];
@@ -509,7 +528,7 @@ function ensureMap(){
     const icon=L.divIcon({className:'',html:pinSvg(h),
       iconSize:isRef?[30,36]:[16,16],iconAnchor:isRef?[15,34]:[8,8]});
     const m=L.marker([h.lat,h.lng],{icon,zIndexOffset:isRef?300:(MARQUEE.has(h.id)?200:0)}).addTo(map);
-    m.bindPopup(`<div class="pop-name">${h.name}</div><div class="pop-sub">${h.ladin}</div><div class="pop-elev">${h.elev} m · ${isRef?'refuge — beds':'food & terrace'}</div>`);
+    m.bindPopup(`<div class="pop-name">${h.name}</div><div class="pop-sub">${h.ladin}</div><div class="pop-elev">${h.elev} m · ${isRef?'refuge — beds':'food & terrace'}</div>${h.phone?`<div class="pop-elev">☎ <a href="tel:${h.phone}">${h.phone.replace('+39','+39 ')}</a></div>`:''}`);
     hutMarkers[h.id]=m;
   });
   DATA.trails.forEach(t=>{
@@ -581,8 +600,10 @@ function selectTrail(id){
     iconSize:[22,26],iconAnchor:[4,25]})}).addTo(map));
   // sheet
   $('shName').textContent=t.name;
+  const TL={classic:['seceda'],pinnacles:['seceda'],fermeda:['seceda','fermedachair'],colraiser:['seceda','colraiser'],sass:['colraiser']};
   $('shChips').innerHTML=`<span class="chip">${t.km} km</span><span class="chip">↑${t.up} ↓${t.down} m</span>
-    <span class="chip">${t.hrs}</span><span class="chip diff-${t.diff}">${diffLabel[t.diff]}</span>`;
+    <span class="chip">${t.hrs}</span><span class="chip diff-${t.diff}">${diffLabel[t.diff]}</span>`
+    +(TL[t.id]||[]).map(liftChip).join('');
   $('shProf').innerHTML=bigProfile(t);
   $('sheet').classList.add('on');document.body.classList.add('sheet-on');
   goMap();
@@ -634,6 +655,52 @@ function bigProfile(t){
     <text x="${W-pr}" y="${H-pb+12}" text-anchor="end" font-size="9" fill="#8b967f" font-weight="700">${t.km} km</text>
   </svg>`;
 }
+
+/* ===================== OFFLINE TRAIL PACK ===================== */
+function tileXY(lat,lng,z){
+  const n=2**z;
+  const x=Math.floor((lng+180)/360*n);
+  const la=lat*Math.PI/180;
+  const y=Math.floor((1-Math.log(Math.tan(la)+1/Math.cos(la))/Math.PI)/2*n);
+  return[x,y];
+}
+function corridorTiles(t){
+  const esri='https://server.arcgisonline.com/ArcGIS/rest/services/';
+  const urls=new Set();
+  for(let z=13;z<=16;z++){
+    const seen=new Set();
+    // sample along the line every ~120 m
+    for(let i=0;i<t.pts.length-1;i++){
+      const segs=Math.max(1,Math.round(hav(t.pts[i],t.pts[i+1])/120));
+      for(let k=0;k<=segs;k++){
+        const la=t.pts[i][0]+(t.pts[i+1][0]-t.pts[i][0])*k/segs;
+        const ln=t.pts[i][1]+(t.pts[i+1][1]-t.pts[i][1])*k/segs;
+        const[x,y]=tileXY(la,ln,z);
+        for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++)seen.add((x+dx)+'_'+(y+dy));
+      }
+    }
+    seen.forEach(k=>{
+      const[x,y]=k.split('_');
+      urls.add(esri+`World_Imagery/MapServer/tile/${z}/${y}/${x}`);
+      if(z<=15)urls.add(esri+`Elevation/World_Hillshade/MapServer/tile/${z}/${y}/${x}`);
+    });
+  }
+  return[...urls];
+}
+async function downloadTrail(t,btn){
+  const urls=corridorTiles(t);
+  btn.disabled=true;
+  let done=0,fail=0;
+  const CHUNK=8;
+  for(let i=0;i<urls.length;i+=CHUNK){
+    await Promise.all(urls.slice(i,i+CHUNK).map(u=>fetch(u,{mode:'no-cors'}).then(()=>done++).catch(()=>fail++)));
+    btn.textContent=`⬇ ${Math.round(100*(done+fail)/urls.length)}% · ${done} tiles`;
+  }
+  btn.textContent=fail>urls.length*0.15?'⚠ partial — retry on wifi':'✓ saved offline';
+  setTimeout(()=>{btn.textContent='⬇ Save trail offline';btn.disabled=false;},4000);
+  toast(`${t.name}: ${done} map tiles cached for offline`);
+}
+$('dlBtn').addEventListener('click',()=>{if(SEL)downloadTrail(trailById[SEL],$('dlBtn'));});
 
 /* ===================== TABS ===================== */
 document.querySelectorAll('.tab').forEach(b=>{
@@ -694,7 +761,8 @@ function hutCard(h){
       <p style="margin-top:8px">${h.desc}</p>
       ${h.eat?`<div class="eat"><b>Eat:</b> ${h.eat}</div>`:''}
       <div class="cardbtns"><button class="cbtn map" data-hut="${h.id}">Show on map</button>
-        <button class="cbtn ghost" data-nav="${h.lat},${h.lng}">Apple Maps</button></div>
+        ${h.phone?`<button class="cbtn ghost" data-call="${h.phone}">☎ Call</button>`:''}
+        <button class="cbtn ghost" data-nav="${h.lat},${h.lng}">Maps</button></div>
     </div></article>`;
 }
 $('hutCards').innerHTML=DATA.huts.map(hutCard).join('');
@@ -760,6 +828,8 @@ document.body.addEventListener('click',e=>{
   if(gb){const t=trailById[gb.dataset.gpx];downloadGpx(t.name,t.pts);return;}
   const hb=e.target.closest('[data-hut]');
   if(hb){goMap();const m=hutMarkers[hb.dataset.hut];map.setView(m.getLatLng(),15.5);m.openPopup();return;}
+  const cb=e.target.closest('[data-call]');
+  if(cb){location.href='tel:'+cb.dataset.call;return;}
   const nb=e.target.closest('[data-nav]');
   if(nb){window.open('https://maps.apple.com/?daddr='+nb.dataset.nav+'&dirflg=w');return;}
   const wv=e.target.closest('[data-wview]');
@@ -862,6 +932,8 @@ function onPos(p){
   const pt=[p.coords.latitude,p.coords.longitude,p.coords.altitude];
   if(p.coords.altitude!=null)$('stElev').textContent=Math.round(p.coords.altitude);
   track.push(pt);
+  lastFix=pt;
+  wkDot();
   drawMe(pt);
   if(!trackLine)trackLine=L.polyline(track.map(q=>[q[0],q[1]]),{color:'#3b82c4',weight:4,opacity:.9}).addTo(map);
   else trackLine.setLatLngs(track.map(q=>[q[0],q[1]]));
@@ -931,7 +1003,20 @@ panoImg.addEventListener('load',()=>{PV.iw=panoImg.naturalWidth;PV.ih=panoImg.na
 if(panoImg.complete&&panoImg.naturalWidth>0){PV.iw=panoImg.naturalWidth;PV.ih=panoImg.naturalHeight;const l=$('panoLoad');if(l)l.hidden=true;}
 else if(panoImg.complete&&panoImg.naturalWidth===0){panoImg.dataset.tried='1';panoImg.src='seceda-map.jpeg';}
 if(PV.iw)panoFit();
-function panoApply(){panoImg.style.transform=`translate(${PV.tx}px,${PV.ty}px) scale(${PV.s})`;}
+function wkProject(lat,lng){
+  const x=lat-WK.la0,y=lng-WK.ln0;
+  return{u:WK.CU[0]*x+WK.CU[1]*y+WK.CU[2],v:WK.CV[0]*x+WK.CV[1]*y+WK.CV[2]};
+}
+function wkDot(){
+  const d=$('wkdot');if(!d)return;
+  if(!lastFix||!PV.iw){d.hidden=true;return;}
+  const{u,v}=wkProject(lastFix[0],lastFix[1]);
+  if(u<0.02||u>0.98||v<0.05||v>0.98){d.hidden=true;return;}
+  d.style.left=(u*PV.iw*PV.s+PV.tx)+'px';
+  d.style.top=(v*PV.ih*PV.s+PV.ty)+'px';
+  d.hidden=false;
+}
+function panoApply(){panoImg.style.transform=`translate(${PV.tx}px,${PV.ty}px) scale(${PV.s})`;wkDot();}
 function panoClamp(){
   const cw=panoWrap.clientWidth,ch=panoWrap.clientHeight;
   const w=PV.iw*PV.s,h=PV.ih*PV.s;
