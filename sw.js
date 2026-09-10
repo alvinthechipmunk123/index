@@ -1,8 +1,8 @@
 /* Seceda offline worker — caches the app shell and every map tile you've seen,
    so the map keeps working in Annatal dead zones. */
 const SHELL = 'seceda-shell-v2';
-const TILES = 'seceda-tiles-v2';
-const TILE_MAX = 900; // ~ a full day's browsing at three zoom levels
+const TILES = 'seceda-tiles-v3';
+const TILE_MAX = 3200; // ~ a full day's browsing at three zoom levels
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(SHELL).then(c => c.addAll(['seceda-map.jpg']).catch(()=>{})));
