@@ -77,6 +77,9 @@ body.hero-min .hero .bondi{top:14px}
 .pin{filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
 .pin.minor{transition:opacity .25s}
 body.zoomed-out .pin.minor{opacity:0;pointer-events:none}
+.poi{font-size:12px;line-height:1;text-align:center;color:#fff;
+  text-shadow:0 0 3px rgba(0,0,0,.8),0 0 6px rgba(0,0,0,.6);transition:opacity .25s}
+body.zoomed-out .poi.minor{opacity:0;pointer-events:none}
 .chev{color:#fff;font-size:13px;font-weight:900;text-shadow:0 0 3px rgba(0,0,0,.55);line-height:1}
 .refbadge{background:#fff;border:2px solid #c8372d;color:#c8372d;border-radius:6px;
   font-weight:900;font-size:11px;padding:1px 5px;box-shadow:0 1px 3px rgba(0,0,0,.3);white-space:nowrap}
@@ -99,12 +102,18 @@ body.zoomed-out .pin.minor{opacity:0;pointer-events:none}
 .wxpanel{position:absolute;top:46px;right:10px;left:10px;z-index:820;background:rgba(253,248,234,.97);
   border:2px solid var(--pine);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:10px 6px 8px;display:none}
 .wxpanel.on{display:block}
+body.wx-open .legend,body.wx-open .leaflet-control-layers,body.wx-open .leaflet-control-zoom{opacity:0;pointer-events:none;transition:opacity .2s}
 .wxrow{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:2px;scrollbar-width:none}
 .wxrow::-webkit-scrollbar{display:none}
 .wxh{flex:0 0 46px;text-align:center;font-size:11px;font-weight:700;color:#4a584e;line-height:1.5}
 .wxh b{display:block;font-size:13.5px;color:var(--pine-deep)}
 .wxh .pr{color:#3b82c4}
 .wxh.storm{background:#f6ded7;border-radius:8px}
+.wxglow{margin-top:7px;padding-top:7px;border-top:1.5px dashed rgba(53,84,59,.25);font-size:11.5px;
+  font-weight:700;color:#8a6a3f;text-align:center;line-height:1.5}
+.wxglow b{color:var(--pine-deep)}
+.wxfreeze{margin-top:4px;font-size:11.5px;font-weight:800;text-align:center;color:var(--pine)}
+.wxfreeze.cold{color:#B4483A}
 .rose{position:absolute;right:12px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:800;width:40px;height:40px;
   background:rgba(253,248,234,.92);border:1.5px solid rgba(53,84,59,.3);border-radius:50%;
   display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
@@ -212,13 +221,13 @@ body.sheet-on .trackstats.on{display:none}
 .fbtn{border:1.5px solid rgba(53,84,59,.22);background:var(--parchment);border-radius:999px;
   padding:6px 13px;font-family:'Nunito Sans';font-weight:800;font-size:12.5px;color:#63745f;cursor:pointer}
 .fbtn.on{background:var(--rosa);border-color:var(--rosa-deep);color:#fff}
-.walkrow{display:flex;align-items:center;gap:10px;background:var(--parchment);border:1.5px solid rgba(53,84,59,.12);
+.walkrow{display:flex;align-items:center;gap:6px;background:var(--parchment);border:1.5px solid rgba(53,84,59,.12);
   border-radius:var(--r-lg);box-shadow:var(--shadow);padding:13px 15px;margin-bottom:12px}
 .walkrow .info{flex:1;min-width:0}
 .walkrow b{font-family:'Fraunces',serif;font-size:16.5px;color:var(--pine-deep);display:block}
 .walkrow span{font-size:12.5px;color:#6d7d69;font-weight:700}
 .walkrow .wbtn{border:none;background:var(--cream);border:1.5px solid rgba(53,84,59,.25);border-radius:999px;
-  padding:7px 11px;font-family:'Nunito Sans';font-weight:800;font-size:12px;color:var(--pine);cursor:pointer;flex:none}
+  padding:7px 9px;font-family:'Nunito Sans';font-weight:800;font-size:11.5px;color:var(--pine);cursor:pointer;flex:none}
 .walkempty{text-align:center;padding:44px 26px;color:#6d7d69;font-size:14.5px;line-height:1.6}
 .walkempty .frn{font-size:21px;color:var(--pine-deep);display:block;margin-bottom:8px}
 
@@ -284,7 +293,7 @@ footer a{pointer-events:auto}
     <div><i style="background:#B4483A"></i>hard / ferrata</div>
   </div>
   <div class="wxchip" id="wxchip"></div>
-  <div class="wxpanel" id="wxpanel"><div class="wxrow" id="wxrow"></div></div>
+  <div class="wxpanel" id="wxpanel"><div class="wxrow" id="wxrow"></div><div class="wxglow" id="wxglow"></div><div class="wxfreeze" id="wxfreeze"></div></div>
   <div class="rose" aria-hidden="true">
     <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="none" stroke="#35543B" stroke-width="1.4"/>
       <path d="M13 3 L15.5 13 L13 11 L10.5 13 Z" fill="#C9483B"/><path d="M13 23 L15.5 13 L13 15 L10.5 13 Z" fill="#8b967f"/>
@@ -366,12 +375,13 @@ footer a{pointer-events:auto}
   </div>
 </section>
 
-<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="resciesa.html" style="color:#8b967f">⇄ Resciesa</a> · Alvan maps · v4.5</footer>
+<footer>trails © OSM · <a href="dolomiti.html" style="color:#8b967f">⛰ all maps</a> · <a href="resciesa.html" style="color:#8b967f">⇄ Resciesa</a> · Alvan maps · v4.6</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 const DATA = {
   center: [46.590, 11.720],
+  pois: [{k:"peak",lat:46.60929,lng:11.76682,n:"Sas Rigais",e:3025},{k:"view",lat:46.60126,lng:11.72546,n:""},{k:"peak",lat:46.60059,lng:11.72578,n:"Secëda - Monte Seceda",e:2519},{k:"saddle",lat:46.60122,lng:11.73563,n:"Jëuf de Pana - Panascharte - Forcella Pana",e:2444},{k:"view",lat:46.57374,lng:11.69371,n:""},{k:"water",lat:46.57698,lng:11.67545,n:""},{k:"water",lat:46.58752,lng:11.75816,n:""},{k:"view",lat:46.59869,lng:11.76576,n:""},{k:"view",lat:46.59102,lng:11.71613,n:""},{k:"view",lat:46.57751,lng:11.69792,n:"Balest",e:1823},{k:"water",lat:46.58764,lng:11.72183,n:""},{k:"water",lat:46.57341,lng:11.69467,n:"",e:1561},{k:"cross",lat:46.59760,lng:11.74822,n:""},{k:"cross",lat:46.59815,lng:11.73931,n:""},{k:"view",lat:46.59052,lng:11.74758,n:"Dolomites UNESCO Welterbeterrasse Mastlé - Dolomites UNESCO Balcone panoramico Mastlé"},{k:"cross",lat:46.57246,lng:11.69531,n:""},{k:"water",lat:46.59475,lng:11.73306,n:""},{k:"water",lat:46.58955,lng:11.70380,n:""},{k:"water",lat:46.58725,lng:11.69802,n:""},{k:"water",lat:46.57611,lng:11.67721,n:"",e:1350},{k:"water",lat:46.57758,lng:11.67562,n:"",e:1269},{k:"water",lat:46.57872,lng:11.67750,n:"",e:1314},{k:"water",lat:46.57816,lng:11.68067,n:"",e:1297},{k:"view",lat:46.60063,lng:11.72800,n:""},{k:"view",lat:46.59977,lng:11.73842,n:""},{k:"view",lat:46.59753,lng:11.74578,n:""}],
   huts: [
     { id:"secedarist", name:"Seceda Ristorante", ladin:"Utia Seceda · top station", type:"restaurant", phone:"+393888743327",
       lat:46.59801, lng:11.72448, elev:2500,
@@ -550,6 +560,14 @@ function ensureMap(){
     const m=L.marker([h.lat,h.lng],{icon,zIndexOffset:isRef?300:(MARQUEE.has(h.id)?200:0)}).addTo(map);
     m.bindPopup(`<div class="pop-name">${h.name}</div><div class="pop-sub">${h.ladin}</div><div class="pop-elev">${h.elev} m · ${isRef?'refuge — beds':'food & terrace'}</div>${h.phone?`<div class="pop-elev">☎ <a href="tel:${h.phone}">${h.phone.replace('+39','+39 ')}</a></div>`:''}`);
     hutMarkers[h.id]=m;
+  });
+  const POI={view:{g:'👁',t:'viewpoint'},water:{g:'💧',t:'water'},cross:{g:'✝',t:'wayside cross'},
+             saddle:{g:'⌒',t:'saddle'},peak:{g:'▲',t:'peak'}};
+  (DATA.pois||[]).forEach(p=>{
+    const d=POI[p.k]||{g:'•',t:''};
+    const m=L.marker([p.lat,p.lng],{zIndexOffset:-50,icon:L.divIcon({className:'',
+      html:`<div class="poi minor">${d.g}</div>`,iconSize:[15,15],iconAnchor:[7,7]})}).addTo(map);
+    m.bindPopup(`<div class="pop-name">${d.g} ${p.n||d.t}</div>`+(p.e?`<div class="pop-elev">${p.e} m</div>`:'')+(p.n?`<div class="pop-sub">${d.t}</div>`:''));
   });
   DATA.trails.forEach(t=>{
     const line=L.polyline(t.pts.map(p=>[p[0],p[1]]),{color:t.color,weight:4,opacity:.85,lineCap:'round'}).addTo(map);
@@ -831,7 +849,7 @@ $('hutFilters').addEventListener('click',e=>{
 const WX={sunset:null};
 (async function(){
   try{
-    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=46.598&longitude=11.724&elevation=2500&current=temperature_2m,wind_speed_10m,weather_code&hourly=weather_code,temperature_2m,precipitation_probability,wind_speed_10m&daily=sunset&forecast_days=2&timezone=auto');
+    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=46.598&longitude=11.724&elevation=2500&current=temperature_2m,wind_speed_10m,weather_code&hourly=weather_code,temperature_2m,precipitation_probability,wind_speed_10m&daily=sunset,sunrise&forecast_days=2&timezone=auto');
     const j=await r.json();
     const nowH=new Date();nowH.setMinutes(0,0,0);
     let cells='';
@@ -842,7 +860,19 @@ const WX={sunset:null};
       cells+=`<div class="wxh${wc>=95?' storm':''}">${String(d.getHours()).padStart(2,'0')}<b>${Math.round(j.hourly.temperature_2m[i])}°</b><span class="pr">${j.hourly.precipitation_probability[i]}%</span><br>${Math.round(j.hourly.wind_speed_10m[i])}</div>`;
     });
     document.getElementById('wxrow').innerHTML=cells;
-    document.getElementById('wxchip').addEventListener('click',()=>document.getElementById('wxpanel').classList.toggle('on'));
+    try{
+      const sr=new Date(j.daily.sunrise?j.daily.sunrise[0]:j.daily.sunset[0]);
+      const ss=new Date(j.daily.sunset[0]), ss2=new Date(j.daily.sunset[1]||j.daily.sunset[0]);
+      const hm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+      const glowE=new Date(ss.getTime()-25*60000), glowM=new Date(sr.getTime()-5*60000);
+      document.getElementById('wxglow').innerHTML=
+        `🌅 <b>${hm(glowM)}</b> morning glow · 🌇 <b>${hm(glowE)}</b> enrosadira · sunset ${hm(ss)}`+
+        (ss2&&ss2.getDate()!==ss.getDate()?` · tomorrow ${hm(ss2)}`:'');
+    }catch(e){}
+    document.getElementById('wxchip').addEventListener('click',()=>{
+      const on=document.getElementById('wxpanel').classList.toggle('on');
+      document.body.classList.toggle('wx-open',on);
+    });
     WX.sunset=new Date(j.daily.sunset[0]);
     let storm=null;
     j.hourly.time.forEach((tm,i)=>{if(storm===null&&new Date(tm)>new Date()&&j.hourly.weather_code[i]>=95)storm=new Date(tm);});
@@ -850,6 +880,16 @@ const WX={sunset:null};
     chip.textContent=`⛰ ${Math.round(j.current.temperature_2m)}° · wind ${Math.round(j.current.wind_speed_10m)} km/h`+(storm?` · ⛈ after ${storm.getHours()}:00`:'');
     if(storm)chip.classList.add('warn');
     chip.style.display='block';
+    try{
+      const fr=await fetch('https://api.open-meteo.com/v1/forecast?latitude=46.598&longitude=11.724&hourly=freezing_level_height&forecast_days=1&timezone=auto');
+      const fj=await fr.json();
+      const nowI=fj.hourly.time.findIndex(t=>new Date(t)>=new Date())-1;
+      const lv=Math.round(fj.hourly.freezing_level_height[Math.max(0,nowI)]);
+      const el=document.getElementById('wxfreeze');
+      const high=Math.max(...DATA.trails.map(t=>Math.max(...t.pts.map(p=>p[2]))));
+      el.textContent=`❄️ freezing level ${lv} m`+(lv<high?` — snow/ice possible above it (top of trails ${high} m)`:' — above every trail here');
+      el.classList.toggle('cold',lv<high);
+    }catch(e){}
   }catch(e){}
 })();
 
@@ -873,7 +913,7 @@ function renderWalks(){
   el.innerHTML=ws.map((w,i)=>{const d=new Date(w.t);
     return `<div class="walkrow"><div class="info"><b>${d.toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'})}</b>
       <span>${w.km} km · ${fmtTime(w.ms)}</span></div>
-      <button class="wbtn" data-wview="${i}">Map</button><button class="wbtn" data-wgpx="${i}">GPX</button><button class="wbtn" data-wdel="${i}">✕</button></div>`;}).join('');
+      <button class="wbtn" data-wview="${i}">Map</button><button class="wbtn" data-wshare="${i}">Share</button><button class="wbtn" data-wgpx="${i}">GPX</button><button class="wbtn" data-wdel="${i}">✕</button></div>`;}).join('');
 }
 let savedSpots=[];
 function viewWalk(i){
@@ -906,6 +946,8 @@ document.body.addEventListener('click',e=>{
   if(nb){window.open('https://maps.apple.com/?daddr='+nb.dataset.nav+'&dirflg=w');return;}
   const wv=e.target.closest('[data-wview]');
   if(wv){viewWalk(+wv.dataset.wview);return;}
+  const wsh=e.target.closest('[data-wshare]');
+  if(wsh){shareWalk(+wsh.dataset.wshare);return;}
   const wg=e.target.closest('[data-wgpx]');
   if(wg){const w=loadWalks()[+wg.dataset.wgpx];if(w)downloadGpx('walk-'+new Date(w.t).toISOString().slice(0,10),w.pts);return;}
   const wd=e.target.closest('[data-wdel]');
@@ -920,6 +962,76 @@ function nearestHut(pos){
   let best=null,bd=1e12;
   DATA.huts.forEach(h=>{const d=hav(pos,[h.lat,h.lng]);if(d<bd){bd=d;best=h;}});
   return{hut:best,d:bd};
+}
+
+async function shareWalk(i){
+  const w=loadWalks()[i];if(!w)return;
+  const W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;
+  const x=c.getContext('2d');
+  const sky=x.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0,'#A8D5CE');sky.addColorStop(.32,'#CDE8E2');sky.addColorStop(.62,'#F3E3C8');sky.addColorStop(1,'#F7F0DC');
+  x.fillStyle=sky;x.fillRect(0,0,W,H);
+  // Odle skyline: jagged towers with snow caps and enrosadira wash
+  const rid=[[0,470],[40,300],[70,395],[105,255],[145,378],[172,300],[210,410],[248,268],[286,392],
+             [330,240],[368,372],[404,306],[448,404],[492,262],[530,388],[576,286],[618,398],
+             [660,300],[700,392],[742,264],[784,380],[826,318],[868,406],[910,338],[954,412],[1000,352],[1080,398]];
+  x.fillStyle='#C4B3B8';x.beginPath();x.moveTo(0,470);
+  rid.forEach(p=>x.lineTo(p[0],p[1]));x.lineTo(W,H);x.lineTo(0,H);x.closePath();x.fill();
+  const glow=x.createLinearGradient(0,240,0,560);
+  glow.addColorStop(0,'rgba(227,154,139,.85)');glow.addColorStop(1,'rgba(227,154,139,0)');
+  x.fillStyle=glow;x.fill();
+  x.fillStyle='rgba(255,255,255,.9)';
+  rid.filter((p,k)=>k%3===1&&p[1]<330).forEach(p=>{x.beginPath();x.moveTo(p[0],p[1]);
+    x.lineTo(p[0]-16,p[1]+34);x.lineTo(p[0]+3,p[1]+27);x.lineTo(p[0]+17,p[1]+36);x.closePath();x.fill();});
+  // rolling forest + meadows
+  x.fillStyle='#4F6E4A';x.beginPath();x.moveTo(0,540);
+  for(let k=0;k<=W;k+=60)x.lineTo(k,540+Math.sin(k/170)*30+Math.cos(k/80)*10);
+  x.lineTo(W,H);x.lineTo(0,H);x.closePath();x.fill();
+  x.fillStyle='#6B9350';x.beginPath();x.moveTo(0,690);
+  for(let k=0;k<=W;k+=60)x.lineTo(k,690+Math.cos(k/140)*26);
+  x.lineTo(W,H);x.lineTo(0,H);x.closePath();x.fill();
+  x.fillStyle='#7FA65A';x.beginPath();x.moveTo(0,830);
+  for(let k=0;k<=W;k+=60)x.lineTo(k,830+Math.sin(k/110)*20);
+  x.lineTo(W,H);x.lineTo(0,H);x.closePath();x.fill();
+  // a little hut on the meadow
+  x.save();x.translate(880,806);
+  x.fillStyle='#8A6844';x.fillRect(0,10,44,26);
+  x.fillStyle='#5C4632';x.beginPath();x.moveTo(-8,12);x.lineTo(22,-10);x.lineTo(52,12);x.closePath();x.fill();
+  x.fillStyle='#F2D98D';x.fillRect(16,20,13,16);x.restore();
+  const la=w.pts.map(p=>p[0]),ln=w.pts.map(p=>p[1]);
+  const mnla=Math.min(...la),mxla=Math.max(...la),mnln=Math.min(...ln),mxln=Math.max(...ln);
+  const sx=v=>140+((v-mnln)/((mxln-mnln)||1))*(W-280);
+  const sy=v=>1000-((v-mnla)/((mxla-mnla)||1))*230;
+  x.strokeStyle='#243B2A';x.lineWidth=13;x.lineCap='round';x.lineJoin='round';x.beginPath();
+  w.pts.forEach((p,k)=>k?x.lineTo(sx(p[1]),sy(p[0])):x.moveTo(sx(p[1]),sy(p[0])));x.stroke();
+  x.strokeStyle='#F2D98D';x.lineWidth=7;x.stroke();
+  (w.spots||[]).forEach(sp=>{x.fillStyle='#C9483B';x.beginPath();x.arc(sx(sp.lng),sy(sp.lat),13,0,7);x.fill();
+    x.strokeStyle='#fff';x.lineWidth=3.5;x.stroke();});
+  x.textAlign='center';x.fillStyle='#243B2A';
+  x.font='700 76px Fraunces, Georgia, serif';
+  x.fillText(document.title.split('\u00b7').pop().trim(),W/2,150);
+  x.font='italic 34px Fraunces, Georgia, serif';x.fillStyle='#5c7261';
+  x.fillText(new Date(w.t).toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}),W/2,205);
+  x.fillStyle='rgba(253,248,234,.93)';
+  const by=1090;
+  if(x.roundRect){x.beginPath();x.roundRect(90,by,W-180,150,28);}else{x.beginPath();x.rect(90,by,W-180,150);}
+  x.fill();x.strokeStyle='#35543B';x.lineWidth=4;x.stroke();
+  [[w.km+' km','distance'],[fmtTime(w.ms),'moving'],[String((w.spots||[]).length),'spots']].forEach((cc,k)=>{
+    const cx2=90+(W-180)*(k+.5)/3;
+    x.fillStyle='#243B2A';x.font='700 56px Fraunces, Georgia, serif';x.fillText(cc[0],cx2,by+72);
+    x.fillStyle='#7d8a78';x.font='800 24px Nunito Sans, sans-serif';x.fillText(cc[1],cx2,by+112);
+  });
+  x.fillStyle='#8b967f';x.font='800 22px Nunito Sans, sans-serif';
+  x.fillStyle='#3f5142';x.font='800 24px Nunito Sans, sans-serif';x.fillText('Alvan Maps \u00b7 Val Gherd\u00ebina',W/2,1292);
+  const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+  const file=new File([blob],'walk.png',{type:'image/png'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:'My walk'});return;}catch(e){}
+  }
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='walk-'+new Date(w.t).toISOString().slice(0,10)+'.png';
+  document.body.appendChild(a);a.click();a.remove();
+  toast('Postcard saved to downloads');
 }
 function nearestTrail(pos){
   const ky=110540,kx=111320*Math.cos(pos[0]*Math.PI/180);
