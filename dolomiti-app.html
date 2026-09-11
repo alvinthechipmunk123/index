@@ -66,18 +66,18 @@ body.mpick-on .hero .caret{transform:rotate(180deg)}
 @media (prefers-reduced-motion:reduce){.cloud,.gondel,.grass-sway,.glow{animation:none}.hero{transition:none}}
 
 /* ============ TABS ============ */
-.tabs{display:flex;gap:0;padding:4px 4px 2px;background:var(--parchment);flex:none;
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:900;
+  display:flex;gap:0;padding:4px 4px calc(3px + env(safe-area-inset-bottom));background:var(--parchment);
   border-top:1.5px solid rgba(53,84,59,.14);box-shadow:0 -3px 12px rgba(46,58,51,.07);
-  overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1),padding .28s;max-height:70px}
-body.bar-hidden .tabs{max-height:0;padding-top:0;padding-bottom:0;border-top-width:0}
-body.bar-hidden footer{display:none}
-.barToggle{position:absolute;left:50%;transform:translateX(-50%);z-index:960;
+  overflow:hidden;transition:transform .28s cubic-bezier(.4,0,.2,1)}
+body.bar-hidden .tabs{transform:translateY(110%)}
+.barToggle{position:fixed;left:50%;transform:translateX(-50%);z-index:980;
   width:52px;height:22px;border:1.5px solid rgba(53,84,59,.28);border-bottom:none;
   border-radius:12px 12px 0 0;background:var(--parchment);color:var(--pine);
   font-size:13px;font-weight:900;line-height:1;cursor:pointer;padding:0;
   box-shadow:0 -2px 8px rgba(46,58,51,.12);transition:transform .28s}
-.barToggle{bottom:calc(70px + env(safe-area-inset-bottom))}
-body.bar-hidden .barToggle{bottom:calc(0px + env(safe-area-inset-bottom));transform:translateX(-50%) rotate(180deg)}
+.barToggle{bottom:var(--barH,58px);transition:bottom .28s cubic-bezier(.4,0,.2,1),transform .28s}
+body.bar-hidden .barToggle{bottom:0;transform:translateX(-50%) rotate(180deg)}
 .tab{flex:1;border:none;background:none;padding:5px 0 3px;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:1px;
   font-family:'Nunito Sans';font-weight:800;font-size:10px;color:#8b967f;transition:color .15s;position:relative}
@@ -134,14 +134,14 @@ body.wx-open .legend,body.wx-open .leaflet-control-layers,body.wx-open .leaflet-
 .wxglow b{color:var(--pine-deep)}
 .wxfreeze{margin-top:4px;font-size:11.5px;font-weight:800;text-align:center;color:var(--pine)}
 .wxfreeze.cold{color:#B4483A}
-.rose{position:absolute;right:12px;bottom:96px;z-index:800;width:40px;height:40px;
+.rose{position:absolute;right:12px;bottom:calc(142px + env(safe-area-inset-bottom));z-index:800;width:40px;height:40px;
   background:rgba(253,248,234,.92);border:1.5px solid rgba(53,84,59,.3);border-radius:50%;
   display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
 .toast{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:900;
   background:var(--pine-deep);color:var(--cream);border-radius:999px;padding:8px 18px;
   font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;max-width:88%;text-align:center}
 .toast.show{opacity:1}
-.mapbar{position:absolute;left:10px;right:10px;bottom:12px;
+.mapbar{position:absolute;left:10px;right:10px;bottom:calc(58px + env(safe-area-inset-bottom));
   z-index:810;display:flex;flex-direction:column;gap:8px;pointer-events:none}
 .mapbar>*{pointer-events:auto}
 .trackstats{display:none;background:rgba(253,248,234,.95);backdrop-filter:blur(4px);
@@ -165,7 +165,7 @@ body.wx-open .legend,body.wx-open .leaflet-control-layers,body.wx-open .leaflet-
 .sheet{position:absolute;left:0;right:0;bottom:0;z-index:850;background:var(--parchment);
   border-radius:22px 22px 0 0;box-shadow:0 -8px 30px rgba(46,58,51,.28);
   transform:translateY(110%);transition:transform .32s cubic-bezier(.4,0,.2,1);
-  padding:10px 16px 12px;height:56%;display:flex;flex-direction:column}
+  padding:10px 16px calc(56px + env(safe-area-inset-bottom));height:60%;display:flex;flex-direction:column}
 body.sheet-on .mapbar{bottom:calc(42% + 10px + env(safe-area-inset-bottom))}
 body.sheet-on .rose{display:none}
 body.sheet-on .trackstats{display:none}
@@ -213,7 +213,7 @@ body.sheet-on .trackstats.on{display:none}
 .panoLoad{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:800;
   font-size:14px;color:#7d8a78;animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
-.panoHint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+.panoHint{position:absolute;bottom:calc(60px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
   background:rgba(253,248,234,.9);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;
   color:var(--pine);transition:opacity .5s;pointer-events:none}
 .panoMissing[hidden]{display:none}
@@ -224,7 +224,7 @@ body.sheet-on .trackstats.on{display:none}
 
 /* ============ CARDS ============ */
 .scroller{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;touch-action:pan-y;padding:14px 14px 22px}
+  overscroll-behavior:contain;touch-action:pan-y;padding:14px 14px calc(66px + env(safe-area-inset-bottom))}
 .lede{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:#5f7060;
   margin:2px 4px 14px;line-height:1.45}
 .card{background:var(--parchment);border-radius:var(--r-lg);box-shadow:var(--shadow);
@@ -386,7 +386,6 @@ footer{flex:none;text-align:center;font-size:9px;color:#8b967f;line-height:1;whi
   <button class="tab" data-panel="walks" role="tab"><i>👣</i><span>Walks</span></button>
   <button class="tab" data-panel="pano" role="tab"><i>🖼</i><span>Panorama</span></button>
 </nav>
-<footer>trails © OSM · Alvan Maps · Val Gherdëina · v6.4</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -1598,7 +1597,12 @@ $('mpick').addEventListener('click',e=>{
 
 // iOS reports a viewport taller than what you can see; measure the real one
 let lastVH=0;
+function syncBar(){
+  const t=document.querySelector('.tabs');
+  if(t)document.documentElement.style.setProperty('--barH',Math.round(t.getBoundingClientRect().height)+'px');
+}
 function syncVH(){
+  syncBar();
   const vv=window.visualViewport;
   // keyboard open => trust visualViewport (small). Otherwise take the largest sane measure,
   // because sizing short is what leaves a dead band under the tab bar.
@@ -1619,7 +1623,7 @@ if(window.visualViewport){
 }
 window.addEventListener('resize',syncVH);
 window.addEventListener('orientationchange',()=>setTimeout(syncVH,250));
-syncVH();[60,200,500,1000,2000].forEach(t=>setTimeout(syncVH,t));
+syncBar();syncVH();[60,200,500,1000,2000].forEach(t=>setTimeout(syncVH,t));
 setInterval(syncVH,1500);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(syncVH,120);});
 
@@ -1630,6 +1634,7 @@ if('scrollRestoration' in history)history.scrollRestoration='manual';
 
 $('barToggle').addEventListener('click',()=>{
   const hidden=document.body.classList.toggle('bar-hidden');
+  document.querySelectorAll('.scroller').forEach(sc=>sc.style.paddingBottom=hidden?'18px':'');
   $('barToggle').setAttribute('aria-label',hidden?'show menu':'hide menu');
   setTimeout(()=>{if(map)map.invalidateSize();panoFit&&panoFit();},320);
 });
