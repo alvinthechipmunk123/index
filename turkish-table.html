@@ -369,6 +369,24 @@ body.lantern{--paper:#241A12;--tile:#31241A;--ink:#F6E2C4;--line:#5A422E;--grey:
 body.lantern .escene,body.lantern #pmapsvg{filter:sepia(.25) saturate(.85) brightness(.92)}
 body.lantern .esell,body.lantern .dsell{font-size:15.5px;line-height:1.72}
 body.lantern .ph .tr,body.lantern .bigtr{font-size:26px}
+
+.syncbtn{position:fixed;right:calc(10px + env(safe-area-inset-right));bottom:calc(60px + env(safe-area-inset-bottom));
+  z-index:60;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);
+  background:var(--tile);color:var(--ink);font-size:16px;cursor:pointer;opacity:.82;
+  box-shadow:0 4px 14px -6px rgba(0,0,0,.45)}
+.syncsheet{position:fixed;inset:0;z-index:200;background:rgba(10,14,24,.55);display:flex;align-items:flex-end;justify-content:center}
+.syncbox{width:100%;max-width:480px;background:var(--paper);color:var(--ink);border-radius:16px 16px 0 0;
+  padding:18px 18px calc(20px + env(safe-area-inset-bottom));border:2px solid var(--line);border-bottom:0}
+.synchd{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:20px;margin-bottom:8px}
+.syncp{font-size:13px;line-height:1.55;opacity:.9;margin:0 0 10px}
+.syncp.small{font-size:11.5px;opacity:.7;margin-top:12px}
+.syncbox input{width:100%;font:inherit;font-size:15px;padding:10px 12px;border-radius:10px;
+  border:1.5px solid var(--line);background:var(--tile);color:var(--ink);-webkit-appearance:none}
+.syncrow{display:flex;gap:8px;margin-top:10px}
+.syncrow button{flex:1;font:inherit;font-size:15px;font-weight:600;padding:11px;border-radius:10px;
+  border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer}
+.syncrow button.ghost{background:transparent;color:var(--ink);font-weight:500;border-color:var(--line)}
+.syncmsg{font-family:'IBM Plex Mono',monospace;font-size:11.5px;margin-top:10px;opacity:.8;line-height:1.5}
 .lanternbtn{position:fixed;right:calc(10px + env(safe-area-inset-right));bottom:calc(10px + env(safe-area-inset-bottom));
   z-index:60;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);
   background:var(--tile);color:var(--ink);font-size:17px;cursor:pointer;opacity:.82;
@@ -517,6 +535,7 @@ body.night header{filter:saturate(.8) brightness(.85)}
 </header>
 
 <button class="lanternbtn" id="lanternbtn" title="Dim-room mode">🕯️</button>
+<button class="syncbtn" id="syncbtn" title="Sync to GitHub">☁︎</button>
 <div class="wrap">
   <div class="tabwrap" id="tabwrap">
   <div class="tabs" id="tabs">
@@ -2286,7 +2305,7 @@ function registerSW(){
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol==='file:') return;          // file:// can't host workers
   const src=`
-    const CACHE='alvan-v21';
+    const CACHE='alvan-v25';
     self.addEventListener('install',e=>{ self.skipWaiting(); });
     self.addEventListener('activate',e=>{ e.waitUntil((async()=>{
       const keys=await caches.keys();
@@ -2486,11 +2505,11 @@ const WORD={d1:{t:'yoku\u015f',p:'yo-KOOSH',e:'uphill \u2014 the leader will say
 function renderExp(){
   const P=PHASES[phase]; const chips=P.chips;
   {const td=document.getElementById('tab-do');
-   if(td) td.innerHTML = phase==='lycian'?'🥾 Lycian Way' : phase==='capp'?'🎈 Cappadocia' : phase==='ist'?'⛴ İstanbul' : '🐟 Fethiye';}
+   if(td) td.innerHTML = phase==='lycian'?'🥾 Lycian Way' : phase==='capp'?'🎈 Cappadocia' : phase==='kadikoy'?'🏠 Kadıköy' : phase==='ist'?'⛴ İstanbul' : '🐟 Fethiye';}
   const dayEl=document.getElementById('days');
   if(!chips.includes(day)) day='All';
   dayEl.innerHTML=chips.map(d=>`<button class="chip${d===day?' on':''}" data-d="${d}">${d==='All'?'All':d}</button>`).join('');
-  document.querySelector('#pane-do .h2').textContent=P.name+' · '+(phase==='fethiye'?'the fifteen':phase==='lycian'?'the trip':phase==='capp'?'the trip':'the city, by district');
+  document.querySelector('#pane-do .h2').textContent=P.name+' · '+(phase==='fethiye'?'the fifteen':phase==='lycian'?'the trip':phase==='capp'?'the trip':phase==='kadikoy'?'home base':'the city, by district');
   drawDmap();
   let list=[...(EXPS[phase]||[])];
   if(phase==='ist') list=list.filter(x=>!x.dist||x.dist===dist);
@@ -3083,7 +3102,16 @@ const PHASES={
      <span>· Dolmuş Göreme ↔ Avanos ↔ Ürgüp runs hourly-ish from the otogar.</span>
      <button class="spk" data-say="Müsait bir yerde">🔊</button><span><b>Müsait bir yerde</b></span>`,
    eatfoot:'Cave-hotel restaurants and the rooftop-view places are ₺₺₺ and left out by rule. Avanos is 20 minutes and eats better than Göreme; the Kadın Kooperatifi is the honest lunch in town.'},
- ist:{name:'İstanbul',ico:'⛴',lat:40.98,lon:29.03,x:54,y:26,lx:12,ly:2,guided:false,
+ kadikoy:{name:'Kadıköy',ico:'🏠',lat:40.99,lon:29.03,x:72,y:36,lx:11,ly:4,guided:false,
+   pal:{coral:'#2E9EA6',turq:'#D9463E',gold:'#E0A83C'},mkm:'bosphorus',
+   chips:['All','Markets','Eat','Cats','Ferry','Gym','Buy','Sophia'],
+   dofoot:`<span><b>Home base: Moda, Kadıköy · Sep 19–26.</b> 700,000 people living ordinary lives, and the only part of the week that costs nothing: markets, ferries, walking, cats, meyhanes.</span>
+     <span>· <b>Market days on this side:</b> Tue — Salı Pazarı (produce). Fri — same ground, textiles + a flea corner. Daily — the Çarşı fish and cheese grid. Sun — İnebolu village market across the water in Kasımpaşa.</span>
+     <span>· <b>Gyms:</b> the strongest fitness district in Turkey — MACFit and studios along Bahariye, running on the Moda sahil at 7am. Day passes ₺400–800.</span>
+     <span>· <b>Shopping:</b> Bahariye Cd for LCW/Koton/Mavi · Kuşdili Cd for şile bezi (₺1,000 = three shirts) · the Friday pazar for the same cloth cheaper.</span>
+     <span>· Ferry from the iskele: Eminönü 25 min · Karaköy 20 · Beşiktaş 20. Tap any contactless card, one tap per person, last boats ~23:00.</span>`,
+   lat2:0},
+ ist:{name:'İstanbul',ico:'⛴',lat:41.01,lon:28.97,x:50,y:26,lx:0,ly:-10,la:'middle',guided:false,
    pal:{coral:'#1B4F8A',turq:'#E0A83C',gold:'#E0A83C'},mkm:'bosphorus',
    chips:['All','Transit','Cats','Kadıköy','Üsküdar','Karaköy','Beyoğlu','Eminönü','Sultanahmet','Balat','Bosphorus','Ferry','Sophia'],
    dofoot:`<span><b>Base: Moda, Kadıköy. Sep 19–26.</b> One district a day, the ferry as the commute. İstanbulkart from any machine, tap on every ferry, tram, metro and bus.</span>
@@ -3095,7 +3123,7 @@ const PHASES={
 };
 let phase='fethiye';
 try{ const sp=localStorage.getItem('alvan_phase'); if(sp&&PHASES[sp]) phase=sp; }catch(e){}
-const PHASE_ORDER=['fethiye','lycian','capp','ist'];
+const PHASE_ORDER=['fethiye','lycian','capp','kadikoy','ist'];
 
 /* the drawn map — Turkey, İznik style */
 function trailPct(){
@@ -3277,52 +3305,80 @@ const EXPS={fethiye:EXP,
   sell:'Nothing planned; luggage storage at the hotel if your flight is late. Last chance for the two things that only exist here: a bag of kabak çekirdeği from a kuruyemişçi for the plane, and a bottle of Emir or Kalecik Karası that you cannot buy at home. Then İstanbul, and the week in Moda.',
   hist:'Nevşehir\'s roasted pumpkin seeds are a regional obsession — sold at every corner, eaten by the handful on a bench at dusk, husks in a growing pile. This is what Göreme does after dinner. Get the tuzsuz, unsalted, and learn the one-handed crack. 60.5 km walked over six days, topping out at 1,400 m — gentler than the Lycian Way and a completely different country: no sea, no rakı culture, wine instead, and everything you walked through was dug rather than built.'}
  ],
- ist:[
- {id:'ciya',n:'Çiya Sofrası',k:'Eat',kc:'eat',tier:'must',days:['Kadıköy','Sophia'],mkm:'bosphorus',dist:'kadikoy',
+ kadikoy:[
+ {id:'kdk_market',n:'Market week, day by day',k:'Markets',kc:'',tier:'must',days:['Markets', 'Sophia'],mkm:'bosphorus',
+  m:'Tue · Fri · daily — and Sunday across the water',
+  sell:'TUESDAY — Salı Pazarı, the Asian side\'s biggest: fruit, vegetables, cheese, olives, textiles, shoes, household. Ten minutes from the flat. It has been running at Merdivenköy and is due to move to a new ground at Hasanpaşa — confirm the location with the host, don\'t trust a pin. FRIDAY — the same ground runs again, and Friday is the TEXTILE day: clothing, curtains, carpets, bags, fabric, with a small bit pazarı (flea corner) at the far end. That is where the şile bezi and linen shirts are at pazar prices rather than shop prices. DAILY — the Kadıköy Çarşı, the permanent grid of fish, cheese, pickle, coffee and spice shops that feeds the district. SUNDAY — worth the crossing: Tarihi İnebolu Köy Pazarı in Kasımpaşa, where Kastamonu villagers drive down Saturday night, sell village bread, cheese, köy eggs, tomatoes and homemade jam, and drive home Sunday evening.',
+  hist:'The pazar is the oldest institution in Turkish urban life and the reason supermarkets never took the country: a street closes, trestles go up before dawn, and by nightfall there is no trace. Prices are shouted, not printed, and the last hour of any pazar is when they fall.'},
+ {id:'kdk_carsi',n:'The Çarşı: your Fethiye hali at city scale',k:'Markets',kc:'',tier:'must',days:['Markets', 'Eat', 'Sophia'],mkm:'bosphorus',
+  m:'Daily · the grid between the iskele and Bahariye',
+  sell:'Fish on ice with the September catch — lüfer arriving, palamut, hamsi — the pickle shops with forty jars, the cheesemongers who cut and hand you a taste, Fazıl Bey for coffee, the dried-fruit men, the olive vats. This is a working market for 700,000 people, not a spectacle: nobody is selling you anything you would not buy. Walk it once with nothing in mind, then again with a list.'},
+ {id:'kdk_day',n:'A day that costs nothing',k:'Walk',kc:'',tier:'must',days:['Cats', 'Ferry', 'Sophia'],mkm:'bosphorus',
+  m:'Free · the argument for staying on this side',
+  sell:'Fish market at 8 while it is still a market. Simit and çay on the Moda sahil with whichever cats join. The promenade south past the kedi evleri to Moda burnu. Çarşı for lunch off a counter. The ferry to Karaköy and back at dusk for the price of one tap — the same water the €39 cruises charge for. Meyhane on Kadife Sokak at nine. Total outlay: dinner. Everything the historic peninsula charges €55 a head for, this side gives away.'},
+ {id:'kdk_gym',n:'Gyms, and the 7am sahil',k:'Gym',kc:'',tier:'should',days:['Gym'],mkm:'bosphorus',
+  m:'MACFit and studios on Bahariye · day passes ₺400–800',
+  sell:'After five weeks of thin provincial gyms this is the correction: Kadıköy is the strongest fitness district in Turkey, with MACFit and boutique studios along Bahariye and the side streets, and the Moda seafront carries a genuine running culture at dawn. Day passes rather than memberships; walk in. The sahil loop from Moda burnu north is flat, paved and about 3km each way.'},
+ {id:'kdk_buy',n:'What to buy on this side',k:'Buy',kc:'',tier:'should',days:['Buy', 'Sophia'],mkm:'bosphorus',
+  m:'Bahariye · Kuşdili · the Friday pazar',
+  sell:'BAHARIYE CADDESI — the pedestrian street: LC Waikiki, Koton, DeFacto, Mavi, Colin\'s in a row, with deeper September sale rails than Fethiye had. Ten minutes from the flat. KUŞDİLİ CADDESİ — two şile bezi shops side by side at No:46 and 50, %100 pamuk, open Sundays; ₺1,000 buys three shirts. THE FRIDAY PAZAR — the same cloth cheaper, if you would rather rummage. Also on this side: the independent designer shops off Moda Caddesi, and vintage in the side streets, which Fethiye simply did not have.'},
+ {id:'ciya',n:'Çiya Sofrası',k:'Eat',kc:'eat',tier:'must',days:['Kadıköy','Sophia'],mkm:'bosphorus',
   m:'Kadıköy market, 10 min from Moda · ₺₺ · point at the counter',
   sell:'The most important restaurant in Turkey for regional Anatolian cooking — a lokanta at heart, where the chef has spent thirty years collecting dishes from villages that were forgetting them. Point at the counter; a third of it is zeytinyağlı. Treat it as a museum with a kitchen.',
   hist:'Musa Dağdeviren\'s Çiya was the subject of a Chef\'s Table episode and is the reason food writers fly to Kadıköy.'},
- {id:'salipazari',n:'Kadıköy Salı Pazarı',k:'Iconic',kc:'',tier:'must',days:['Kadıköy'],mkm:'bosphorus',dist:'kadikoy',
+ {id:'salipazari',n:'Kadıköy Salı Pazarı',k:'Iconic',kc:'',tier:'must',days:['Kadıköy'],mkm:'bosphorus',
   m:'Tuesday · the giant version of Fethiye\'s · free',
   sell:'The Tuesday market that Fethiye\'s was a rehearsal for — the largest open-air market on the Asian side, blocks of produce, cheese wheels, olives, textiles. Same rules: produce side honest, bazaar side theatre. Bring the numbers helper.',
   hist:'Kadıköy\'s markets predate the Ottomans; the Salı Pazarı moved to its current site in the 2010s and got bigger.'},
- {id:'ferry',n:'Çay on the ferry deck',k:'Iconic',kc:'',tier:'must',days:['Kadıköy','Ferry'],mkm:'bosphorus',dist:'kadikoy',
+ {id:'ferry',n:'Çay on the ferry deck',k:'Iconic',kc:'',tier:'must',days:['Kadıköy','Ferry'],mkm:'bosphorus',
   m:'Kadıköy → Karaköy or Eminönü · ₺20 · tea on deck',
   sell:'The ferry is the novelty: twenty minutes crossing between continents with a tulip glass of tea from the man with the tray, gulls following for simit, the whole skyline arriving. Take it for no reason. Take it at dusk.',
   hist:'Şirket-i Hayriye started the Bosphorus ferries in 1851 — the oldest public ferry company in the world still running.'},
- {id:'lufer',n:'Lüfer week',k:'Eat',kc:'eat',tier:'must',days:['Kadıköy'],mkm:'bosphorus',dist:'kadikoy',
+ {id:'lufer',n:'Lüfer week',k:'Eat',kc:'eat',tier:'must',days:['Kadıköy'],mkm:'bosphorus',
   m:'September · any fish lokanta · grilled, rocket, rakı',
   sell:'The bluefish migration through the Bosphorus is the city\'s edible calendar event, and it opens in September. Grilled whole, salt and lemon, a pile of rocket, a duble. Sized by name: çinekop small, lüfer proper, kofana large. The app already knows the word; now say it.',
   hist:'Lüfer was so central to Ottoman İstanbul that the sultans\' poets wrote about it; overfishing nearly ended it, and the September run is now the moment the city waits for.'},
- {id:'fasilnight',n:'The fasıl night',k:'Night',kc:'night',tier:'must',days:['Kadıköy'],mkm:'fasil',dist:'kadikoy',
+ {id:'fasilnight',n:'The fasıl night',k:'Night',kc:'night',tier:'must',days:['Kadıköy'],mkm:'fasil',
   m:'Kadife Sokak meyhanes · ask which night the takım plays',
   sell:'The real thing the app\'s engine has been gesturing at: oud, kanun, clarinet, a singer, a room that knows the words by the third rakı. Kadıköy\'s meyhane street runs live fasıl on set nights — ask at the door which. Sit close.',
   hist:'Fasıl is the Ottoman urban repertoire kept alive by Greek, Armenian and Turkish meyhane keepers; Zeki Müren and Müzeyyen Senar are its voices.'},
- {id:'modastreet',n:'Moda\'s own street',k:'Walk',kc:'walk',tier:'should',days:['Kadıköy','Sophia'],mkm:'bosphorus',dist:'kadikoy',
+ {id:'modastreet',n:'Moda\'s own street',k:'Walk',kc:'walk',tier:'should',days:['Kadıköy','Sophia'],mkm:'bosphorus',
   m:'Dondurmacı Ali Usta · Baylan · the Moda pier',
   sell:'Ali Usta\'s ice cream — a queue out the door for sixty years, the sour cherry — then Baylan, a 1920s patisserie whose Kup Griye is the city\'s most famous dessert, then the pier at the end of Moda for the sunset side of the water. Your neighbourhood, done properly.',
   hist:'Moda was the summer suburb of Levantine and Greek İstanbul; the pier is a 1917 Art Nouveau building by Vedat Tek.'},
- {id:'transit1',dist:'kadikoy',n:'How to move: the ferry is the commute',k:'Transit',kc:'',tier:'must',days:['Kadıköy', 'Ferry', 'Transit'],mkm:'fasil',
+ {id:'transit1',n:'How to move: the ferry is the commute',k:'Transit',kc:'',tier:'must',days:['Kadıköy', 'Ferry', 'Transit'],mkm:'fasil',
   m:'Tap a bank card or İstanbulkart at the turnstile · one tap per person · last boats ~23:00',
   sell:'Everything you want is a ferry away and the ferry is the best part of the day. You don’t need an İstanbulkart at all — a contactless bank card, Apple Pay or Google Pay taps straight through the turnstile, one tap per person. If you want the card anyway, machines at any pier sell one for about ₺130 including credit. A crossing is ₺53–59 on the main lines; transfers within 120 minutes are discounted, and the 24-hour cap for all transit combined sits around ₺60–75. Big piers like Eminönü and Kadıköy have several docks side by side — read the digital sign over each entrance for the destination and make sure you are at a Şehir Hatları dock, not a private tour boat.',
   hist:'The Şehir Hatları company has run the city’s ferries since 1844; the boats are the same white-and-orange design commuters have boarded for a century, and the tea boy with the tray on the upper deck is part of the fare in spirit if not in law.'},
- {id:'transit2',dist:'kadikoy',n:'The four crossings from Kadıköy',k:'Transit',kc:'',tier:'must',days:['Kadıköy', 'Ferry', 'Transit'],mkm:'fasil',
+ {id:'transit2',n:'The four crossings from Kadıköy',k:'Transit',kc:'',tier:'must',days:['Kadıköy', 'Ferry', 'Transit'],mkm:'fasil',
   m:'Kadıköy → Eminönü 25 min · → Karaköy 20 · → Beşiktaş 20 · → Üsküdar by bus or Marmaray',
   sell:'From the Kadıköy iskele, three docks cover the city. EMİNÖNÜ (via Karaköy): the bazaars, Süleymaniye, and the T1 tram to Sultanahmet — every 20 minutes, ~25 minutes, the best Bosphorus view for one fare. KARAKÖY: same boat, first stop — Galata, Beyoğlu, Güllüoğlu. BEŞİKTAŞ: every 20 minutes 06:30–22:30, 20 minutes — for Ortaköy and the Bosphorus buses north to Bebek and Rumeli Hisarı. ÜSKÜDAR: no direct Kadıköy ferry — take the Marmaray train two stops from Ayrılık Çeşmesi, or the 12/12A bus along the shore, 15 minutes. Last departures on the main lines are around 23:00; after that it’s a ₺400–600 taxi across the bridge. The Eminönü → Üsküdar crossing at sunset, ten minutes, is the one every guide names first.'},
+ {id:'transit4',n:'Taxis, dolmuş, and the apps',k:'Transit',kc:'',tier:'should',days:['Kadıköy', 'Transit'],mkm:'fasil',
+  m:'BiTaksi or Uber (taxis only) · dolmuş from the Kadıköy rıhtım · metered, insist',
+  sell:'İstanbul taxis are yellow, metered, and famous for not using the meter with foreigners — say “taksimetre” as you get in, or skip the argument and call one on BiTaksi or Uber, which in İstanbul dispatch licensed taxis at meter rate with the route tracked. A crossing of the bridge at night is ₺400–600. Dolmuş run from the Kadıköy waterfront along the Asian shore and to Üsküdar, flat fare, the same shout-to-stop system you learned in Fethiye. Never take a taxi you didn’t call from outside Sultanahmet or the Grand Bazaar.'},
+ {id:'transit5',n:'Airport in, airport out',k:'Transit',kc:'',tier:'should',days:['Kadıköy', 'Transit'],mkm:'fasil',
+  m:'Arrive: Sabiha Gökçen (SAW) is the Asian-side airport · Depart: check which',
+  sell:'Flying in from Kayseri, land at SABİHA GÖKÇEN if you can — it is on your side of the water: the M4 Metro runs from the terminal to Kadıköy in about 55 minutes, or the HAVABÜS shuttle to Kadıköy is 60–90 minutes, or a taxi ₺900–1,200. İstanbul Airport (IST) is the European side, an hour-plus by HAVAİST bus to Kadıköy or ₺1,500+ by taxi. For the flight home, the same rule in reverse: if the ticket says IST, leave Moda two and a half hours before the departure time, not two.'},
+ {id:'cat1',n:'The cats of Moda',k:'Cats',kc:'',tier:'must',days:['Kadıköy', 'Sophia', 'Cats'],mkm:'fasil',
+  m:'Moda sahil, any hour · the Kedi documentary’s home turf',
+  sell:'İstanbul has an estimated 200,000 street cats and Kadıköy is where the 2016 film Kedi was shot — the promenade, the fish market and the café tables are the film set. The cats belong to the street, not to anyone; every shop has a bowl, every bench has a resident, and the kedi evleri (cat houses) along the sahil are municipal. The morning move: simit and çay on the Moda seafront with whoever joins you. Watch Kedi on the flight up.',
+  hist:'The city’s cats date to the Ottoman grain ships — rat-catchers off the boats — and a hadith tradition that treats cats as clean animals made feeding them a small act of piety. That is why a Muslim megacity runs the world’s largest informal cat welfare system with no charity in charge.'},
+ {id:'dog1',n:'The street dogs, tagged and fed',k:'Animals',kc:'',tier:'should',days:['Kadıköy', 'Cats'],mkm:'fasil',
+  m:'Every park and ferry pier · the yellow ear tags',
+  sell:'İstanbul’s street dogs wear yellow ear tags — vaccinated, neutered, registered by the belediye, then released back to their patch. They sleep on the ferry piers and in the parks, huge and placid, and the city feeds them. It is a policy under attack: a 2024 law ordered them into shelters and the neighbourhoods have quietly resisted. Feed one on the Moda pier and you are taking a side.',
+  hist:'The 1910 Hayırsızada massacre — 80,000 dogs shipped to an island to starve — is the city’s shame story, taught to every child; the catch-neuter-release regime that followed was the reparation. The 2024 rollback reopened the wound.'},
+ {id:'fish1',n:'The Kadıköy fish market at dawn',k:'Animals',kc:'',tier:'should',days:['Kadıköy', 'Cats'],mkm:'fasil',
+  m:'Balıkçılar Çarşısı, 7–9am · lüfer, palamut, the cats’ breakfast',
+  sell:'The fish market lane between Kadıköy and Moda is a working market before the cafés open: the September catch on ice — lüfer, palamut, hamsi arriving — the fishmongers shouting prices, and the market cats working the gutters for their cut. It is the Fethiye hali at city scale, and the cats are the same institution.'},
+ {id:'princes1',n:'Büyükada, if the week has a spare day',k:'Ferry',kc:'',tier:'if',days:['Ferry', 'Sophia'],mkm:'fasil',
+  m:'Ferry from Kadıköy 60 min · no cars, bicycles, the monastery hill',
+  sell:'The largest of the Princes\' Islands, a car-free hour from Kadıköy: rent bicycles, ride the loop, climb to the Aya Yorgi monastery for the view, fish lunch on the front. Trotsky lived here for four years in exile. Best on a weekday — Sunday the whole city comes.'}
+ ],
+ ist:[
  {id:'transit3',dist:'sultanahmet',n:'Trams, Marmaray, and the one funicular',k:'Transit',kc:'',tier:'should',days:['Sultanahmet', 'Transit'],mkm:'fasil',
   m:'T1 tram Eminönü → Sultanahmet · Marmaray under the strait · Tünel up to Beyoğlu',
   sell:'T1 tram: from the Eminönü pier, three stops to Sultanahmet, on to the Grand Bazaar (Beyazıt) — tap on, no tap off. MARMARAY: the rail tunnel under the Bosphorus; from Ayrılık Çeşmesi (a 10-minute walk from Moda or one Metro stop) it puts you at Sirkeci in 8 minutes — the fast way to Eminönü when the ferry’s not the point, and the way to Üsküdar. TÜNEL: the 1875 funicular from Karaköy up to the top of İstiklal, 90 seconds, the second-oldest underground in the world. The F1 funicular does the same from Kabataş to Taksim. All on the same tap.',
   hist:'Marmaray’s tunnel runs 60 metres below the Bosphorus and its excavation found the Byzantine harbour of Theodosius under Yenikapı — 37 shipwrecks and the oldest boats ever found in the city, which delayed the line by years and rewrote the archaeology.'},
- {id:'transit4',dist:'kadikoy',n:'Taxis, dolmuş, and the apps',k:'Transit',kc:'',tier:'should',days:['Kadıköy', 'Transit'],mkm:'fasil',
-  m:'BiTaksi or Uber (taxis only) · dolmuş from the Kadıköy rıhtım · metered, insist',
-  sell:'İstanbul taxis are yellow, metered, and famous for not using the meter with foreigners — say “taksimetre” as you get in, or skip the argument and call one on BiTaksi or Uber, which in İstanbul dispatch licensed taxis at meter rate with the route tracked. A crossing of the bridge at night is ₺400–600. Dolmuş run from the Kadıköy waterfront along the Asian shore and to Üsküdar, flat fare, the same shout-to-stop system you learned in Fethiye. Never take a taxi you didn’t call from outside Sultanahmet or the Grand Bazaar.'},
- {id:'transit5',dist:'kadikoy',n:'Airport in, airport out',k:'Transit',kc:'',tier:'should',days:['Kadıköy', 'Transit'],mkm:'fasil',
-  m:'Arrive: Sabiha Gökçen (SAW) is the Asian-side airport · Depart: check which',
-  sell:'Flying in from Kayseri, land at SABİHA GÖKÇEN if you can — it is on your side of the water: the M4 Metro runs from the terminal to Kadıköy in about 55 minutes, or the HAVABÜS shuttle to Kadıköy is 60–90 minutes, or a taxi ₺900–1,200. İstanbul Airport (IST) is the European side, an hour-plus by HAVAİST bus to Kadıköy or ₺1,500+ by taxi. For the flight home, the same rule in reverse: if the ticket says IST, leave Moda two and a half hours before the departure time, not two.'},
- {id:'cat1',dist:'kadikoy',n:'The cats of Moda',k:'Cats',kc:'',tier:'must',days:['Kadıköy', 'Sophia', 'Cats'],mkm:'fasil',
-  m:'Moda sahil, any hour · the Kedi documentary’s home turf',
-  sell:'İstanbul has an estimated 200,000 street cats and Kadıköy is where the 2016 film Kedi was shot — the promenade, the fish market and the café tables are the film set. The cats belong to the street, not to anyone; every shop has a bowl, every bench has a resident, and the kedi evleri (cat houses) along the sahil are municipal. The morning move: simit and çay on the Moda seafront with whoever joins you. Watch Kedi on the flight up.',
-  hist:'The city’s cats date to the Ottoman grain ships — rat-catchers off the boats — and a hadith tradition that treats cats as clean animals made feeding them a small act of piety. That is why a Muslim megacity runs the world’s largest informal cat welfare system with no charity in charge.'},
  {id:'cat2',dist:'uskudar',n:'The cat mosque: Aziz Mahmud Hüdayi',k:'Cats',kc:'',tier:'must',days:['Üsküdar', 'Sophia', 'Cats'],mkm:'fasil',
   m:'Üsküdar, 10 min uphill from the ferry · dress modestly, shoes off',
   sell:'The imam here adopted the neighbourhood’s cats and let them into the prayer hall; the story went round the world and the mosque has been the cat mosque since. Dozens sleep on the carpets, on the mihrab steps, in the courtyard sun. Go outside prayer times, take your shoes off, sit on the floor and one will find you. The dervish lodge and tomb of Aziz Mahmud Hüdayi next door are the reason pilgrims come; the cats are why you will.',
@@ -3330,16 +3386,9 @@ const EXPS={fethiye:EXP,
  {id:'cat3',dist:'balat',n:'Balat’s cats and the painted stairs',k:'Cats',kc:'',tier:'should',days:['Balat', 'Sophia', 'Cats'],mkm:'fasil',
   m:'Vodina Cd and the coloured houses · café cats, church cats',
   sell:'The Golden Horn quarters have the most photographed cats in the city because the houses are painted and the cats sit on the steps. The antiques lanes and the cafés around Forno each keep their own; the courtyard of the Greek Patriarchate has a colony the priests feed. Combine with the Balat walk — the cats are the punctuation.'},
- {id:'dog1',dist:'kadikoy',n:'The street dogs, tagged and fed',k:'Animals',kc:'',tier:'should',days:['Kadıköy', 'Cats'],mkm:'fasil',
-  m:'Every park and ferry pier · the yellow ear tags',
-  sell:'İstanbul’s street dogs wear yellow ear tags — vaccinated, neutered, registered by the belediye, then released back to their patch. They sleep on the ferry piers and in the parks, huge and placid, and the city feeds them. It is a policy under attack: a 2024 law ordered them into shelters and the neighbourhoods have quietly resisted. Feed one on the Moda pier and you are taking a side.',
-  hist:'The 1910 Hayırsızada massacre — 80,000 dogs shipped to an island to starve — is the city’s shame story, taught to every child; the catch-neuter-release regime that followed was the reparation. The 2024 rollback reopened the wound.'},
  {id:'bird1',dist:'eminonu',n:'Pigeons at the Yeni Cami, gulls on the ferry',k:'Animals',kc:'',tier:'should',days:['Eminönü', 'Ferry', 'Cats'],mkm:'fasil',
   m:'Eminönü square · buy the seed cup, ₺20',
   sell:'The seed-sellers on the Yeni Cami steps have sold birdseed to the same pigeons for a century; ₺20 buys a cup and a photograph of Sophia in a cloud of them. On every ferry the gulls follow the stern for simit — tear it, hold it up, and one takes it from your fingers at speed. Feeding the gulls is the single most İstanbul thing a commuter does.'},
- {id:'fish1',dist:'kadikoy',n:'The Kadıköy fish market at dawn',k:'Animals',kc:'',tier:'should',days:['Kadıköy', 'Cats'],mkm:'fasil',
-  m:'Balıkçılar Çarşısı, 7–9am · lüfer, palamut, the cats’ breakfast',
-  sell:'The fish market lane between Kadıköy and Moda is a working market before the cafés open: the September catch on ice — lüfer, palamut, hamsi arriving — the fishmongers shouting prices, and the market cats working the gutters for their cut. It is the Fethiye hali at city scale, and the cats are the same institution.'},
  {id:'aqua1',dist:'sultanahmet',n:'The Bosphorus dolphins and the aquarium you skip',k:'Animals',kc:'',tier:'if',days:['Bosphorus', 'Ferry'],mkm:'fasil',
   m:'Any ferry crossing, mornings · look for the fins mid-channel',
   sell:'Bottlenose and harbour porpoise still run the Bosphorus — the current pushes fish through and the dolphins follow. Morning ferries, mid-channel, watch the water not the skyline. The Florya aquarium is fine and an hour away; the free version is a ₺20 ferry ride with your eyes open.'},
@@ -3398,9 +3447,7 @@ const EXPS={fethiye:EXP,
  {id:'bosph2',dist:'bosphorus',n:'Ortaköy and the bridge at dusk',k:'Night',kc:'',tier:'should',days:['Bosphorus'],mkm:'fasil',
   m:'Bus or ferry · kumpir on the square, the mosque under the bridge',
   sell:'The baroque mosque sitting under the Bosphorus Bridge is the picture; the square behind it is where İstanbul eats kumpir — a baked potato split and loaded with everything on the stall — and waffles, at sunset, on a Sunday. Touristy in the local sense: the tourists are Turkish.'},
- {id:'princes1',dist:'kadikoy',n:'Büyükada, if the week has a spare day',k:'Ferry',kc:'',tier:'if',days:['Ferry', 'Sophia'],mkm:'fasil',
-  m:'Ferry from Kadıköy 60 min · no cars, bicycles, the monastery hill',
-  sell:'The largest of the Princes\' Islands, a car-free hour from Kadıköy: rent bicycles, ride the loop, climb to the Aya Yorgi monastery for the view, fish lunch on the front. Trotsky lived here for four years in exile. Best on a weekday — Sunday the whole city comes.'}]
+ ]
 };
 /* tiers for the Fethiye fifteen */
 const FTIER={market:'must',tombs:'must',kayakoy:'must',meyhane:'must',oztoklu:'should',doner:'should',pide:'should',lokanta:'should',
@@ -3450,8 +3497,6 @@ const RS={fethiye:R,lycian:[],
   m:'4.6 · 628 reviews',t:'12–10pm daily',w:'Atatürk Cd. 6, Avanos',ph:'+90 552 735 38 38'},
  {n:'Sarhan',k:'River breakfast, testi dinner',k2:'Lokanta',s:1,pr:2,d:'A rooftop over the Kızılırmak bridge in Avanos — Turkish breakfast in the morning, testi kebab opened at the table at night, the best lentil soup one reviewer had ever had. Live music some evenings.',
   m:'4.8 · 417 reviews',t:'12–10pm, from 9am weekends',w:'Atatürk Cd. 92, Avanos',ph:'+90 505 757 68 50'},
- {n:'Tarihi Göreme Kahvesi',k:'The old man\'s tea house',k2:'Kahve',s:1,pr:1,d:'Where Göreme\'s men drink tea and play cards in the sun. Turkish coffee on the ember, cheap, board games, and the only place in town to watch local life rather than tourist life. Confirm the price before ordering.',
-  m:'4.0 · 21 reviews',t:'9am–11pm daily',w:'Aydınlı-Orta, Göreme'},
  {n:'King\'s Coffee',k:'The owner and his dog',k2:'Kahve',s:2,pr:1,d:'Özcan opens at 5:30am for the balloon crowd and makes pistachio coffee with real pistachio cream. His dog works the room. Not a Turkish-coffee place — but the warmest cup in Göreme, and vegan cheesecake for Sophia.',
   m:'4.8 · 4,045 reviews',t:'5:30am–7:30pm daily',w:'İçeridere Sk. 3/B, Göreme',ph:'+90 533 238 50 61'},
  {n:'Dürümlet',k:'The wrap counter, 4.9',k2:'Street',s:0,d:'Two women, a counter, and the best-value meal in Göreme. Chicken, beef, pastırma or mushroom wraps — one is a full meal — and a free drink with every roll. Handwritten menus translated by travellers taped to the wall. 5 min from the hotel.',
@@ -3470,7 +3515,35 @@ const RS={fethiye:R,lycian:[],
   m:'4.0 · 22 reviews',t:'9am–11pm',w:'Aydınlı · Orta, Göreme',ph:''},
  {n:'HeM Coffee & Breakfast',k:'Menemen and börek, 6:30am',k2:'Kahve',s:1,d:'Reviewers came three days running. Menemen with free bread, homemade börek made by the owner\'s mother Aysel, pistachio coffee, and a cat. Warm service, reasonable prices, opens 6:30am — the post-balloon breakfast.',
   m:'4.8 · 668 reviews',t:'6:30am–11pm',w:'Bilal Eroğlu Cd. 47B, Göreme',ph:'+90 541 213 32 88'},
- {n:'Tandır Restaurant',k:'The hidden gem, 4.9',k2:'Lokanta',s:1,d:'\\\'I almost don\\\'t want to recommend this because I\\\'d like it to stay a secret.\\\' Testi kebabı and kavurma, a passionate chef, and so many complimentary dishes — salad, smoked aubergine, bean soup, bread, wraps, fruit, free-flowing çay — that people skip dinner after lunch. Best value in Göreme. Don\\\'t miss the katmer.',
+ {n:'Badem Restaurant',k:'5.0 · bring your own wine',k2:'Lokanta',s:1,d:'IN TOWN, 10 MIN. Ottoman cooking on a roof terrace over Göreme — karınıyarık, lamb shank, a well-balanced menu with real vegetarian options, everything cooked to order (so it is slow, by design). And they let you bring your own wine or beer, which after the Şiluh and the Turasan is the point. Closed Tuesdays, evenings only.',
+  m:'5.0 · 726 reviews',t:'5–10pm, closed Tue',w:'Hacı İsmail Efendi Sk. 25, Göreme',ph:'+90 537 271 26 65'},
+ {n:'Old Cappadocia Restaurant',k:'Barış teaches you gözleme',k2:'Lokanta',s:1,d:'IN TOWN. Guests get pulled into the kitchen — one reviewer was helping make the gözleme on their last day. Potato gözleme, içli köfte, spinach-cheese gözleme, testi, and a katmer with pistachio and kaymak that people call the best they have had. Unlimited apple tea.',
+  m:'4.5 · 3,285 reviews',t:'9am–11pm',w:'İçeridere Sk. 8, Göreme',ph:''},
+ {n:'Cappadocia Kebab',k:'Rooftop, and open at 4:30am',k2:'Lokanta',s:1,d:'IN TOWN. Private rooftop with sunset views, six or seven complimentary mezes and fresh pide before the main, and generous portions. Opens 4:30am, which makes it the balloon-morning breakfast as well as a dinner. Couples come back three nights running.',
+  m:'4.9 · 546 reviews',t:'4:30am–11pm',w:'Bilal Eroğlu Cd. 69, Göreme',ph:'+90 540 271 50 50'},
+ {n:'CANCAN Cafe',k:'Big plates, free soup, free çay',k2:'Lokanta',s:1,d:'IN TOWN, a short walk out. Large portions at affordable prices, and after every meal they bring tea and offer soup and bread on the house. Turkish ravioli and chicken şiş are the picks; the women running it will explain any dish. One group ate there all three nights of their stay.',
+  m:'4.8 · 2,424 reviews',t:'9am–11pm',w:'Avcılar Mah. 27, Göreme',ph:'+90 384 271 24 40'},
+ {n:'Alev Adana Ocakbaşı',k:'Adana and lahmacun, terrace off the street',k2:'Lokanta',s:0,d:'IN TOWN. \\\'We were warned the food in Göreme isn\\\'t good but this place was so good we came back a second time despite having a car.\\\' Adana-style kebabs and lahmacun, huge servings, fair prices, kadayıf at the end, and a terrace set back from the noise.',
+  m:'4.8 · 83 reviews',t:'12–11pm',w:'Belediye Cd. 11/70, Göreme',ph:'+90 542 336 13 48'},
+ {n:'Şirhanem Cave Restaurant · Ayvalı',k:'WORTH THE TAXI · 5.0',k2:'Lokanta',s:1,d:'The find of the region. A family cave restaurant in Ayvalı village, well outside the tourist area, 20 min south of Ürgüp. Clay-pot meatballs and dumplings, home-made everything. \\\'We have been travelling in Türkiye for 17 days and this was the best meal we have had.\\\' \\\'If I could give ten stars — hands down my favourite culinary experience in Turkey.\\\' Go out of your way.',
+  m:'5.0 · 65 reviews',t:'12–9pm daily',w:'Ayvalı Köyü İç Yolu 185, Ürgüp',ph:'+90 536 059 77 35'},
+ {n:'Rumeli Cafe · Mustafapaşa',k:'Jasmine\'s kitchen · meat and vegan',k2:'Lokanta',s:1,d:'SOPHIA-SAFE, and the Day 7 lunch since the walk ends in Mustafapaşa. Jasmine walks guests into the kitchen, opens the pots and spears a vine leaf on a fork for you to taste. Turkish home cooking plus traditional Greek recipes — this was Sinasos. \\\'Accommodated perfectly an awesome meal with meat for myself and vegan for my girlfriend.\\\' Reviewers rate it well above the famous Old Greek House next door on food, atmosphere and price.',
+  m:'4.9 · 294 reviews',t:'8am–10pm',w:'Davutlu, Mustafapaşa',ph:'+90 537 451 55 19'},
+ {n:'Sarhoşun Yeri · Ortahisar',k:'The cave bar under the castle',k2:'Bar',s:1,d:'\\\'The drunk\\\'s place\\\' — a husband-and-wife cave bar below Ortahisar castle. Mulled red wine served with a generous cheese, fruit and nut plate, a wine cellar one reviewer had never seen the like of, and a stereo you can plug your phone into. Canadians came back a second night out of three. The most unusual drink in Cappadocia.',
+  m:'4.7 · 114 reviews',t:'9:30am–10pm (11:30 wknd)',w:'Resul Bey Sk., Ortahisar',ph:''},
+ {n:'Hisarönü · Ortahisar',k:'Pottery kebab, family prices',k2:'Lokanta',s:1,d:'\\\'The best food I have had in Turkey so far... a chicken and meat dish with starter and cold drinks for two cost less than $35.\\\' Family-run under the Ortahisar rock, pottery kebabs the named dish, everything cooked fresh so expect a wait.',
+  m:'4.7 · 775 reviews',t:'8am–11pm',w:'Peribacaları Cd. 2/1, Ortahisar',ph:'+90 537 308 03 97'},
+ {n:'Gülbağ Şarap Evi · Ürgüp',k:'Wine tasting, and wine sorbet',k2:'Kahve',s:1,d:'The Ürgüp tasting room: five very different regional wines walked through by Hasan, who genuinely enjoys strangers trying his wines. And the oddity — wine sorbet, frozen pure wine, no added sugar or cream. Buy the Emir here at source rather than at a restaurant markup.',
+  m:'4.9 · 843 reviews',t:'12–10pm',w:'Ahmet Refik Cd. 22, Ürgüp',ph:''},
+ {n:'Efendi Wine House · Ürgüp',k:'Nine-wine tasting tray',k2:'Kahve',s:1,d:'A small wine bar run by a couple who advise you through the local bottles — \\\'it felt like meeting friends.\\\' The nine-wine tasting tray is the thing; food platters if you want them, seating in or out.',
+  m:'4.6 · 360 reviews',t:'10am–10pm',w:'Tevfik Fikret Cd. 12, Ürgüp',ph:'+90 535 515 57 95'},
+ {n:'İnci Cave Restaurant',k:'Sebzeli testi, in a cave',k2:'Lokanta',s:1,d:'SOPHIA-SAFE. A reviewer found it via HappyCow for the vegan selections and ate a spicy dip, a salad and a vegetable clay pot — so the sebzeli testi is real here. Carved cave room in a house with a history the staff will tell you, lamb testi for the other side of the table, Cappadocian wine by the glass. ₺₺₺, closed Mondays.',
+  m:'4.7 · 2,007 reviews',t:'3–11pm, closed Mon',w:'Cami Sk. 22, Göreme',ph:'+90 531 844 44 42'},
+ {n:'Göreme Restaurant',k:'Testi with real vegetarian range',k2:'Lokanta',s:1,d:'SOPHIA-SAFE and the better-value of the two: \\\'lots of vegetarian options\\\' in the first review, and they came back the next night. Testi, baba ganoush, mantı, complimentary red-pepper dip, cushions on the floor if you want them. One reviewer: finally a place in Cappadocia charging what it delivers.',
+  m:'4.7 · 684 reviews',t:'10am–11:30pm',w:'Müze Cd. 12, Göreme',ph:'+90 384 271 21 83'},
+ {n:'Mommy\'s Kitchen Teras',k:'Tagged vegetarian, open to midnight',k2:'Lokanta',s:1,d:'SOPHIA\'S SAFETY NET. Listed as a vegetarian restaurant, on a quiet terrace off the tourist path surrounded by plants. Potato ravioli, lentil soup, the \\\'Special of the Mommy\\\' lahmacun. Portions run small for the price and staffing is thin at lunch — but it is open 8am to midnight, which nothing else useful is.',
+  m:'4.8 · 433 reviews',t:'8am–midnight',w:'Ünlü Sk. 11, Göreme',ph:'+90 538 259 07 42'},
+ {n:'Tandır Restaurant',k:'The hidden gem, 4.9',k2:'Lokanta',s:1,d:'\\\'I almost don\\\'t want to recommend this because I\\\'d like it to stay a secret.\\\' Testi kebabı and kavurma, a passionate chef, and so many complimentary dishes — salad, smoked aubergine, bean soup, bread, wraps, fruit, free-flowing çay — that people skip dinner after lunch. Best value in Göreme. Don\\\'t miss the katmer. VEGETARIAN: the free spread is nearly all meatless — salad, smoked aubergine, pickles, stuffed potatoes, bean soup, wraps, fruit — plus a mushroom sauté. No confirmed sebzeli testi; ring first.',
   m:'4.9 · 1,226 reviews',t:'9am–11:30pm',w:'Bilal Eroğlu Cd. 49/F, Göreme',ph:'+90 533 341 31 75'},
  {n:'Ankara Sofrası',k:'Where the locals order from',k2:'Lokanta',s:0,d:'Tucked in the bazaar passage with the coloured umbrellas. Recommended by hotel owners, full of locals eating in and taking away, and a couple ate a gözleme, a special chicken wrap and two drinks for ₺550. Owner is generous with the time. And the Turkish coffee is called the best of a whole trip.',
   m:'4.6 · 261 reviews',t:'9am–11pm',w:'Göreme Çarşı Bazaar Pasajı 9',ph:'+90 543 930 62 27'},
@@ -3480,39 +3553,7 @@ const RS={fethiye:R,lycian:[],
   m:'4.9 · 341 reviews',t:'6:30am–9pm',w:'Bilal Eroğlu Cd. 67A, Göreme',ph:'+90 544 306 74 25'},
  {n:'Skip these',k:'Avoid',k2:'All',s:1,pr:0,d:'Rooftop-view restaurants (TUMA, the Sunset Point terraces) are ₺₺₺ for the view and out by rule. Any place that serves testi from a casserole instead of cracking the jar — ask "masada açılıyor mu?" (is it opened at the table?) before ordering.',
   m:'',t:'',w:'Göreme'}],
- ist:[
- {n:'Çiya Sofrası',k:'The museum with a kitchen',k2:'Lokanta',s:2,pr:2,d:'Regional Anatolian cooking, thirty years of collected village dishes, point-at-the-counter service. A third of the counter is zeytinyağlı. The most important restaurant in the country and it costs a lokanta price.',
-  m:'Kadıköy market',t:'11am–10pm daily',w:'Güneşli Bahçe Sk. 43, Kadıköy'},
- {n:'Fazıl Bey\'in Türk Kahvesi',k:'The coffee',k2:'Kahve',s:1,pr:1,d:'Kadıköy\'s coffee institution since 1923, ground in-house, brewed on the sand. The order is by sweetness: sade, az, orta, şekerli. Don\'t drink the last inch. Ten minutes from Moda.',
-  m:'Serasker Cd., Kadıköy',t:'8am–late daily',w:'Serasker Cd. 1/A, Kadıköy'},
- {n:'Dondurmacı Ali Usta',k:'The Moda queue',k2:'Street',s:2,pr:1,d:'Sixty years of ice cream on Moda Caddesi, a queue out the door every warm night, the sour cherry (vişne) and the pistachio. Your street.',
-  m:'Moda Cd.',t:'till late',w:'Moda Cd. 264, Moda'},
- {n:'Baylan',k:'1923 patisserie',k2:'Street',s:1,pr:1,d:'Kup Griye — caramel, ice cream, whipped cream, almonds in a tall glass — has been the city\'s dessert since the 1950s. The room is unchanged. Sit, don\'t take away.',
-  m:'Muvakkithane Cd.',t:'daytime',w:'Muvakkithane Cd. 9, Kadıköy'},
- {n:'The Eminönü fish boats',k:'Balık ekmek, standing',k2:'Street',s:0,pr:1,d:'Mackerel grilled on the rocking boats by the Galata Bridge, in half a loaf with onion and lemon, eaten standing at the water. The ferry from Kadıköy lands you beside them.',
-  m:'Eminönü pier',t:'all day',w:'Eminönü'},
- {n:'Kanaat Lokantası',k:'The Üsküdar lokanta since 1933',k2:'Lokanta',s:1,d:'Every dish in the case, a whole vegetarian counter, and the ekmek kadayıfı. Water is charged, desserts are pricier than they look — go anyway.',
-  m:'3.7 · 7,079 reviews',t:'7am–10:30pm',w:'Selmani Pak Cd. 9, Üsküdar',ph:'+90 216 553 37 91'},
- {n:'Karaköy Güllüoğlu',k:'The baklava reference',k2:'Sweets',s:1,d:'Fıstıklı with kaymak. The Mumhane Cd branch has the garden and shorter queues. Do not buy the airport version — double the price.',
-  m:'4.4 · 28,616 reviews',t:'7am–1am',w:'Kemankeş Cd. 67, Karaköy',ph:'+90 212 225 52 82'},
- {n:'Karaköy Lokantası',k:'The Michelin-noted meze room',k2:'Meyhane',s:1,d:'Classical mezes with a modern hand, the octopus, the lamb. Prices rose with the Michelin nod; book. Sundays from 4pm.',
-  m:'4.3 · 3,114 reviews',t:'12–4, 5:30–11:30pm',w:'Kemankeş Cd. 57, Karaköy',ph:'+90 212 292 44 55'},
- {n:'Asmalı Cavit',k:'The meyhane at its apex',k2:'Meyhane',s:1,d:'Fava, chard, grilled hamsi off the tray; loud, local, unpretentious. The city\'s most-recommended meyhane for a reason. Closed Sunday. Book.',
-  m:'4.6 · 1,140 reviews',t:'5pm–midnight, closed Sun',w:'Asmalı Mescit Cd. 16/D, Beyoğlu',ph:'+90 212 292 49 50'},
- {n:'Hacı Abdullah',k:'Ottoman cooking since 1888',k2:'Lokanta',s:1,d:'400 dishes from the case, older waiters who mean it, the best aubergine in İstanbul, quince with kaymak. No alcohol. Sophia eats brilliantly here.',
-  m:'4.4 · 2,567 reviews',t:'11am–10:30pm',w:'Atıf Yılmaz Cd. 9/A, Beyoğlu',ph:'+90 212 293 85 61'},
- {n:'Kurufasülyeci Ali Baba',k:'The beans, since 1924',k2:'Lokanta',s:1,d:'In an old Süleymaniye medrese. Kuru fasulye, pilav, pickled cabbage, ayran; kabak tatlısı after. Meat can be fatty — the beans are the order.',
-  m:'3.6 · 3,508 reviews',t:'11am–9pm',w:'Sıddık Sami Onar Cd. 7, Süleymaniye',ph:'+90 212 513 62 19'},
- {n:'Selim Usta Köftecisi',k:'The Sultanahmet köfte since 1920',k2:'Street',s:0,d:'Köfte, piyaz, the chilli paste, out. The only thing to eat on the square. Divanyolu branch only.',
-  m:'4.1 · 10,342 reviews',t:'10:30am–10:30pm',w:'Divanyolu Cd. 12, Sultanahmet',ph:'+90 212 513 64 68'},
- {n:'Forno Balat',k:'Wood-oven lahmacun and the apricot soufflé',k2:'Lokanta',s:1,d:'Breakfast till late, lahmacun from the oven, the basket-on-a-rope to the upper floor. Slow service in the back room; sit in the main one.',
-  m:'4.4 · 2,555 reviews',t:'9am–10pm',w:'Vodina Cd., Kireçhane Sk. 13/A, Balat',ph:'+90 545 322 30 30'},
- {n:'Agora Meyhanesi 1890',k:'Balat\'s historic meyhane',k2:'Meyhane',s:1,d:'Sea bass in vine leaves, mackerel meze, apricot bulgur. Service and couvert charges on the bill, smoking allowed. Upstairs is the room.',
-  m:'4.4 · 1,594 reviews',t:'1pm–midnight',w:'Mürselpaşa Cd. 185, Balat',ph:'+90 546 631 21 30'},
- {n:'Kale Café, Rumeli Hisarı',k:'The Bosphorus breakfast',k2:'Kahvaltı',s:1,d:'Eggs, fresh juice and the fortress view; the breakfast is the thing — reviewers warn off the salads and the lemonade. From 5am.',
-  m:'4.2 · 2,157 reviews',t:'5am–7pm',w:'Yahya Kemal Cd. 10, Rumeli Hisarı',ph:'+90 212 265 00 97'},
- {n:'Kuşdili Şile Bezi',k:'The muslin shop',k2:'Shop',s:1,d:'Two şile bezi shops side by side on Kuşdili Cd, %100 pamuk, honest prices, open Sundays. Ten minutes from Moda; the ₺1,000 budget buys three shirts.',
-  m:'4.5 · local',t:'9am–8pm daily',w:'Kuşdili Cd. 46, Kadıköy',ph:'+90 216 330 86 14'},
+ kadikoy:[
  {n:'Hoş Sefa Lokantası',k:'The best lokanta in Kadıköy',k2:'Lokanta',s:1,d:'Family business, tray food, and a big shaded garden at the back away from the street. A reviewer in June 2026 ate a large meal for $9. English menu by QR, staff explain the dishes patiently. The chicken breast with spinach and cheese is the named dish. Closed Sundays.',
   m:'4.9 · 308 reviews',t:'7:30am–10pm, closed Sun',w:'Karakolhane Cd. 20A, Rasimpaşa',ph:'+90 532 290 24 18'},
  {n:'imece moda mutfak',k:'Handmade mantı, 5.0',k2:'Lokanta',s:1,d:'Homemade mantı — beef or spinach — lentil köfte, cacık, baba ganoush, fresh mulberry juice. Warm, peaceful, nowhere near the touristy end. Vegan and vegetarian friendly. Closed Sundays.',
@@ -3541,6 +3582,40 @@ const RS={fethiye:R,lycian:[],
   m:'4.7 · 448 reviews',t:'11am–midnight',w:'Moda Bostanı Sk. 32/D',ph:'+90 506 691 08 06'},
  {n:'Tilki Coffee',k:'Mühürdar Cd, chess on the table',k2:'Kahve',s:1,d:'Small, family-run, one of the best cappuccinos in Kadıköy per the regulars. Carrot-walnut cake and an iced americano came to ₺57 for one reviewer. Chess sets, quiet corner of Moda.',
   m:'4.8 · 242 reviews',t:'12–10pm',w:'Mühürdar Cd. 130/A',ph:''},
+ {n:'Çiya Sofrası',k:'The museum with a kitchen',k2:'Lokanta',s:2,pr:2,d:'Regional Anatolian cooking, thirty years of collected village dishes, point-at-the-counter service. A third of the counter is zeytinyağlı. The most important restaurant in the country and it costs a lokanta price.',
+  m:'Kadıköy market',t:'11am–10pm daily',w:'Güneşli Bahçe Sk. 43, Kadıköy'},
+ {n:'Fazıl Bey\'in Türk Kahvesi',k:'The coffee',k2:'Kahve',s:1,pr:1,d:'Kadıköy\'s coffee institution since 1923, ground in-house, brewed on the sand. The order is by sweetness: sade, az, orta, şekerli. Don\'t drink the last inch. Ten minutes from Moda.',
+  m:'Serasker Cd., Kadıköy',t:'8am–late daily',w:'Serasker Cd. 1/A, Kadıköy'},
+ {n:'Dondurmacı Ali Usta',k:'The Moda queue',k2:'Street',s:2,pr:1,d:'Sixty years of ice cream on Moda Caddesi, a queue out the door every warm night, the sour cherry (vişne) and the pistachio. Your street.',
+  m:'Moda Cd.',t:'till late',w:'Moda Cd. 264, Moda'},
+ {n:'Baylan',k:'1923 patisserie',k2:'Street',s:1,pr:1,d:'Kup Griye — caramel, ice cream, whipped cream, almonds in a tall glass — has been the city\'s dessert since the 1950s. The room is unchanged. Sit, don\'t take away.',
+  m:'Muvakkithane Cd.',t:'daytime',w:'Muvakkithane Cd. 9, Kadıköy'},
+ {n:'Kuşdili Şile Bezi',k:'The muslin shop',k2:'Shop',s:1,d:'Two şile bezi shops side by side on Kuşdili Cd, %100 pamuk, honest prices, open Sundays. Ten minutes from Moda; the ₺1,000 budget buys three shirts.',
+  m:'4.5 · local',t:'9am–8pm daily',w:'Kuşdili Cd. 46, Kadıköy',ph:'+90 216 330 86 14'}
+ ],
+ ist:[
+ {n:'The Eminönü fish boats',k:'Balık ekmek, standing',k2:'Street',s:0,pr:1,d:'Mackerel grilled on the rocking boats by the Galata Bridge, in half a loaf with onion and lemon, eaten standing at the water. The ferry from Kadıköy lands you beside them.',
+  m:'Eminönü pier',t:'all day',w:'Eminönü'},
+ {n:'Kanaat Lokantası',k:'The Üsküdar lokanta since 1933',k2:'Lokanta',s:1,d:'Every dish in the case, a whole vegetarian counter, and the ekmek kadayıfı. Water is charged, desserts are pricier than they look — go anyway.',
+  m:'3.7 · 7,079 reviews',t:'7am–10:30pm',w:'Selmani Pak Cd. 9, Üsküdar',ph:'+90 216 553 37 91'},
+ {n:'Karaköy Güllüoğlu',k:'The baklava reference',k2:'Sweets',s:1,d:'Fıstıklı with kaymak. The Mumhane Cd branch has the garden and shorter queues. Do not buy the airport version — double the price.',
+  m:'4.4 · 28,616 reviews',t:'7am–1am',w:'Kemankeş Cd. 67, Karaköy',ph:'+90 212 225 52 82'},
+ {n:'Karaköy Lokantası',k:'The Michelin-noted meze room',k2:'Meyhane',s:1,d:'Classical mezes with a modern hand, the octopus, the lamb. Prices rose with the Michelin nod; book. Sundays from 4pm.',
+  m:'4.3 · 3,114 reviews',t:'12–4, 5:30–11:30pm',w:'Kemankeş Cd. 57, Karaköy',ph:'+90 212 292 44 55'},
+ {n:'Asmalı Cavit',k:'The meyhane at its apex',k2:'Meyhane',s:1,d:'Fava, chard, grilled hamsi off the tray; loud, local, unpretentious. The city\'s most-recommended meyhane for a reason. Closed Sunday. Book.',
+  m:'4.6 · 1,140 reviews',t:'5pm–midnight, closed Sun',w:'Asmalı Mescit Cd. 16/D, Beyoğlu',ph:'+90 212 292 49 50'},
+ {n:'Hacı Abdullah',k:'Ottoman cooking since 1888',k2:'Lokanta',s:1,d:'400 dishes from the case, older waiters who mean it, the best aubergine in İstanbul, quince with kaymak. No alcohol. Sophia eats brilliantly here.',
+  m:'4.4 · 2,567 reviews',t:'11am–10:30pm',w:'Atıf Yılmaz Cd. 9/A, Beyoğlu',ph:'+90 212 293 85 61'},
+ {n:'Kurufasülyeci Ali Baba',k:'The beans, since 1924',k2:'Lokanta',s:1,d:'In an old Süleymaniye medrese. Kuru fasulye, pilav, pickled cabbage, ayran; kabak tatlısı after. Meat can be fatty — the beans are the order.',
+  m:'3.6 · 3,508 reviews',t:'11am–9pm',w:'Sıddık Sami Onar Cd. 7, Süleymaniye',ph:'+90 212 513 62 19'},
+ {n:'Selim Usta Köftecisi',k:'The Sultanahmet köfte since 1920',k2:'Street',s:0,d:'Köfte, piyaz, the chilli paste, out. The only thing to eat on the square. Divanyolu branch only.',
+  m:'4.1 · 10,342 reviews',t:'10:30am–10:30pm',w:'Divanyolu Cd. 12, Sultanahmet',ph:'+90 212 513 64 68'},
+ {n:'Forno Balat',k:'Wood-oven lahmacun and the apricot soufflé',k2:'Lokanta',s:1,d:'Breakfast till late, lahmacun from the oven, the basket-on-a-rope to the upper floor. Slow service in the back room; sit in the main one.',
+  m:'4.4 · 2,555 reviews',t:'9am–10pm',w:'Vodina Cd., Kireçhane Sk. 13/A, Balat',ph:'+90 545 322 30 30'},
+ {n:'Agora Meyhanesi 1890',k:'Balat\'s historic meyhane',k2:'Meyhane',s:1,d:'Sea bass in vine leaves, mackerel meze, apricot bulgur. Service and couvert charges on the bill, smoking allowed. Upstairs is the room.',
+  m:'4.4 · 1,594 reviews',t:'1pm–midnight',w:'Mürselpaşa Cd. 185, Balat',ph:'+90 546 631 21 30'},
+ {n:'Kale Café, Rumeli Hisarı',k:'The Bosphorus breakfast',k2:'Kahvaltı',s:1,d:'Eggs, fresh juice and the fortress view; the breakfast is the thing — reviewers warn off the salads and the lemonade. From 5am.',
+  m:'4.2 · 2,157 reviews',t:'5am–7pm',w:'Yahya Kemal Cd. 10, Rumeli Hisarı',ph:'+90 212 265 00 97'},
  {n:'Skip these',k:'Avoid',k2:'All',s:1,pr:0,d:'The Bosphorus fish palaces (₺₺₺, out by rule), any restaurant with a man outside holding a menu, and the Grand Bazaar\'s cafés. Kadıköy side is where the food is; the European side is where the monuments are.',
   m:'',t:'',w:'İstanbul'}]
 };
@@ -3824,6 +3899,61 @@ render();
 renderExp();
 renderEat();
 renderBuy();
+
+/* ============ cloud sync (GitHub Contents API) ============ */
+const SYNC = (()=>{
+  const REPO='alvinthechipmunk123/index', FILE='turkish-table-state.json';
+  const KEYS=['alvan_done','alvan_cay','alvan_taste','alvan_pics','alvan_places','alvan_ate','alvan_buy','alvan_phase','alvan_seen','alvan_lantern','alvan_compact'];
+  const tok=()=>{ try{return localStorage.getItem('alvan_ghtok')||''}catch(e){return ''} };
+  const setTok=t=>{ try{ t?localStorage.setItem('alvan_ghtok',t):localStorage.removeItem('alvan_ghtok') }catch(e){} };
+  const api=async(url,method,body)=>{
+    const r=await fetch(url,{method:method||'GET',
+      headers:{'Authorization':'Bearer '+tok(),'Accept':'application/vnd.github+json'},
+      body:body?JSON.stringify(body):undefined});
+    if(r.status===404) return null;
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  };
+  const url='https://api.github.com/repos/'+REPO+'/contents/'+FILE;
+  const b64e=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+  const b64d=s=>JSON.parse(decodeURIComponent(escape(atob(s.replace(/\n/g,'')))));
+  const snapshot=()=>{ const o={_t:Date.now()}; KEYS.forEach(k=>{ try{ const v=localStorage.getItem(k); if(v!==null) o[k]=v; }catch(e){} }); return o; };
+  const apply=o=>{ KEYS.forEach(k=>{ if(o[k]!==undefined){ try{ localStorage.setItem(k,o[k]) }catch(e){} } }); };
+  return {
+    has:()=>!!tok(), setTok, tok,
+    async push(){ const cur=await api(url); const body={message:'turkish-table: state '+new Date().toISOString().slice(0,16),content:b64e(snapshot())};
+      if(cur&&cur.sha) body.sha=cur.sha; const r=await api(url,'PUT',body); return r.commit.sha.slice(0,7); },
+    async pull(){ const cur=await api(url); if(!cur) return null; const o=b64d(cur.content); apply(o); return o._t||0; }
+  };
+})();
+
+function syncPanel(){
+  const wrap=document.createElement('div'); wrap.className='syncsheet';
+  const last=(()=>{ try{return localStorage.getItem('alvan_synct')||''}catch(e){return ''} })();
+  wrap.innerHTML=`<div class="syncbox">
+    <div class="synchd">\u2601\ufe0e Sync</div>
+    <p class="syncp">Your ticks, \u00e7ay count, notes, photos and lists live on this device only. Paste a GitHub token once here and they sync to the <b>index</b> repo, so the iPhone and the ThinkPad see the same trip.</p>
+    <input id="synctok" type="password" placeholder="github_pat_\u2026" autocomplete="off" spellcheck="false" value="${SYNC.tok()?'\u2022'.repeat(18):''}">
+    <div class="syncrow"><button id="syncpush">Push \u2191</button><button id="syncpull">Pull \u2193</button></div>
+    <div class="syncmsg" id="syncmsg">${last?'Last sync '+last:'Not synced yet'}</div>
+    <p class="syncp small">Fine-grained token, repository <b>index</b>, permission <b>Contents: read and write</b>. It is stored on this device and sent only to api.github.com. This syncs your data \u2014 not new versions of the app itself.</p>
+    <div class="syncrow"><button id="syncforget" class="ghost">Forget token</button><button id="syncclose" class="ghost">Close</button></div>
+  </div>`;
+  document.body.appendChild(wrap);
+  const msg=t=>document.getElementById('syncmsg').textContent=t;
+  const grab=()=>{ const v=document.getElementById('synctok').value.trim(); if(v && !/^\u2022+$/.test(v)) SYNC.setTok(v); };
+  const stamp=()=>{ const t=new Date().toLocaleString(); try{localStorage.setItem('alvan_synct',t)}catch(e){} return t; };
+  document.getElementById('syncpush').onclick=async()=>{ grab(); if(!SYNC.has()) return msg('Paste a token first.');
+    msg('Pushing\u2026'); try{ const sha=await SYNC.push(); msg('Pushed \u00b7 '+sha+' \u00b7 '+stamp()); HAP.confirm(); }
+    catch(e){ msg('Failed: '+e.message+(e.message.includes('401')?' \u2014 token expired or wrong scope':'')); } };
+  document.getElementById('syncpull').onclick=async()=>{ grab(); if(!SYNC.has()) return msg('Paste a token first.');
+    msg('Pulling\u2026'); try{ const t=await SYNC.pull(); if(t===null){ msg('Nothing saved in the repo yet \u2014 push first.'); return; }
+      msg('Pulled \u00b7 reloading\u2026'); HAP.confirm(); stamp(); setTimeout(()=>location.reload(),600); }
+    catch(e){ msg('Failed: '+e.message); } };
+  document.getElementById('syncforget').onclick=()=>{ SYNC.setTok(''); document.getElementById('synctok').value=''; msg('Token removed from this device.'); };
+  document.getElementById('syncclose').onclick=()=>wrap.remove();
+  wrap.addEventListener('click',e=>{ if(e.target===wrap) wrap.remove(); });
+}
 /* ============ UI: collapsing header, search, lantern, density ============ */
 (function(){
   let lastY=0, ticking=false;
@@ -3934,6 +4064,7 @@ function searchAll(q){
 })();
 
 try{ setTab('do'); }catch(e){}
+document.getElementById('syncbtn').onclick=()=>{ HAP.light(); syncPanel(); };
 </script>
 </body>
 </html>
