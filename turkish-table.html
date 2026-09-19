@@ -1772,6 +1772,38 @@ const EART={
   <path d="M40,84 h120" stroke="${C.ink}" stroke-width="2.4"/>
   <path d="M60,20 q5,-8 0,-14" stroke="${C.coral}" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".7"/>`
 };
+EART.tickets1=EART.museum;
+EART.tickets2=EART.castle;
+EART.tickets3=EART.museum;
+EART.sema1=EART.meyhane;
+EART.sema2=EART.meyhane;
+EART.inebolu=EART.market;
+EART.under1=EART.market;
+EART.under2=EART.dist_eminonu;
+EART.under3=EART.dist_uskudar;
+EART.under4=EART.castle;
+EART.chora=EART.dist_balat;
+EART.whim1=EART.bird1;
+EART.whim2=EART.museum;
+EART.whim3=EART.museum;
+EART.whim4=EART.cat1;
+EART.whim5=EART.cat3;
+EART.whim6=EART.lokanta;
+EART.kahve1=EART.lokanta;
+EART.kahve2=EART.lokanta;
+EART.kahve3=EART.lokanta;
+EART.kahve4=EART.lokanta;
+EART.hamam1=EART.hamam;
+EART.tour1=EART.dist_balat;
+EART.tour2=EART.castle;
+EART.kart=EART.transit1;
+EART.arrive=EART.dolmus;
+EART.day1=EART.dist_kadikoy;
+EART.day2=EART.dist_karakoy;
+EART.week=EART.dist_bosphorus;
+EART.texture=EART.lokanta;
+EART.customs=EART.meyhane;
+
 
 function elevProfile(pts, up, down, km, label){
   const W=200,H=92, maxE=Math.max(...pts), minE=Math.min(...pts);
@@ -2305,7 +2337,7 @@ function registerSW(){
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol==='file:') return;          // file:// can't host workers
   const src=`
-    const CACHE='alvan-v25';
+    const CACHE='alvan-v27';
     self.addEventListener('install',e=>{ self.skipWaiting(); });
     self.addEventListener('activate',e=>{ e.waitUntil((async()=>{
       const keys=await caches.keys();
@@ -3113,7 +3145,7 @@ const PHASES={
    lat2:0},
  ist:{name:'İstanbul',ico:'⛴',lat:41.01,lon:28.97,x:50,y:26,lx:0,ly:-10,la:'middle',guided:false,
    pal:{coral:'#1B4F8A',turq:'#E0A83C',gold:'#E0A83C'},mkm:'bosphorus',
-   chips:['All','Transit','Cats','Kadıköy','Üsküdar','Karaköy','Beyoğlu','Eminönü','Sultanahmet','Balat','Bosphorus','Ferry','Sophia'],
+   chips:['All','Tickets','Sufi','Markets','Walk','Kahve','Whim','Hamam','Transit','Cats','Üsküdar','Karaköy','Beyoğlu','Eminönü','Sultanahmet','Balat','Bosphorus','Ferry','Sophia'],
    dofoot:`<span><b>Base: Moda, Kadıköy. Sep 19–26.</b> One district a day, the ferry as the commute. İstanbulkart from any machine, tap on every ferry, tram, metro and bus.</span>
      <span>· <b>Ferries from Kadıköy:</b> Eminönü (bazaars, Sultanahmet by tram) 25 min · Karaköy (Galata, Beyoğlu) 20 min · Beşiktaş (Bosphorus buses) 20 min · Üsküdar 15 min. Last boats ~11pm; a taxi across the bridge is ₺400–600 after.</span>
      <span>· <b>Gyms:</b> Kadıköy is the strongest fitness district in Turkey — MACFit and studios along Bahariye, running on the Moda sahil at 7am. Day passes ₺400–800.</span>
@@ -3375,6 +3407,110 @@ const EXPS={fethiye:EXP,
   sell:'The largest of the Princes\' Islands, a car-free hour from Kadıköy: rent bicycles, ride the loop, climb to the Aya Yorgi monastery for the view, fish lunch on the front. Trotsky lived here for four years in exile. Best on a weekday — Sunday the whole city comes.'}
  ],
  ist:[
+ {id:'tickets1',n:'What it costs, and what to skip',k:'Tickets',kc:'',tier:'must',days:['Tickets', 'Sultanahmet'],mkm:'fasil',
+  m:'Topkapı €55 · Hagia Sophia €25 · Cistern €38 · Blue Mosque free',
+  sell:'The state ticket prices for foreigners have gone somewhere absurd. TOPKAPI + Harem + Hagia Irene €55. BASILICA CISTERN €38 by day, more at night. HAGIA SOPHIA upper gallery €25, on-site purchase only. DOLMABAHÇE ~₺2,650. GALATA TOWER ~₺1,750. CHORA €20, and it is NO LONGER on the Museum Pass. BLUE MOSQUE free. SÜLEYMANİYE free. RÜSTEM PAŞA free. The Big Five standalone comes to €188 a head before transport — €376 for two, which is more than a week of dinners.',
+  hist:'MUSEUM PASS İSTANBUL: €105, five days from FIRST USE not purchase, 13 state sites. Covers Topkapı, the Archaeological Museums, Turkish & Islamic Arts, Rumeli Hisarı, the Mosaic Museum, Galata Mevlevihanesi. Does NOT cover Hagia Sophia, the Cistern, Dolmabahçe or Chora. Break-even is four covered sites. Buy it in the Müzekart app rather than at the gate, and activate it on the first crossing day so the five days cluster.'},
+ {id:'tickets2',n:'The swaps: free beats paid',k:'Tickets',kc:'',tier:'must',days:['Tickets', 'Sultanahmet', 'Eminönü'],mkm:'fasil',
+  m:'Şerefiye not Basilica · Süleymaniye not Galata Tower · Beylerbeyi not Dolmabahçe',
+  sell:'ŞEREFİYE CİSTERN (~€20) instead of the BASILICA (€38): same Byzantine columned hall, ten minutes apart, no queue, no one photographing a Medusa head. SÜLEYMANİYE\'S TERRACE instead of the GALATA TOWER (₺1,750 + an hour of queue): Galata buys you a view OF the skyline; Süleymaniye looks OVER the Golden Horn with the skyline in it, and it costs nothing. HAGIA SOPHIA\'S GROUND FLOOR is free — the €25 is the upper gallery only. THE PUBLIC FERRY up the Bosphorus instead of the €19–39 cruise. BEYLERBEYİ PALACE on the Asian shore just north of Üsküdar instead of DOLMABAHÇE — a fraction of the price, no crowd, and it is on your own side.'},
+ {id:'tickets3',n:'Closed days — check before you cross',k:'Tickets',kc:'',tier:'should',days:['Tickets'],mkm:'fasil',
+  m:'Topkapı Tue · Dolmabahçe Mon · Chora Fri · Galata Mevlevihanesi Mon',
+  sell:'TOPKAPI is closed TUESDAYS. DOLMABAHÇE closed MONDAYS. CHORA closed FRIDAYS for prayer, and tourists are excluded during the five daily prayers — the narthexes usually stay open but the naos closes. GALATA MEVLEVİHANESİ museum closed MONDAYS. And the pass doesn\'t cover night openings after 19:00. Plan the crossings around these rather than discovering them at a locked gate.'},
+ {id:'sema1',n:'The sema — and the confusion around it',k:'Sufi',kc:'',tier:'must',days:['Beyoğlu', 'Sophia'],mkm:'fasil',
+  m:'Galata Mevlevihanesi · Sundays · ₺30–150 · but verify',
+  sell:'The Galata lodge on Galipdede Cd has been a Mevlevi house since 1491, and it is the real thing — a religious ceremony, not a show. BUT THE SOURCES CONFLICT: one guide says Sundays 17:00 at ₺150 with tickets on location from Saturday noon; the OFFICIAL museum site says Sundays 18:00 at ₺30, online only, and that on-location sales have stopped. Biletinial\'s venue page for it currently shows NO EVENTS. RING WHEN YOU LAND: +90 212 245 41 41 — \'pazar günü sema var mı?\' — five seconds and it\'s settled. The Biletix listing (Mevlana Culture and Art Foundation) is the other place to check.',
+  hist:'The sema is the turning: right hand up to receive from heaven, left hand down to pass it to earth, the skirt opening into a cone. Shoulders and knees covered, no talking, no leaving your seat, no photos, no clapping. The museum itself is thin — one floor, few objects, the semahane viewable only from the doorway — so go for the ceremony, when you are seated inside it. The garden is called an oasis of quiet; arrive early and sit in it.'},
+ {id:'sema2',n:'Kasımpaşa — the fallback, and it pairs with Sunday',k:'Sufi',kc:'',tier:'should',days:['Beyoğlu'],mkm:'fasil',
+  m:'17th-century lodge · from $20 · same neighbourhood as the İnebolu market',
+  sell:'KASIMPAŞA MEVLEVİHANESİ: a 17th-century lodge billed as an authentic Sufi ritual rather than a show, away from the tourist crowds, with the tekke artifacts exhibition, the dervish trousseau museum and a calligraphy gallery included, and complimentary çay in the foyer. From $20. AND IT IS IN THE SAME NEIGHBOURHOOD AS THE İNEBOLU VİLLAGE MARKET — so Sunday becomes one crossing: market in the morning, sema in the evening. The other fallback is HODJAPAŞA in Sirkeci, €36, in a 15th-century hammam — polished, reliable, ten times the price of Galata, and in low season it runs Tue/Thu/Sat only, so it may not be on for a Sunday.'},
+ {id:'inebolu',n:'İnebolu Köy Pazarı — Sunday only',k:'Markets',kc:'',tier:'must',days:['Markets', 'Sophia', 'Beyoğlu'],mkm:'fasil',
+  m:'Kasımpaşa · Sunday morning · they drive home that evening',
+  sell:'The best market nobody tells you about. Villagers from KASTAMONU and İnebolu on the Black Sea drive down on Saturday night, set up, sell all Sunday, and drive home Sunday evening. Village bread, cheeses, köy eggs, tomatoes and cucumbers that taste of something, homemade jams — the whole Turkish breakfast table brought by the people who made it. One writer says it breaks the metropolis feeling for a day. Buy first, then sit down and eat. Sometimes called the Kastamonu Pazarı.'},
+ {id:'under1',n:'The crossing: Moda to Çarşamba',k:'Walk',kc:'',tier:'must',days:['Eminönü', 'Markets'],mkm:'fasil',
+  m:'20 minutes · two Turkeys · nobody will mention it',
+  sell:'The sharpest thing you can do in a week. MODA: uncovered women, bars on Kadife Sokak, opposition voting, people who holiday in Greece. ÇARŞAMBA, behind Süleymaniye: black chador, religious bookshops, a different century. Same city, same day, twenty minutes apart, and no conversation between them. Do it in one afternoon — Kadıköy morning, ferry to Eminönü, Hasırcılar and Rüstem Paşa, uphill to Süleymaniye, then walk into Çarşamba for the Wednesday market. Ferry home by dark. You will cross three Turkeys and nobody will acknowledge any of it.',
+  hist:'The Çarşamba Pazarı is one of the oldest and largest in the city — thousands of people, clothing to electronics, spices to antiques. It is a spectacle rather than a shopping trip, and it is in the most conservative quarter of the historic peninsula. Dress modestly and photograph nothing and no one.'},
+ {id:'under2',n:'Rüstem Paşa — up the stairs, unmarked, free',k:'Mosque',kc:'',tier:'must',days:['Eminönü', 'Tickets'],mkm:'fasil',
+  m:'Above the shopfronts on Hasırcılar Cd · finest İznik tiles in Turkey',
+  sell:'Sinan, 1563, and every surface inside is tiled — the best İznik work anywhere, and better than anything in the Blue Mosque. It sits ABOVE the shops on Hasırcılar Caddesi, reached by an unmarked staircase between two shopfronts, so you can walk past it a dozen times and never see it. That is the city\'s whole method: the good thing is one floor up and unsigned. Free. Shoes off, shoulders covered.'},
+ {id:'under3',n:'Kuzguncuk — one street, four faiths, three gone',k:'Walk',kc:'',tier:'must',days:['Üsküdar', 'Ferry'],mkm:'fasil',
+  m:'A synagogue, an Armenian church, a Greek church and a mosque',
+  sell:'Charming, much photographed, and the undercurrent is that three of those four congregations are effectively gone. It reads as harmony; it is a museum of an absence. The street survived because the neighbourhood was too poor to redevelop. Wooden houses painted in colours, a bostan (market garden) still worked in the middle of the city, and cafes along İcadiye Caddesi. Bus or a walk north from Üsküdar along the shore.',
+  hist:'The 1942 wealth tax broke the minorities financially; the 1955 pogrom emptied Beyoğlu in a night; the 1964 expulsions finished it. The buildings stayed. The people did not. Beyoğlu\'s phone shops sit in buildings with Greek and Armenian names carved into the lintels.'},
+ {id:'under4',n:'The land walls — and nobody goes',k:'Walk',kc:'',tier:'should',days:['Balat', 'Tickets'],mkm:'fasil',
+  m:'Tram to Edirnekapı · free · laundry hanging off Theodosius',
+  sell:'Twelve metres high, triple-layered, moat in front, and they held for a thousand years against Avars, Arabs, Bulgars, Rus and four Crusades. Then Mehmet brought a Hungarian gunfounder and seventy cannon and they fell in an afternoon. Now there is laundry hanging off them and a linear park between the towers. Walk down from Edirnekapı toward the Golden Horn and you will have it to yourself. CHORA IS AT EDİRNEKAPI TOO — so the walls and Chora are one afternoon.'},
+ {id:'chora',n:'Chora — €20, and no longer on the pass',k:'Museum',kc:'',tier:'must',days:['Balat', 'Tickets', 'Sophia'],mkm:'fasil',
+  m:'09:00–18:00, CLOSED FRIDAYS · headscarf required',
+  sell:'Since August 2024 there is a €20 entrance fee from foreign visitors and MUSEUM PASSES ARE NOT ACCEPTED — it is an active mosque now. Payable in euros or the lira equivalent (~₺750–800). Dress code enforced: no shorts, and Sophia needs a headscarf — scarves for sale at the entrance. Entrance next to the Ebu Said El Hudri Tomb on Kariye Türbesi Street. Nearest tram Edirnekapı. Photography without flash is fine.',
+  hist:'A licensed guide of twenty years says yes without hesitation: the mosaics are better preserved than most in the city and CLOSER TO EYE LEVEL, so you experience Byzantine art unusually intimately. The frescoes in the burial chapel — Christ pulling Adam and Eve out of their tombs by the wrists — are one of the most powerful treatments of death and resurrection in medieval art. They survived because the Ottomans plastered over them in 1511, which shielded them from light and decay until 1947.'},
+ {id:'whim1',n:'Ottoman bird palaces',k:'Whim',kc:'',tier:'should',days:['Eminönü', 'Sultanahmet'],mkm:'fasil',
+  m:'Free · on the outer walls of mosques and hans · once seen, seen everywhere',
+  sell:'Miniature stone mansions built into the outer walls of mosques, hans and libraries across the city — some with domes, balconies and little windows — built as charitable architecture for birds, because Ottoman ethics extended to them. They are on Süleymaniye, the Yeni Cami and a dozen other buildings. You walk past them constantly and never see them until someone points one out. Then you find them everywhere.'},
+ {id:'whim2',n:'Barış Manço\'s house — and it\'s in Moda',k:'Museum',kc:'',tier:'must',days:['Cats', 'Sophia'],mkm:'fasil',
+  m:'Ten minutes from the flat · almost no foreigners',
+  sell:'Manço was Turkey\'s Anatolian-rock king — moustache, rings, and the most beloved musician of the 20th century here. His house on the Asian side is kept exactly as he left it: the stage clothes, the rings, the instruments, the kitchen. It is the single best window into modern Turkish popular culture available, and it is on your own side, ten minutes away.'},
+ {id:'whim3',n:'The Museum of Innocence — 4,213 cigarette butts',k:'Museum',kc:'',tier:'should',days:['Beyoğlu'],mkm:'fasil',
+  m:'Çukurcuma · FREE if you bring the book · ₺300 otherwise',
+  sell:'Orhan Pamuk built a real museum of the objects from his novel. One vitrine holds 4,213 cigarette butts, each one smoked by the woman the narrator loved. Absurd, obsessive, and a genuine work of art. Bring a copy of the book and entry is free. Çukurcuma\'s antique streets are the other reason to be up there.'},
+ {id:'whim4',n:'Tombili\'s statue — a cat with a bronze',k:'Cats',kc:'',tier:'should',days:['Cats'],mkm:'fasil',
+  m:'Ziverbey, Kadıköy · 15 min from Moda · free',
+  sell:'Tombili was a cat famous for lounging on a step with one paw out, elbow down, surveying the street. He died in 2016, a petition got him a bronze statue on the exact spot in the exact pose, and it is fifteen minutes from Moda. The closest thing İstanbul has to a shrine for a cat, and nobody you know will have seen it.'},
+ {id:'whim5',n:'Aziz Mahmud Hüdayi — the mosque with cats inside',k:'Mosque',kc:'',tier:'should',days:['Üsküdar', 'Cats'],mkm:'fasil',
+  m:'Üsküdar · ten minutes uphill from the ferry · free',
+  sell:'There is no cat temple in İstanbul, but this is the closest thing. The imam adopted the neighbourhood\'s cats and lets them into the prayer hall — dozens sleep on the carpets, on the mihrab steps, in the courtyard. It is a working Sufi complex: Hüdayi was a 17th-century sheikh and advisor to sultans, and the lodge is still active. Cats are considered clean in Islam, which is why they are allowed where dogs are not.',
+  hist:'Hagia Sophia had Gli, the resident cat who lived there sixteen years, was photographed by Obama, and had hundreds of thousands of followers. She died in 2020 and is buried in the grounds, with a plaque.'},
+ {id:'whim6',n:'Kahve falı — the grounds read',k:'Kahve',kc:'',tier:'should',days:['Kahve', 'Sophia'],mkm:'fasil',
+  m:'Cafés in Kadıköy · complete nonsense · entirely local',
+  sell:'You drink the coffee, invert the cup onto the saucer, wait for it to cool, and someone reads the grounds. Several cafés in Kadıköy do it. It is nonsense and it is a properly local ritual, and being read by a stranger in a back-street café is a better twenty minutes than most paid attractions.'},
+ {id:'kahve1',n:'Sand coffee — kumda kahve',k:'Kahve',kc:'',tier:'should',days:['Kahve', 'Karaköy'],mkm:'fasil',
+  m:'Nostalgia Cafe, Karaköy · 4.8 · open to 2am',
+  sell:'The cezve sits in hot sand rather than on a flame, so the heat is even and you can pull it the instant the foam rises. NOSTALGIA CAFE in Karaköy is the one: a side street, limited seating, made on sand in front of you, chess sets, shisha, a view of the mosque lit at night, and a cat. One review: \'tea, a good shisha, chess, music, sight of a mosque and a cuddly cat — the best ambiente we could have wished for. The owner is the most chill guy ever. A core İstanbul moment.\' Five minutes from the Karaköy ferry, so it folds into the Sunday.'},
+ {id:'kahve2',n:'Mandabatmaz — the benchmark cup',k:'Kahve',kc:'',tier:'must',days:['Kahve', 'Beyoğlu'],mkm:'fasil',
+  m:'Asmalı Mescit · 4.6 on 3,965 · a hundred metres from Asmalı Cavit',
+  sell:'The name means \'a buffalo wouldn\'t sink in it\' — the foam is that thick. A legendary hole at the end of an alley off İstiklal, and it is the best Turkish coffee in the city by general agreement. Not sand, just decades of one man doing one thing. It is a hundred metres from Asmalı Cavit, so it is the before or after on that night.'},
+ {id:'kahve3',n:'Sand coffee on your own side',k:'Kahve',kc:'',tier:'should',days:['Kahve'],mkm:'fasil',
+  m:'Tarihi Kum Kahvecisi · Gençlik Sk 6C, in the Çarşı',
+  sell:'Brewed in sand, in the Kadıköy Çarşı, ten minutes from the flat. 4.9 but on few reviews. \'Both the coffee brewed in sand and the pastries are fantastic.\' A regular: \'I drink a medium coffee every Saturday.\' They also do San Sebastián cheesecake and mulberry ice cream. +90 216 337 41 61.'},
+ {id:'kahve4',n:'Fazıl Bey — and which branch',k:'Kahve',kc:'',tier:'must',days:['Kahve', 'Markets'],mkm:'fasil',
+  m:'Since 1923 · four branches, rated differently · go to Gen. Asım Gündüz',
+  sell:'SERASKER CD 1/A is the famous original in the Çarşı — 4.3 on 1,463, a little garden, antiques and historic photos upstairs, coffee to take home. But GEN. ASIM GÜNDÜZ CD 80 is rated 4.6 and the reviews are about the man behind the counter: \'incredibly kind, welcoming, clearly passionate about his craft\', \'he took time to show me pictures of the city, teach me some basic words in Turkish, and offered me so much on top of what I ordered.\' That is the one. Skip the Bağdat Cd branch (4.1).'},
+ {id:'hamam1',n:'Hamam — historic or neighbourhood',k:'Hamam',kc:'',tier:'should',days:['Sultanahmet', 'Sophia'],mkm:'fasil',
+  m:'Çemberlitaş or Kılıç Ali Paşa €40–80 · a Kadıköy hamam a fraction',
+  sell:'ÇEMBERLİTAŞ (Sinan, 1584) and KILIÇ ALİ PAŞA are the historic ones, and you are paying €40–80 for the building and the marble. Worth it once if you have never done it. THE ALTERNATIVE: Kadıköy has working neighbourhood hamams where the same kese-and-köpük costs a fraction and the clientele is residents. You have already learned this trip that the ritual is the point, not the marble. Separate men\'s and women\'s sections or separate hours — check before you go.'},
+ {id:'tour1',n:'The one walking tour worth booking',k:'Walk',kc:'',tier:'should',days:['Balat', 'Walk'],mkm:'fasil',
+  m:'Yunus, art historian · GuruWalk · pay what you want',
+  sell:'Most Balat tours are the colourful-houses photo walk. This one is led by an art historian who built the route from his own experience of the neighbourhoods rather than from a script: \'he walked us through both neighbourhoods and gave enough time for pictures and soaking in the stories.\' He also handed one group a mantı recommendation, which is the sign of a local rather than a guide. Pay what you want. Uphill in places.',
+  hist:'The deeper option is Serhat Engul (byzantineistanbul.com), who runs a separate thematic Fener and Balat tour focused on the life of non-Muslims in Ottoman İstanbul. Private, quote by enquiry. His Byzantine tour deliberately skips Hagia Sophia now: \'after the building was converted into a mosque the visitor experience is very limited and guides are not allowed to give long explanations.\' He takes you to Little Hagia Sophia instead.'},
+ {id:'tour2',n:'The Zeyrek walk — do it yourself, free',k:'Walk',kc:'',tier:'should',days:['Eminönü', 'Walk'],mkm:'fasil',
+  m:'Pantokrator → Cibali → Fener · a morning · nothing to book',
+  sell:'Start at ZEYREK MOLLA CAMİİ, the former Pantokrator Monastery and the third-largest church in Byzantine İstanbul, then downhill through CIBALI along the Golden Horn shore into FENER. One operator describes this route as combining Byzantine engineering, Ottoman domestic architecture and local daily life in a way no other part of the city can match. The ZEYREK CİSTERN is mostly ABOVE ground along Atatürk Boulevard — you can see the brick exterior and its niches, which you cannot do with any other cistern. It ends where the Balat walk begins.'},
+ {id:'kart',n:'İstanbulkart — buy TWO',k:'Transit',kc:'',tier:'must',days:['Transit','Ferry'],mkm:'fasil',
+  m:'₺46.20 a ride on the card vs ~₺60 tapping a bank card · transfers discounted · card ~₺130',
+  sell:'Buy them at the biletmatik by the metro entrance inside Sabiha Gökçen, or at the Kadıköy pier. Load ₺500 each. THE FARES: İstanbulkart ₺46.20 a ride on bus, metro, tram and the ferry base; a single-ride token or a contactless bank card is about ₺60. Kadıköy–Eminönü ferry ₺59.28 (ferries are distance-priced). Marmaray 1–7 stations ₺37.40. Bostancı–Adalar ₺156.26. BUY TWO, NOT ONE: an anonymous card does take two taps, but the second tap counts as a NEW PASSENGER at full fare, not a transfer. With a card each, you each get your own 90-minute transfer chain — first ride ~₺42, first transfer ₺31.27, second ₺24.02. On any day with changes, two cards is cheaper as well as easier.',
+  hist:'Covers metro, tram, funicular, Marmaray, İETT buses, metrobüs, the Şehir Hatları ferries and the Princes\' Islands boats. Not Havabus, not taxis, not the private cruises. Touch it flat to the yellow reader — one beep, fare deducted, balance on the little screen. No tapping off. Watch the balance: if it goes negative the turnstile stops you while the ferry loads.'},
+ {id:'arrive',n:'Airport to Moda — take the taxi',k:'Transit',kc:'',tier:'must',days:['Transit'],mkm:'fasil',
+  m:'M4 52 min ₺46 each + taxi · or ₺1,200–1,400 door to door',
+  sell:'M4 METRO from Sabiha Gökçen to Kadıköy: 52 minutes, ₺46 a head, trains every 5 minutes, 06:00–midnight and 24h Fri/Sat. Moda is NOT on the metro — it is 15–20 minutes\' walk south of Kadıköy, or a ₺150–200 taxi. TAXI THE WHOLE WAY: 30–45 minutes in light traffic, ₺1,200–1,400, metered, no night surcharge at SAW. AFTER FIVE WEEKS AND A FLIGHT FROM KAYSERİ WITH FULL BAGS, TAKE THE TAXI — it is about $27 and the M4 with two large cases at the end of a travel day is not worth the saving. Use BiTaksi or Uber rather than the rank: licensed, metered, route tracked, no meter argument. Buy the İstanbulkarts next morning at the pier.',
+  hist:'If your flight from Kayseri lands at İstanbul Airport (IST) on the European side instead, it is a different problem: HAVAİST bus or a ₺1,500+ taxi and an hour-plus to Kadıköy. Check the ticket — if it is bookable into SAW, take that.'},
+ {id:'day1',n:'Day one — make the neighbourhood yours',k:'Walk',kc:'',tier:'must',days:['Walk', 'Markets'],mkm:'fasil',
+  m:'Sat 19 · no sights · reconnaissance',
+  sell:'Land, taxi to Moda, drop bags. Then GO TO THE BULL — the statue at the Kadıköy pier; \'see you at the bull\' is how that side of the city makes plans, and it orients you. Walk into the ÇARŞI with nothing in mind: fishmongers hosing marble, the pickle shops with walls of jars, the cheese-agers, Güneşlibahçe Sokak. Don\'t buy, don\'t eat, just walk it twice. ÇAY somewhere with old men in it, one glass, an hour — start the habit on day one and by Wednesday you\'re recognised. SUNSET on the Moda sahil. Dinner close and unambitious. Then the FERRY to Karaköy and straight back if you\'re not wrecked — 40 minutes round trip, one tap, the old city lit up. That is the thing you\'ll remember from day one.'},
+ {id:'day2',n:'Day two — Karaköy, and the only sema day',k:'Walk',kc:'',tier:'must',days:['Karaköy', 'Sufi', 'Markets'],mkm:'fasil',
+  m:'Sun 20 · one crossing, three things',
+  sell:'MORNING: ferry to Karaköy, then walk or bus west to KASIMPAŞA for the İNEBOLU VİLLAGE MARKET — Sunday only, and they drive home that evening. AFTERNOON: back into Karaköy — Güllüoğlu for baklava at the counter, the KAMONDO STAIRS, the Galata lanes, Serdar-ı Ekrem for vintage, the Museum of Turkish Jews (free, passport needed). Coffee on sand at NOSTALGIA. 17:00: THE SEMA — Galata Mevlevihanesi if it is running, Kasımpaşa if not. DINNER: Karaköy Lokantası, which opens 4pm Sundays — most of your Kadıköy list is CLOSED Sundays (Hoş Sefa, imece, Gönül Abla, Kekik). Ferry home in the dark, which is the better direction.'},
+ {id:'week',n:'The week, shaped around four fixed points',k:'Walk',kc:'',tier:'must',days:['Walk'],mkm:'fasil',
+  m:'Sun sema · Tue your market · Wed Fatih\'s · Fri textiles',
+  sell:'SUN 20 — Karaköy, İnebolu market, sema at 17:00. MON 21 — Sultanahmet ONCE, early: Hagia Sophia at opening, Blue Mosque between prayers, Şerefiye not Basilica, köfte at Selim Usta, out before lunch ends. Topkapı today or Wednesday (closed Tuesdays). TUE 22 — your own side, costs nothing: Salı Pazarı, the Çarşı, a gym on Bahariye, Kadife Sokak in the evening. WED 23 — Eminönü and Süleymaniye: Spice Bazaar for the building, Hasırcılar for the real shopping, Rüstem Paşa up the stairs, the bean house, then ÇARŞAMBA PAZARI uphill. THU 24 — Üsküdar, Kanaat for lunch, Kuzguncuk, then CHORA and the WALLS at Edirnekapı. FRI 25 — the Kadıköy pazar runs again and FRIDAY IS TEXTILES: şile bezi at pazar prices. Then Balat and Agora 1890. SAT 26 — out; the İstanbul Kültür Yolu Festivali opens today with free concerts if your flight is late.',
+  hist:'THE DELIBERATE OMISSIONS: Dolmabahçe, Galata Tower, the Bosphorus dinner cruise, and a second Sultanahmet day. All expensive, all replaceable. And the structural point: five of your seven days cost almost nothing, because the Asian side charges for nothing. The whole budget is three crossings.'},
+ {id:'texture',n:'The thing that isn\'t on any list',k:'Walk',kc:'',tier:'must',days:['Walk', 'Kahve'],mkm:'fasil',
+  m:'Repetition · the kahvehane · an afternoon with nothing in it',
+  sell:'Seven nights in one neighbourhood is the first time this trip you have enough to become a regular somewhere. Pick a kahvehane and a lokanta in the first two days and go four times each. THE KAHVEHANE: a back street behind Bahariye, mid-afternoon, one çay, an hour, tavla going at three tables and nobody minding you are there. You will be the only foreigner. Order \'bir çay\', sit, don\'t perform. THE OTHER RHYTHMS: the Moda sahil at dusk when the whole neighbourhood walks it eating sunflower seeds; the ferry deck twice a day; the Çarşı mid-morning when it is residents shopping. The best day of the week will be one where you did nothing you could name.',
+  hist:'WHO IS WHERE AT MIDDAY: working men in the esnaf lokantası 12–2, twenty minutes, then back. Older men in the kahvehane from eleven until evening. WOMEN at the kahvaltı places 11–2, four or six at a table covered in small plates, three hours — a completely separate social world from the kahvehane, same hours, all over Moda Caddesi. Students in the cafés around Bahariye. And everyone at once on FRIDAY NOON, when the cuma namaız empties the street into the mosques and fills it again.'},
+ {id:'customs',n:'Customs, so you can read what you\'re seeing',k:'Say',kc:'',tier:'should',days:['Walk', 'Sophia'],mkm:'fasil',
+  m:'Çay · the bill · tavla · nazar · el öpme · bread',
+  sell:'ÇAY arrives constantly and refusing is rude — the glass is small because it is meant to be refilled; turning the saucer over it means enough. NOBODY SPLITS A BILL: fighting to pay is the ritual, the older or the inviter wins, and the loser pays next time. TAVLA is played fast and loud with the dice slammed; the commentary is the point. NAZAR, the blue eye, is on cars, babies and shop doors, and believed by more people than admit it. SHOES OFF indoors, always. EL ÖPME: younger men kiss an elder\'s hand and touch it to the forehead. BREAD IS NEVER BINNED — you will see loaves left ON TOP of bins rather than in them. SIMIT AND ÇAY standing up is breakfast for a large part of the city.'},
  {id:'transit3',dist:'sultanahmet',n:'Trams, Marmaray, and the one funicular',k:'Transit',kc:'',tier:'should',days:['Sultanahmet', 'Transit'],mkm:'fasil',
   m:'T1 tram Eminönü → Sultanahmet · Marmaray under the strait · Tünel up to Beyoğlu',
   sell:'T1 tram: from the Eminönü pier, three stops to Sultanahmet, on to the Grand Bazaar (Beyazıt) — tap on, no tap off. MARMARAY: the rail tunnel under the Bosphorus; from Ayrılık Çeşmesi (a 10-minute walk from Moda or one Metro stop) it puts you at Sirkeci in 8 minutes — the fast way to Eminönü when the ferry’s not the point, and the way to Üsküdar. TÜNEL: the 1875 funicular from Karaköy up to the top of İstiklal, 90 seconds, the second-oldest underground in the world. The F1 funicular does the same from Kabataş to Taksim. All on the same tap.',
