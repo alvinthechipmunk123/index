@@ -1778,7 +1778,6 @@ EART.kdk_day=EART.dist_kadikoy;
 EART.kdk_gym=EART.gym;
 EART.kdk_buy=EART.vgo;
 EART.princes1=EART.dist_bosphorus;
-EART.ev1=EART.meyhane;
 EART.ev2=EART.museum;
 EART.gt1=EART.castle;
 EART.gt2=EART.castle;
@@ -2361,7 +2360,7 @@ function registerSW(){
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol==='file:') return;          // file:// can't host workers
   const src=`
-    const CACHE='alvan-v32';
+    const CACHE='alvan-v33';
     self.addEventListener('install',e=>{ self.skipWaiting(); });
     self.addEventListener('activate',e=>{ e.waitUntil((async()=>{
       const keys=await caches.keys();
@@ -3431,10 +3430,6 @@ const EXPS={fethiye:EXP,
   sell:'The largest of the Princes\' Islands, a car-free hour from Kadıköy: rent bicycles, ride the loop, climb to the Aya Yorgi monastery for the view, fish lunch on the front. Trotsky lived here for four years in exile. Best on a weekday — Sunday the whole city comes.'}
  ],
  ist:[
- {id:'ev1',n:'What\'s on while you\'re there',k:'Event',kc:'',tier:'must',days:['Event', 'Markets'],mkm:'fasil',
-  m:'Chamber music in Kadıköy · cocktails on arrival weekend · Kültür Yolu opens as you leave',
-  sell:'İSTANBUL INTERNATIONAL CHAMBER MUSIC FESTIVAL, 6–24 September, at the SÜREYYA OPERASI — which is on Bahariye Caddesi, ten minutes from the flat. Sixth year, founded by the cellist Nil Kocamangil, run by İBB Kültür with Kadıköy Belediyesi. International soloists, Turkish chamber ensembles and young musicians; the sa.ne.na percussion quartet and the Anatolian Clarinet Connection are on the programme. That covers Sep 19–24 of your week, in a 1927 opera house in your own neighbourhood, at municipal prices. İSTANBUL COCKTAIL FESTIVAL, 19–20 September at LifePark — ALL STAR edition, bars from across the city bringing signature drinks, plus Zeynep Bastık, Büyük Ev Ablukada, Bedük and Jakuzi. Your arrival weekend. EUROPEAN HERITAGE DAYS in Beyoğlu ends Sunday 20th — free access to buildings normally closed. İSTANBUL KÜLTÜR YOLU FESTİVALİ opens Saturday 26th and runs to 4 October: free concerts across the city, so if your flight is late it is a bonus morning.',
-  hist:'WHERE TO CHECK WHEN YOU LAND: bubilet.com.tr and biletix.com list by district — Kadıköy alone had 280 events listed for the month, more than any other district in the city. kultur.istanbul is the municipality\'s own portal and lists the free programme. Kadıköy Sahne, Blind İstanbul and the Bahariye venues run gigs most nights from about ₺650.'},
  {id:'ev2',n:'Süreyya Operası — the building itself',k:'Event',kc:'',tier:'should',days:['Event'],mkm:'fasil',
   m:'Bahariye Cd · 1927 · ten minutes from the flat',
   sell:'Built in 1927 by Yüksel Bey as a gift to his wife, modelled on the Champs-Élysées theatre, and the first opera house on the Asian side. Art Deco and neo-classical, restored by the municipality, and now Kadıköy\'s main stage. Even if the chamber music isn\'t your thing, look at the foyer. Tickets through İBB Kültür are a fraction of what the European-side venues charge.'},
