@@ -1789,6 +1789,12 @@ EART.hyp2=EART.castle;
 EART.hyp3=EART.museum;
 EART.hyp4=EART.dist_kadikoy;
 EART.hyp5=EART.meyhane;
+EART.day3=EART.dist_balat;
+EART.day4=EART.market;
+EART.day5=EART.dist_sultanahmet;
+EART.day6=EART.dist_uskudar;
+EART.day7=EART.vgo;
+EART.day8=EART.transit1;
 EART.tickets1=EART.museum;
 EART.tickets2=EART.castle;
 EART.tickets3=EART.museum;
@@ -2354,7 +2360,7 @@ function registerSW(){
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol==='file:') return;          // file:// can't host workers
   const src=`
-    const CACHE='alvan-v30';
+    const CACHE='alvan-v31';
     self.addEventListener('install',e=>{ self.skipWaiting(); });
     self.addEventListener('activate',e=>{ e.waitUntil((async()=>{
       const keys=await caches.keys();
@@ -3546,6 +3552,26 @@ const EXPS={fethiye:EXP,
   m:'M4 52 min ₺46 each + taxi · or ₺1,200–1,400 door to door',
   sell:'M4 METRO from Sabiha Gökçen to Kadıköy: 52 minutes, ₺46 a head, trains every 5 minutes, 06:00–midnight and 24h Fri/Sat. Moda is NOT on the metro — it is 15–20 minutes\' walk south of Kadıköy, or a ₺150–200 taxi. TAXI THE WHOLE WAY: 30–45 minutes in light traffic, ₺1,200–1,400, metered, no night surcharge at SAW. AFTER FIVE WEEKS AND A FLIGHT FROM KAYSERİ WITH FULL BAGS, TAKE THE TAXI — it is about $27 and the M4 with two large cases at the end of a travel day is not worth the saving. Use BiTaksi or Uber rather than the rank: licensed, metered, route tracked, no meter argument. Buy the İstanbulkarts next morning at the pier.',
   hist:'If your flight from Kayseri lands at İstanbul Airport (IST) on the European side instead, it is a different problem: HAVAİST bus or a ₺1,500+ taxi and an hour-plus to Kadıköy. Check the ticket — if it is bookable into SAW, take that.'},
+ {id:'day3',n:'Mon 21 — Fener, Balat, Chora, the walls',k:'Walk',kc:'',tier:'must',days:['Walk', 'Balat', 'Tickets'],mkm:'fasil',
+  m:'Guided tour, then work back down the Golden Horn',
+  sell:'THE TOUR takes the morning. ASK YOUR GUIDE THREE THINGS most tours skip: why the Patriarchate\'s main gate is welded shut (a Patriarch was hanged from it in 1821 and it has never been opened since); what the roll is at the FENER GREEK HIGH SCHOOL, the 1880s castle-like building on the hill — about 50 pupils in a building the size of a fortress; and whether you can get inside the CHURCH OF ST MARY OF THE MONGOLS, the only Orthodox church in the city that never became a mosque, by a specific decree. AFTER: CHORA at Edirnekapı if the tour hasn\'t done it — €20, headscarf for Sophia, closed Fridays so today works. Then walk DOWN THE LAND WALLS from Edirnekapı toward the Horn. LUNCH: Forno in Balat for lahmacun, or the Fener shore places. BACK: the HALİÇ FERRY from Balat or Fener to Eminönü — 15 minutes on the water and the view nobody photographs. Better than the tram. THEN, AT EMİNÖNÜ: Hasırcılar Caddesi behind the Spice Bazaar — KURUKAHVECİ MEHMET EFENDİ on the corner at Tahmis Sk for coffee to carry home, isot, sumac, pekmez. RÜSTEM PAŞA up the unmarked staircase. Uphill to Süleymaniye for the terrace and the bean house. FERRY HOME AT DUSK.',
+  hist:'Fener climbs hard from the water — wear something for uphill. And the Spice Bazaar itself is worth walking through for the building, not the shopping: prices inside are roughly double what Hasırcılar charges twenty metres away.'},
+ {id:'day4',n:'Tue 22 — your own side, and it costs nothing',k:'Walk',kc:'',tier:'must',days:['Walk', 'Markets', 'Cats'],mkm:'fasil',
+  m:'Salı Pazarı · the Çarşı · a gym · Kadife Sokak',
+  sell:'MORNING: the TARİHİ SALI PAZARI — Hasanpaşa, Uzunçayır Yolu No:7, not in Moda, so it\'s a short bus or taxi. The Asian side\'s biggest: fruit, vegetables, cheese, olives, textiles, shoes, household. Tuesday is the FOOD day; Friday is textiles. THEN the ÇARŞI on the way back — walk it with a list this time rather than with nothing in mind. MIDDAY: a gym on Bahariye if you want one, or the Moda sahil. AFTERNOON WITH NOTHING IN IT — this is the one to protect. A kahvehane on a back street, one çay, an hour. EVENING: KADİFE SOKAK. Ask which night the fasıl takım plays — ud, kanun, violin, darbuka, and by the second hour the room is singing. That is the thing you have been circling all trip and it is four minutes from the flat.'},
+ {id:'day5',n:'Wed 23 — Sultanahmet, once, early',k:'Walk',kc:'',tier:'must',days:['Walk', 'Sultanahmet', 'Tickets'],mkm:'fasil',
+  m:'In at opening, out before lunch ends',
+  sell:'GO EARLY and do it in one morning. HAGIA SOPHIA at opening — €25 for the upper gallery, or the ground prayer floor free. BLUE MOSQUE between prayers, free. ŞEREFİYE CİSTERN (~€20) rather than the Basilica (€38) — same Byzantine hall, ten minutes apart, no queue. TOPKAPI if you\'re buying the Museum Pass: €55 standalone, and it is CLOSED TUESDAYS so today or Monday. The Harem and the Fourth Courtyard terraces are the point; skip the Treasury queue. LUNCH: köfte at Selim Usta. THEN LEAVE — Sultanahmet is the one district built entirely for visitors and you will not enjoy a second afternoon of it. AFTERNOON: tram to Eminönü, ferry home, and the rest of the day on your own side. OR, if you skipped Topkapı: the ARCHAEOLOGICAL MUSEUMS at Gülhane instead — the Alexander Sarcophagus, the Treaty of Kadesh, Sidon\'s royal tombs, world-class and almost empty while everyone queues next door.'},
+ {id:'day6',n:'Thu 24 — the Asian Bosphorus',k:'Walk',kc:'',tier:'must',days:['Walk', 'Üsküdar', 'Ferry', 'Cats'],mkm:'fasil',
+  m:'Üsküdar · Kanaat · Kuzguncuk · the ferry north',
+  sell:'MARMARAY two stops to ÜSKÜDAR, or the ferry. Sinan\'s shore mosques — Mihrimah Sultan and Şemsi Paşa on the water. Uphill ten minutes to AZİZ MAHMUD HÜDAYİ, the working Sufi lodge where the imam lets the cats into the prayer hall. LUNCH: KANAAT LOKANTASI, since 1933, tray food, and the desserts are the reason. AFTERNOON: KUZGUNCUK — one street with a synagogue, an Armenian church, a Greek church and a mosque, and three of those four congregations effectively gone. A bostan still worked in the middle of the city. Cafés along İcadiye. THEN: the PUBLIC FERRY up the Bosphorus rather than the €19–39 cruise — same shoreline, same yalıs, tea on the deck. Or the MAİDEN\'S TOWER from Salacak at sunset, which is the photograph. EVENING: back in Moda.',
+  hist:'If the chamber music at the SÜREYYA OPERASI has returns, tonight is the closing concert at 20:00 — ring 0216 346 15 31 in the morning and ask. The free 18:30 masterclasses and \'Off the Record\' talks are not ticketed through the platforms at all.'},
+ {id:'day7',n:'Fri 25 — textiles, then Beyoğlu',k:'Walk',kc:'',tier:'must',days:['Walk', 'Markets', 'Buy', 'Beyoğlu'],mkm:'fasil',
+  m:'The Friday pazar is the shopping one · then across for the evening',
+  sell:'MORNING: the SAME PAZAR GROUND runs again and FRIDAY IS THE TEXTILE DAY — clothing, curtains, carpets, bags, fabric, with a small bit pazarı (flea corner) at the far end. That is where the şile bezi and the linen shirts are at pazar prices rather than shop prices. Go early. If it disappoints, KUŞDİLİ CADDESİ No:46 and 50 have the şile bezi shops — ₺1,000 for three shirts, %100 pamuk, open Sundays too. AFTERNOON: BAHARİYE for LCW, Koton, Mavi — deeper September sale rails than Fethiye had. EVENING ACROSS THE WATER: ferry to Karaköy, up to Beyoğlu. MANDABATMAZ for the benchmark coffee at the end of an alley off İstiklal — the name means \'a buffalo wouldn\'t sink in it\'. Then ASMALI CAVİT a hundred metres away for the meyhane night: book ahead, it is small and it is the real thing. Last ferry from Karaköy is 01:00.'},
+ {id:'day8',n:'Sat 26 — out, and the festival opens',k:'Walk',kc:'',tier:'should',days:['Walk', 'Event'],mkm:'fasil',
+  m:'Kültür Yolu opens today · free concerts citywide',
+  sell:'The İSTANBUL KÜLTÜR YOLU FESTİVALİ opens today and runs to 4 October — free concerts and cultural events across the city, so if your flight is late it is a bonus morning rather than a departure. OTHERWISE: the Çarşı one last time, a coffee at Fazıl Bey, and the M4 or a taxi to Sabiha Gökçen. Allow 90 minutes to the airport with bags.'},
  {id:'day1',n:'Day one — make the neighbourhood yours',k:'Walk',kc:'',tier:'must',days:['Walk', 'Markets'],mkm:'fasil',
   m:'Sat 19 · no sights · reconnaissance',
   sell:'Land, taxi to Moda, drop bags. Then GO TO THE BULL — the statue at the Kadıköy pier; \'see you at the bull\' is how that side of the city makes plans, and it orients you. Walk into the ÇARŞI with nothing in mind: fishmongers hosing marble, the pickle shops with walls of jars, the cheese-agers, Güneşlibahçe Sokak. Don\'t buy, don\'t eat, just walk it twice. ÇAY somewhere with old men in it, one glass, an hour — start the habit on day one and by Wednesday you\'re recognised. SUNSET on the Moda sahil. Dinner close and unambitious. Then the FERRY to Karaköy and straight back if you\'re not wrecked — 40 minutes round trip, one tap, the old city lit up. That is the thing you\'ll remember from day one.'},
