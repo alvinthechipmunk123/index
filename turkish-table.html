@@ -387,6 +387,8 @@ body.lantern .ph .tr,body.lantern .bigtr{font-size:26px}
   border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer}
 .syncrow button.ghost{background:transparent;color:var(--ink);font-weight:500;border-color:var(--line)}
 .syncmsg{font-family:'IBM Plex Mono',monospace;font-size:11.5px;margin-top:10px;opacity:.8;line-height:1.5}
+.datestamp{position:absolute;top:calc(10px + env(safe-area-inset-top));right:calc(14px + env(safe-area-inset-right));z-index:6;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.09em;color:var(--paper);opacity:.72;text-align:right;line-height:1.45;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.45)}
+.datestamp b{display:block;font-weight:600;font-size:11px;opacity:1;letter-spacing:.07em}
 .lanternbtn{position:fixed;right:calc(10px + env(safe-area-inset-right));bottom:calc(10px + env(safe-area-inset-bottom));
   z-index:60;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);
   background:var(--tile);color:var(--ink);font-size:17px;cursor:pointer;opacity:.82;
@@ -522,6 +524,7 @@ body.night header{filter:saturate(.8) brightness(.85)}
 <header id="hdr">
   <svg id="tilebg" preserveAspectRatio="none"></svg>
   <div class="hd">
+    <div class="datestamp" id="datestamp"></div>
     <div class="hdtext">
       <h1>Alvan &amp; Sophia's Turkish Adventure</h1>
       <div class="hsub" id="hsub">Turkish food, drink &amp; how to ask for it
@@ -2360,7 +2363,7 @@ function registerSW(){
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol==='file:') return;          // file:// can't host workers
   const src=`
-    const CACHE='alvan-v34';
+    const CACHE='alvan-v35';
     self.addEventListener('install',e=>{ self.skipWaiting(); });
     self.addEventListener('activate',e=>{ e.waitUntil((async()=>{
       const keys=await caches.keys();
@@ -3229,7 +3232,10 @@ function setPhase(k){
   mode=PHASES[k].mkm; if(on){ toggleMode(mode); }
   HAP.light();
   applyPalette(); drawPmap(); drawCat(); renderExp(); renderEat(); renderBuy(); render();
-  try{ setTab('do'); }catch(e){}
+  
+
+
+try{ setTab('do'); }catch(e){}
   if(navigator.vibrate) navigator.vibrate(10);
 }
 
@@ -4279,6 +4285,31 @@ function searchAll(q){
 
 try{ setTab('do'); }catch(e){}
 document.getElementById('syncbtn').onclick=()=>{ HAP.light(); syncPanel(); };
+/* header date stamp — today, and where we are in the trip */
+(function(){
+  const LEGS=[
+    {a:'2026-08-31',b:'2026-09-05',n:'Fethiye'},
+    {a:'2026-09-05',b:'2026-09-12',n:'Lycian Way'},
+    {a:'2026-09-12',b:'2026-09-19',n:'Cappadocia'},
+    {a:'2026-09-19',b:'2026-09-26',n:'Kadıköy'}
+  ];
+  function paint(){
+    const el=document.getElementById('datestamp'); if(!el) return;
+    const d=new Date();
+    const day=d.toLocaleDateString('en-GB',{weekday:'short'});
+    const dm=d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    const iso=d.toISOString().slice(0,10);
+    let leg='';
+    for(const L of LEGS){ if(iso>=L.a && iso<=L.b){
+      const start=new Date(L.a+'T00:00:00'), n=Math.floor((d-start)/86400000)+1;
+      leg=L.n+' · day '+n; break; } }
+    const end=new Date('2026-09-26T00:00:00');
+    const left=Math.ceil((end-d)/86400000);
+    el.innerHTML='<b>'+day+' '+dm+'</b>'+(leg?leg:'')+(left>0?'<br>'+left+' days left':'');
+  }
+  paint();
+  setInterval(paint, 60*60*1000);
+})();
 </script>
 </body>
 </html>
