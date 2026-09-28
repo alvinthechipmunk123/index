@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Shala">
+<meta name="theme-color" content="#eceee9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%232e3b7a'/%3E%3Ccircle cx='50' cy='50' r='26' fill='%23c98a06'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232e3b7a'/%3E%3Ccircle cx='50' cy='50' r='26' fill='%23c98a06'/%3E%3C/svg%3E">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Shala Count</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ground:#eceee9; --surface:#f7f8f5; --surface-2:#e4e8e2; --line:#d6dbd5; --line-2:#bcc4bb;
+  --ink:#1b2724; --ink-2:#55635e; --muted:#8b9691;
+  --indigo:#2e3b7a; --indigo-2:#4a58a0; --indigo-soft:#dcdff0;
+  --marigold:#c98a06; --marigold-soft:#f5e7c4;
+  --rest:#9aa8a2;
+  --radius:3px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#11161a; --surface:#1a2127; --surface-2:#232c33; --line:#2c363d; --line-2:#3e4a52;
+    --ink:#e7ebe6; --ink-2:#b3bdb8; --muted:#7d8a84;
+    --indigo:#93a0e6; --indigo-2:#7280d4; --indigo-soft:#232a4a;
+    --marigold:#e2ab38; --marigold-soft:#3a3018;
+    --rest:#6d7a74;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#11161a; --surface:#1a2127; --surface-2:#232c33; --line:#2c363d; --line-2:#3e4a52;
+  --ink:#e7ebe6; --ink-2:#b3bdb8; --muted:#7d8a84;
+  --indigo:#93a0e6; --indigo-2:#7280d4; --indigo-soft:#232a4a;
+  --marigold:#e2ab38; --marigold-soft:#3a3018;
+  --rest:#6d7a74;
+}
+*{box-sizing:border-box}
+html,body{background:var(--ground)}
+body{color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.45;padding-inline:14px;padding-block:14px 44px;-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.wrap > *{min-width:0}
+.sp{font-family:"Spectral",Georgia,serif}
+.sk{font-family:"Spectral",Georgia,serif;font-style:italic}
+.num{font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+h1{margin:0;font-family:"Spectral",Georgia,serif;font-weight:500;font-size:26px;letter-spacing:.01em;line-height:1.1}
+h2{margin:0;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.pad{padding:14px}
+
+/* today */
+.today{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 16px;align-items:center}
+.today .eyebrow{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.today .state{font-family:"Spectral",Georgia,serif;font-size:21px;line-height:1.2}
+.today .sub{font-size:12.5px;color:var(--ink-2);margin-top:3px}
+.moon{display:grid;justify-items:center;gap:3px}
+.moon svg{width:54px;height:54px;display:block}
+.moon .cap{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.3}
+
+/* counts */
+.counts{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
+.count{padding:10px 12px;border-right:1px solid var(--line)}
+.count:last-child{border-right:0}
+.count .v{font-family:"Spectral",Georgia,serif;font-size:25px;line-height:1;font-weight:500}
+.count .v small{font-size:11px;color:var(--muted);font-family:"IBM Plex Sans",sans-serif;margin-left:2px}
+.count .k{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+@media (max-width:420px){ .counts{grid-template-columns:repeat(2,1fr)} .count:nth-child(2){border-right:0} .count:nth-child(-n+2){border-bottom:1px solid var(--line)} }
+
+/* calendar */
+.calhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 0 9px}
+.calnav{display:flex;gap:4px}
+.calnav button{border:1px solid var(--line-2);background:transparent;border-radius:var(--radius);width:26px;height:24px;line-height:1;color:var(--ink-2);font-size:12px}
+.dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px}
+.dow span{text-align:center;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cell{aspect-ratio:1;border:1px solid var(--line);border-radius:2px;display:grid;place-items:center;position:relative;background:var(--surface);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.cell.void{border-color:transparent;background:transparent;cursor:default}
+.cell .d{font-size:11px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.cell.done{background:var(--indigo);border-color:var(--indigo)}
+.cell.done .d{color:#fff;font-weight:600}
+.cell.done.led{background:var(--indigo-2);border-color:var(--indigo-2)}
+.cell.moon{border-color:var(--marigold);border-width:1.5px}
+.cell.moon .d{color:var(--marigold)}
+.cell.moon.done .d{color:var(--marigold-soft)}
+.cell.sat .d{color:var(--rest)}
+.cell.future{opacity:.42}
+.cell.today{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.cell .mk{position:absolute;bottom:2px;font-size:8px;letter-spacing:.02em;color:var(--marigold);line-height:1}
+.legend{display:flex;flex-wrap:wrap;max-width:100%;gap:4px 14px;font-size:11px;color:var(--ink-2);padding-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;border:1px solid var(--line-2)}
+
+/* series ladder */
+.ladder{position:relative;max-height:330px;overflow-y:auto;overscroll-behavior:contain;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.grp{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);padding:5px 14px;position:sticky;top:0;z-index:2;box-shadow:0 1px 0 var(--line)}
+.pose{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:6px 14px;border-top:1px solid var(--line);cursor:pointer}
+.pose:first-of-type{border-top:0}
+.pose .n{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.pose .nm{font-family:"Spectral",Georgia,serif;font-style:italic;font-size:14px;line-height:1.3}
+.pose .en{font-size:11px;color:var(--muted);display:block;font-family:"IBM Plex Sans",sans-serif;font-style:normal}
+.pose.have{background:var(--indigo-soft)}
+.pose.have .nm{color:var(--ink)}
+.pose.beyond{opacity:.5}
+.pose .tag{font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--marigold);font-weight:600}
+.pose.edge{background:var(--indigo);}
+.pose.edge .nm,.pose.edge .n,.pose.edge .en{color:#fff}
+.pose.edge .tag{color:var(--marigold-soft)}
+.edgebar{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:11px 14px 0}
+.edgebar .cur{font-family:"Spectral",Georgia,serif;font-style:italic;font-size:16px}
+.edgebar .pct{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.hint{font-size:11.5px;color:var(--muted);padding:9px 14px 12px}
+
+/* form */
+.bar{display:flex;gap:8px;align-items:center}
+.btn{border:1px solid var(--line-2);background:var(--surface);padding:9px 14px;border-radius:var(--radius);font-weight:500;font-size:13.5px;color:var(--ink)}
+.btn.primary{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.btn.block{flex:1}
+.btn.sm{padding:5px 9px;font-size:11.5px}
+form.log{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+form.log label{display:grid;gap:4px;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+form.log input,form.log select{border:1px solid var(--line-2);border-radius:2px;background:var(--ground);padding:8px 9px;font-size:15px;width:100%;min-width:0;letter-spacing:0;text-transform:none;color:var(--ink)}
+form.log .wide{grid-column:1/-1}
+form.log .actions{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toast{font-size:12px;color:var(--indigo);font-weight:600}
+.toast.err{color:#a8322b}
+.feels{display:flex;gap:5px;flex-wrap:wrap}
+.feels button{border:1px solid var(--line-2);background:transparent;border-radius:999px;padding:5px 11px;font-size:12px;color:var(--ink-2)}
+.feels button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+
+/* history */
+.mrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:9px 14px;border-top:1px solid var(--line);font-size:13px}
+.mrow:first-child{border-top:0}
+.mrow .dt{font-weight:500}
+.mrow .kind{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-left:7px;font-weight:600}
+.mrow .meta{grid-column:1/-1;color:var(--ink-2);font-size:12px}
+.mrow .meta .sk{color:var(--ink)}
+.mrow button{background:none;border:0;color:var(--muted);font-size:11px;text-decoration:underline;padding:2px 4px}
+.marks{display:flex;gap:6px;overflow-x:auto;padding:2px 0;scrollbar-width:none;max-width:100%}
+.marks::-webkit-scrollbar{display:none}
+.mark{flex:0 0 auto;min-width:78px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);text-align:center}
+.mark .t{font-family:"Spectral",Georgia,serif;font-style:italic;font-size:12.5px;color:var(--muted)}
+.mark .w{font-size:10px;color:var(--muted);margin-top:2px}
+.mark.on{border-color:var(--marigold);background:var(--marigold-soft)}
+.mark.on .t{color:var(--ink);font-style:italic}
+.mark.on .w{color:var(--marigold);font-weight:600}
+.foot{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.6}
+.syncrow{display:flex;flex-wrap:wrap;gap:6px}
+.syncrow input{flex:1 1 100%;border:1px solid var(--line-2);border-radius:2px;background:var(--ground);padding:8px 9px;font-size:14px;color:var(--ink)}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Shala Count</h1>
+    <div style="font-size:12.5px;color:var(--ink-2);margin-top:3px">Ashtanga practice, counted the way the practice counts it — six days, rest on Saturdays and moon days.</div>
+  </header>
+
+  <section class="panel">
+    <div class="pad today" id="today"></div>
+    <div class="counts" id="counts"></div>
+  </section>
+
+  <div class="bar">
+    <button class="btn primary block" type="button" id="open-log">Log today's practice</button>
+    <button class="btn sm" type="button" id="sync" hidden>☁</button>
+  </div>
+
+  <section class="panel pad" id="sheet" hidden>
+    <form class="log" id="log" autocomplete="off">
+      <label class="wide">Date<input type="date" id="f-date" required></label>
+      <label>Practice<select id="f-kind">
+        <option value="mysore">Mysore</option>
+        <option value="led-primary">Led Primary</option>
+        <option value="led-int">Led Intermediate</option>
+        <option value="half">Half Primary</option>
+        <option value="self">Self practice</option>
+        <option value="workshop">Workshop</option>
+        <option value="restorative">Restorative</option>
+        <option value="rest">Rest day</option>
+      </select></label>
+      <label>Minutes<input type="number" id="f-min" step="1" min="0" max="300" inputmode="numeric" placeholder="90"></label>
+      <label class="wide">Finished at<select id="f-edge"></select></label>
+      <label class="wide" style="text-transform:none;letter-spacing:0;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase">How it felt
+        <div class="feels" id="feels">
+          <button type="button" data-f="heavy">Heavy</button>
+          <button type="button" data-f="steady">Steady</button>
+          <button type="button" data-f="open">Open</button>
+          <button type="button" data-f="strong">Strong</button>
+          <button type="button" data-f="light">Light</button>
+        </div>
+      </label>
+      <label class="wide">Notes<input type="text" id="f-notes" placeholder="what the teacher said, what the body did"></label>
+      <div class="actions">
+        <button class="btn primary" type="submit" id="f-save">Save</button>
+        <button class="btn" type="button" id="f-del" hidden>Delete</button>
+        <button class="btn" type="button" id="f-cancel">Close</button>
+        <span class="toast" id="toast"></span>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel pad">
+    <div class="calhead">
+      <h2 id="calmonth">Month</h2>
+      <div class="calnav">
+        <button type="button" id="cal-prev" aria-label="Previous month">‹</button>
+        <button type="button" id="cal-next" aria-label="Next month">›</button>
+      </div>
+    </div>
+    <div class="dow"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+    <div class="cal" id="cal"></div>
+    <div class="legend">
+      <span><i style="background:var(--indigo);border-color:var(--indigo)"></i>Mysore</span>
+      <span><i style="background:var(--indigo-2);border-color:var(--indigo-2)"></i>Led</span>
+      <span><i style="border-color:var(--marigold);border-width:1.5px"></i>Moon day</span>
+      <span><i></i>No practice</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="edgebar"><h2>The series</h2><span class="pct" id="edge-pct"></span></div>
+    <div class="edgebar" style="padding-top:2px"><span class="cur" id="edge-cur"></span></div>
+    <div class="hint" style="padding-bottom:9px">Tap the posture you've been given up to. Everything above it counts as yours.</div>
+    <div class="ladder" id="ladder"></div>
+    <div class="hint">Named in the traditional order. Nothing here is a target — it's where the practice happens to be.</div>
+  </section>
+
+  <section>
+    <h2 style="margin-bottom:7px">Marks</h2>
+    <div class="marks" id="marks"></div>
+  </section>
+
+  <section class="panel">
+    <div class="edgebar" style="padding-bottom:9px"><h2>Practice log</h2><span class="pct" id="log-count"></span></div>
+    <div id="history"></div>
+  </section>
+
+  <section class="panel pad" id="syncsheet" hidden>
+    <h2 style="margin-bottom:9px">Backup &amp; sync</h2>
+    <div class="syncrow">
+      <input type="password" id="gh-token" placeholder="GitHub token (optional)" autocomplete="off">
+      <button class="btn primary" type="button" id="gh-save">Save token</button>
+      <button class="btn" type="button" id="gh-sync">Sync now</button>
+      <button class="btn" type="button" id="gh-copy">Copy backup</button>
+      <button class="btn" type="button" id="gh-paste">Restore</button>
+      <button class="btn" type="button" id="gh-close">Close</button>
+    </div>
+    <div class="hint" style="padding:9px 0 0">Without a token everything lives in this browser only. Copy backup puts the whole log on the clipboard — paste it somewhere safe now and again.</div>
+  </section>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,'0');
+const iso = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parseISO = s => { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); };
+const today = () => { const t=new Date(); return new Date(t.getFullYear(),t.getMonth(),t.getDate()); };
+const MS_DAY = 86400000;
+const MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// New and full moons, Eastern time. Moon days are rest days in the tradition.
+const MOONS = ['2026-09-10N','2026-09-26F','2026-10-10N','2026-10-26F','2026-11-09N','2026-11-24F','2026-12-08N','2026-12-23F','2027-01-07N','2027-01-22F','2027-02-06N','2027-02-20F','2027-03-08N','2027-03-22F','2027-04-06N','2027-04-20F','2027-05-06N','2027-05-20F','2027-06-04N','2027-06-18F','2027-07-03N','2027-07-18F','2027-08-02N','2027-08-17F','2027-08-31N','2027-09-15F','2027-09-29N','2027-10-15F','2027-10-29N','2027-11-13F','2027-11-27N','2027-12-13F','2027-12-27N'];
+const MOONMAP = {}; MOONS.forEach(m=>MOONMAP[m.slice(0,10)]=m.slice(10));
+const moonOf = ds => MOONMAP[ds] || null;
+const isSat = ds => parseISO(ds).getDay()===6;
+const isRestDay = ds => isSat(ds) || !!moonOf(ds);
+
+// Primary series (Yoga Chikitsa), then the opening of Intermediate (Nadi Shodhana).
+const SERIES = [
+  ['Opening',[
+    ['Surya Namaskara A','Sun salutation A ×5'],['Surya Namaskara B','Sun salutation B ×5']]],
+  ['Standing',[
+    ['Padangusthasana','Big toe pose'],['Padahastasana','Hand under foot'],
+    ['Utthita Trikonasana','Extended triangle'],['Parivrtta Trikonasana','Revolved triangle'],
+    ['Utthita Parsvakonasana','Extended side angle'],['Parivrtta Parsvakonasana','Revolved side angle'],
+    ['Prasarita Padottanasana A–D','Wide-legged forward fold'],['Parsvottanasana','Intense side stretch'],
+    ['Utthita Hasta Padangusthasana','Extended hand to big toe'],['Ardha Baddha Padmottanasana','Half bound lotus fold'],
+    ['Utkatasana','Fierce pose'],['Virabhadrasana A–B','Warrior']]],
+  ['Primary — seated',[
+    ['Dandasana','Staff pose'],['Paschimottanasana A–C','Seated forward fold'],['Purvottanasana','Upward plank'],
+    ['Ardha Baddha Padma Paschimottanasana','Half bound lotus forward fold'],
+    ['Triang Mukhaikapada Paschimottanasana','Three limbs forward fold'],
+    ['Janu Sirsasana A','Head to knee A'],['Janu Sirsasana B','Head to knee B'],['Janu Sirsasana C','Head to knee C'],
+    ['Marichyasana A','Sage Marichi A'],['Marichyasana B','Sage Marichi B'],['Marichyasana C','Sage Marichi C'],
+    ['Marichyasana D','Sage Marichi D','gate'],
+    ['Navasana','Boat ×5'],['Bhujapidasana','Shoulder pressing'],['Kurmasana','Tortoise','gate'],
+    ['Supta Kurmasana','Sleeping tortoise','gate'],['Garbha Pindasana','Embryo in the womb','gate'],
+    ['Kukkutasana','Rooster'],['Baddha Konasana A–B','Bound angle'],['Upavistha Konasana','Wide-angle seated'],
+    ['Supta Konasana','Reclining angle'],['Supta Padangusthasana','Reclining big toe'],
+    ['Ubhaya Padangusthasana','Both big toes'],['Urdhva Mukha Paschimottanasana','Upward forward fold'],
+    ['Setu Bandhasana','Bridge — end of Primary','gate']]],
+  ['Finishing',[
+    ['Urdhva Dhanurasana','Upward bow ×3'],['Dropbacks','Standing to backbend and up','gate'],
+    ['Sarvangasana','Shoulderstand'],['Halasana','Plough'],['Karnapidasana','Ear pressure'],
+    ['Urdhva Padmasana','Upward lotus'],['Pindasana','Embryo'],['Matsyasana','Fish'],
+    ['Uttana Padasana','Extended leg'],['Sirsasana','Headstand'],['Baddha Padmasana','Bound lotus'],
+    ['Yoga Mudra','Seal'],['Padmasana','Lotus'],['Utpluthih','Lifted up']]],
+  ['Intermediate',[
+    ['Pasasana','Noose — Second series begins','gate'],['Krounchasana','Heron'],
+    ['Shalabhasana A–B','Locust'],['Bhekasana','Frog'],['Dhanurasana','Bow'],['Parsva Dhanurasana','Side bow'],
+    ['Ustrasana','Camel'],['Laghu Vajrasana','Little thunderbolt'],['Kapotasana','Pigeon','gate'],
+    ['Supta Vajrasana','Sleeping thunderbolt'],['Bakasana A–B','Crane'],['Bharadvajasana','Sage Bharadvaja'],
+    ['Ardha Matsyendrasana','Half lord of the fishes'],['Eka Pada Sirsasana','Leg behind head']]]
+];
+const FLAT=[]; SERIES.forEach(g=>g[1].forEach(p=>FLAT.push({grp:g[0], name:p[0], en:p[1], gate:p[2]==='gate'})));
+const PRIMARY_END = FLAT.findIndex(p=>p.name==='Setu Bandhasana');
+const KIND={mysore:'Mysore','led-primary':'Led Primary','led-int':'Led Intermediate',half:'Half Primary',self:'Self practice',workshop:'Workshop',restorative:'Restorative',rest:'Rest'};
+const LED = k => k==='led-primary'||k==='led-int';
+const COUNTS = k => k!=='rest';
+
+let log=[], edge=-1, editing=null, feel='', calRef=today(), ghToken='', ghSha=null, dbMode='local', lastScrolledEdge=null;
+try{ log=JSON.parse(localStorage.getItem('shala-log')||'[]'); }catch(e){}
+try{ const e=parseInt(localStorage.getItem('shala-edge')); if(!isNaN(e)) edge=e; }catch(e){}
+try{ ghToken=localStorage.getItem('shala-token')||''; }catch(e){}
+
+const GH={owner:'alvinthechipmunk123', repo:'index', path:'shala-practice.json'};
+function ghHeaders(){ const h={'Accept':'application/vnd.github+json'}; if(ghToken) h['Authorization']='Bearer '+ghToken; return h; }
+const b64enc = s => btoa(unescape(encodeURIComponent(s)));
+const b64dec = b => decodeURIComponent(escape(atob(b.replace(/\n/g,''))));
+function setSync(t){ const el=$('sync'); if(el) el.textContent='☁ '+t; }
+async function ghLoad(){
+  const r=await fetch('https://api.github.com/repos/'+GH.owner+'/'+GH.repo+'/contents/'+GH.path+'?t='+Date.now(),{headers:ghHeaders(),cache:'no-store'});
+  if(r.status===404){ ghSha=null; return null; }
+  if(!r.ok) throw new Error(r.status);
+  const j=await r.json(); ghSha=j.sha; return JSON.parse(b64dec(j.content)||'{}');
+}
+async function ghSave(){
+  if(!ghToken) return;
+  const body={message:'shala: '+log.length+' practices', content:b64enc(JSON.stringify({updated:new Date().toISOString(), edge, log},null,1))};
+  if(ghSha) body.sha=ghSha;
+  const r=await fetch('https://api.github.com/repos/'+GH.owner+'/'+GH.repo+'/contents/'+GH.path,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},ghHeaders()),body:JSON.stringify(body)});
+  if(!r.ok) throw new Error(r.status);
+  ghSha=(await r.json()).content.sha;
+}
+function persist(){
+  try{ localStorage.setItem('shala-log',JSON.stringify(log)); localStorage.setItem('shala-edge',String(edge)); }catch(e){}
+  if(dbMode==='git'&&ghToken){ setSync('saving'); ghSave().then(()=>setSync('synced')).catch(e=>setSync('error '+e.message)); }
+}
+
+// ---------- computed ----------
+const byDate = {}; const reindex=()=>{ for(const k in byDate) delete byDate[k]; log.forEach(p=>byDate[p.date]=p); };
+reindex();
+function streak(){
+  let n=0, d=today();
+  // an unlogged today doesn't break anything — the day isn't over
+  if(!byDate[iso(d)]) d=new Date(d.getTime()-MS_DAY);
+  for(let i=0;i<400;i++){
+    const ds=iso(d), p=byDate[ds];
+    if(p && COUNTS(p.kind)) n++;
+    else if(!isRestDay(ds)) break;
+    d=new Date(d.getTime()-MS_DAY);
+  }
+  return n;
+}
+function longest(){
+  const dates=log.filter(p=>COUNTS(p.kind)).map(p=>p.date).sort();
+  if(!dates.length) return 0;
+  let best=0, run=0, cur=parseISO(dates[0]);
+  const last=parseISO(dates[dates.length-1]);
+  const set=new Set(dates);
+  while(cur<=last){
+    const ds=iso(cur);
+    if(set.has(ds)) run++;
+    else if(!isRestDay(ds)) { best=Math.max(best,run); run=0; }
+    cur=new Date(cur.getTime()+MS_DAY);
+  }
+  return Math.max(best,run);
+}
+function consistency(days){
+  const t=today(); let avail=0, done=0;
+  for(let i=0;i<days;i++){
+    const ds=iso(new Date(t.getTime()-i*MS_DAY));
+    if(isRestDay(ds)) continue;
+    avail++; if(byDate[ds]&&COUNTS(byDate[ds].kind)) done++;
+  }
+  return avail? done/avail : null;
+}
+const monthCount = (y,m) => log.filter(p=>COUNTS(p.kind)&&parseISO(p.date).getFullYear()===y&&parseISO(p.date).getMonth()===m).length;
+
+// ---------- moon drawing ----------
+function moonSVG(ds){
+  const k=moonOf(ds);
+  // illuminated fraction from the nearest new moon, for the in-between days
+  let frac=0.5, waxing=true;
+  let nearest=null, nd=1e9;
+  MOONS.forEach(m=>{ const d=(parseISO(ds)-parseISO(m.slice(0,10)))/MS_DAY; if(Math.abs(d)<Math.abs(nd)){ nd=d; nearest=m; } });
+  if(nearest){
+    const isNew=nearest.slice(10)==='N';
+    const t=Math.abs(nd)/14.77;
+    frac = isNew ? Math.min(1,t) : Math.max(0,1-t);
+    waxing = nd>=0 ? isNew : !isNew;
+  }
+  if(k==='N') frac=0; if(k==='F') frac=1;
+  const R=22, C=27;
+  const lit = k==='F' ? 'var(--marigold)' : k==='N' ? 'var(--surface-2)' : 'var(--indigo)';
+  const term = R*Math.abs(1-2*frac);
+  const sweepOuter = waxing?1:0;
+  const sweepInner = (frac>0.5) ? (waxing?1:0) : (waxing?0:1);
+  let body;
+  if(frac<=0.01) body='<circle cx="'+C+'" cy="'+C+'" r="'+R+'" fill="var(--surface-2)"/>';
+  else if(frac>=0.99) body='<circle cx="'+C+'" cy="'+C+'" r="'+R+'" fill="'+lit+'"/>';
+  else body='<circle cx="'+C+'" cy="'+C+'" r="'+R+'" fill="var(--surface-2)"/>'+
+       '<path d="M'+C+' '+(C-R)+' A'+R+' '+R+' 0 0 '+sweepOuter+' '+C+' '+(C+R)+' A'+term+' '+R+' 0 0 '+sweepInner+' '+C+' '+(C-R)+' Z" fill="'+lit+'"/>';
+  return '<svg viewBox="0 0 54 54" aria-hidden="true">'+body+'<circle cx="'+C+'" cy="'+C+'" r="'+R+'" fill="none" stroke="var(--line-2)" stroke-width="1"/></svg>';
+}
+
+function nextMoon(ds){
+  const t=parseISO(ds).getTime();
+  for(const m of MOONS){ const d=Math.round((parseISO(m.slice(0,10))-t)/MS_DAY); if(d>0) return {days:d, kind:m.slice(10), date:m.slice(0,10)}; }
+  return null;
+}
+function moonCaption(ds){
+  const k=moonOf(ds);
+  if(k) return (k==='F'?'Full moon':'New moon')+'<br>rest day';
+  const n=nextMoon(ds); if(!n) return 'Moon';
+  const name=(n.kind==='F'?'Full':'New')+' moon';
+  if(n.days===1) return name+'<br>tomorrow';
+  if(n.days<=6) return name+'<br>in '+n.days+' days';
+  const d=parseISO(n.date);
+  return name+'<br>'+MONS[d.getMonth()]+' '+d.getDate();
+}
+
+// ---------- render ----------
+function render(){ reindex(); renderToday(); renderCounts(); renderCal(); renderLadder(); renderMarks(); renderHistory(); renderFoot(); }
+
+function renderToday(){
+  const ds=iso(today()), p=byDate[ds], k=moonOf(ds);
+  let state, sub;
+  if(p && COUNTS(p.kind)){
+    state='Practised.'; sub=KIND[p.kind]+(p.min?' · '+p.min+' min':'')+(p.feel?' · felt '+p.feel:'');
+  }else if(k){
+    state = (k==='F'?'Full moon.':'New moon.'); sub='Traditional rest day. Nothing to log, nothing missed.';
+  }else if(isSat(ds)){
+    state='Saturday.'; sub='Rest day. The count waits.';
+  }else if(p){
+    state='Rest.'; sub=p.notes?esc(p.notes):'Logged as a rest day.';
+  }else{
+    const h=new Date().getHours();
+    state = h<10 ? 'Not yet.' : h<18 ? 'Still open.' : 'Nothing logged.';
+    sub='Practice day. '+(streak()?'Streak stands at '+streak()+'.':'Log one and the count starts.');
+  }
+  $('today').innerHTML =
+    '<div><div class="eyebrow">'+DOW[parseISO(ds).getDay()]+' '+MONS[parseISO(ds).getMonth()]+' '+parseISO(ds).getDate()+'</div>'+
+    '<div class="state">'+state+'</div><div class="sub">'+sub+'</div></div>'+
+    '<div class="moon">'+moonSVG(ds)+'<div class="cap">'+moonCaption(ds)+'</div></div>';
+}
+
+function renderCounts(){
+  const t=today(), total=log.filter(p=>COUNTS(p.kind)).length;
+  const c28=consistency(28);
+  const cells=[
+    {v:streak(), k:'Day streak'},
+    {v:monthCount(t.getFullYear(),t.getMonth()), k:MONS[t.getMonth()]+' practices'},
+    {v:total, k:'Total practices'},
+    {v:c28==null?'—':Math.round(c28*100)+'<small>%</small>', k:'Last 28 days'}
+  ];
+  $('counts').innerHTML=cells.map(c=>'<div class="count"><div class="v num">'+c.v+'</div><div class="k">'+c.k+'</div></div>').join('');
+}
+
+function renderCal(){
+  const y=calRef.getFullYear(), m=calRef.getMonth();
+  $('calmonth').textContent=MON[m]+' '+y;
+  const first=new Date(y,m,1), start=(first.getDay()+6)%7; // Monday-first
+  const days=new Date(y,m+1,0).getDate(), td=iso(today());
+  let html='';
+  for(let i=0;i<start;i++) html+='<div class="cell void"></div>';
+  for(let d=1;d<=days;d++){
+    const ds=y+'-'+pad(m+1)+'-'+pad(d), p=byDate[ds], k=moonOf(ds);
+    const cls=['cell'];
+    if(p&&COUNTS(p.kind)){ cls.push('done'); if(LED(p.kind)) cls.push('led'); }
+    if(k) cls.push('moon');
+    if(isSat(ds)) cls.push('sat');
+    if(ds===td) cls.push('today');
+    if(parseISO(ds)>today()) cls.push('future');
+    const label = p&&COUNTS(p.kind) ? KIND[p.kind]+(p.min?', '+p.min+' min':'') : k ? (k==='F'?'Full moon':'New moon') : 'No practice';
+    html+='<div class="'+cls.join(' ')+'" data-d="'+ds+'" role="button" tabindex="0" aria-label="'+MONS[m]+' '+d+', '+label+'">'+
+      '<span class="d">'+d+'</span>'+(k&&!(p&&COUNTS(p.kind))?'<span class="mk">'+(k==='F'?'○':'●')+'</span>':'')+'</div>';
+  }
+  $('cal').innerHTML=html;
+  $('cal').querySelectorAll('[data-d]').forEach(el=>{
+    const go=()=>openFor(el.dataset.d);
+    el.addEventListener('click',go);
+    el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } });
+  });
+}
+
+function renderLadder(){
+  let html='', gi=null, n=0;
+  FLAT.forEach((p,i)=>{
+    if(p.grp!==gi){ gi=p.grp; html+='<div class="grp">'+gi+'</div>'; }
+    n++;
+    const cls=['pose'];
+    if(i<edge) cls.push('have');
+    if(i===edge) cls.push('edge');
+    if(i>edge) cls.push('beyond');
+    html+='<div class="'+cls.join(' ')+'" data-i="'+i+'" role="button" tabindex="0">'+
+      '<span class="n">'+n+'</span>'+
+      '<span class="nm">'+p.name+'<span class="en">'+p.en+'</span></span>'+
+      (p.gate?'<span class="tag">mark</span>':'<span></span>')+'</div>';
+  });
+  $('ladder').innerHTML=html;
+  $('ladder').querySelectorAll('[data-i]').forEach(el=>{
+    const go=()=>{ const i=+el.dataset.i; edge = (i===edge? i-1 : i); persist(); render(); };
+    el.addEventListener('click',go);
+    el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } });
+  });
+  const cur=$('ladder').querySelector('.pose.edge');
+  if(cur && lastScrolledEdge!==edge){
+    lastScrolledEdge=edge;
+    requestAnimationFrame(()=>{ $('ladder').scrollTop = Math.max(0, cur.offsetTop - 110); });
+  }
+  $('edge-cur').textContent = edge>=0 ? FLAT[edge].name : 'Not set yet';
+  $('edge-pct').textContent = edge>=0 ? Math.min(100,Math.round(100*(edge+1)/(PRIMARY_END+1)))+'% of Primary' : 'tap a posture';
+  const sel=$('f-edge');
+  if(sel && !sel.options.length){
+    sel.innerHTML='<option value="-1">— leave as is —</option>'+FLAT.map((p,i)=>'<option value="'+i+'">'+p.name+'</option>').join('');
+  }
+}
+
+function renderMarks(){
+  const gates=FLAT.map((p,i)=>({p,i})).filter(o=>o.p.gate);
+  const totals=[{n:30,t:'30 practices'},{n:100,t:'100 practices'},{n:250,t:'250 practices'}];
+  const count=log.filter(p=>COUNTS(p.kind)).length;
+  const dated=log.filter(p=>COUNTS(p.kind)).map(p=>p.date).sort();
+  let html=gates.map(o=>'<div class="mark'+(edge>=o.i?' on':'')+'"><div class="t">'+o.p.name.split(' ')[0]+(o.p.name.split(' ')[1]?' '+o.p.name.split(' ')[1]:'')+'</div><div class="w">'+(edge>=o.i?'given':'—')+'</div></div>').join('');
+  html+=totals.map(t=>'<div class="mark'+(count>=t.n?' on':'')+'"><div class="t" style="font-style:normal">'+t.t+'</div><div class="w">'+(count>=t.n?MONS[parseISO(dated[t.n-1]).getMonth()]+' '+parseISO(dated[t.n-1]).getDate():count+'/'+t.n)+'</div></div>').join('');
+  const ls=longest();
+  html+='<div class="mark'+(ls>=21?' on':'')+'"><div class="t" style="font-style:normal">21 in a row</div><div class="w">'+(ls>=21?'done':'best '+ls)+'</div></div>';
+  $('marks').innerHTML=html;
+}
+
+function renderHistory(){
+  const recent=log.slice().sort((a,b)=>a.date<b.date?1:-1).slice(0,14);
+  $('log-count').textContent = log.length ? log.length+' logged' : '';
+  if(!recent.length){ $('history').innerHTML='<div class="hint">Nothing logged yet. The first one is the hard one.</div>'; return; }
+  $('history').innerHTML=recent.map(p=>{
+    const d=parseISO(p.date), bits=[];
+    if(p.min) bits.push(p.min+' min');
+    if(p.feel) bits.push(p.feel);
+    if(p.edge!=null&&p.edge>=0&&FLAT[p.edge]) bits.push('to <span class="sk">'+FLAT[p.edge].name+'</span>');
+    return '<div class="mrow"><div><span class="dt">'+DOW[d.getDay()]+' '+MONS[d.getMonth()]+' '+d.getDate()+'</span><span class="kind">'+KIND[p.kind]+'</span></div>'+
+      '<div><button type="button" data-e="'+p.date+'">edit</button></div>'+
+      '<div class="meta">'+bits.join(' · ')+(p.notes?(bits.length?' — ':'')+esc(p.notes):'')+'</div></div>';
+  }).join('');
+  $('history').querySelectorAll('[data-e]').forEach(b=>b.addEventListener('click',()=>openFor(b.dataset.e)));
+}
+
+function renderFoot(){
+  const c=consistency(84);
+  $('foot').innerHTML = (dbMode==='git'&&ghToken ? 'Synced to the repo' : 'Saved in this browser')+
+    ' · rest on Saturdays and moon days, as the tradition has it'+
+    (c!=null? '<br>'+Math.round(c*100)+'% of available practice days over the last twelve weeks' : '');
+}
+
+// ---------- form ----------
+function setFeel(f){ feel=f; $('feels').querySelectorAll('[data-f]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.f===f)); }
+function openFor(ds){
+  const p=byDate[ds];
+  editing = p? ds : null;
+  $('sheet').hidden=false; $('open-log').hidden=true;
+  $('f-date').value=ds;
+  $('f-kind').value = p? p.kind : (isRestDay(ds)?'rest':'mysore');
+  $('f-min').value = p&&p.min? p.min : '';
+  $('f-notes').value = p&&p.notes? p.notes : '';
+  $('f-edge').value = p&&p.edge!=null? p.edge : -1;
+  setFeel(p&&p.feel? p.feel : '');
+  $('f-del').hidden = !p;
+  $('toast').textContent='';
+  $('sheet').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeSheet(){ $('sheet').hidden=true; $('open-log').hidden=false; editing=null; }
+$('open-log').addEventListener('click',()=>openFor(iso(today())));
+$('f-cancel').addEventListener('click',closeSheet);
+$('feels').addEventListener('click',e=>{ const b=e.target.closest('[data-f]'); if(b) setFeel(b.dataset.f===feel?'':b.dataset.f); });
+$('f-del').addEventListener('click',()=>{
+  if(!editing) return;
+  log=log.filter(p=>p.date!==editing); persist(); render(); closeSheet();
+});
+$('log').addEventListener('submit',e=>{
+  e.preventDefault();
+  const ds=$('f-date').value; if(!ds) return;
+  const ed=parseInt($('f-edge').value);
+  const rec={date:ds, kind:$('f-kind').value, min:parseInt($('f-min').value)||0, feel, notes:$('f-notes').value.trim(), edge: isNaN(ed)?-1:ed};
+  log=log.filter(p=>p.date!==ds); log.push(rec); log.sort((a,b)=>a.date<b.date?-1:1);
+  if(rec.edge>=0 && rec.edge>edge) edge=rec.edge;
+  persist(); render();
+  $('toast').textContent='Counted.';
+  setTimeout(()=>{ closeSheet(); },450);
+});
+$('cal-prev').addEventListener('click',()=>{ calRef=new Date(calRef.getFullYear(),calRef.getMonth()-1,1); renderCal(); });
+$('cal-next').addEventListener('click',()=>{ calRef=new Date(calRef.getFullYear(),calRef.getMonth()+1,1); renderCal(); });
+
+// ---------- sync panel ----------
+$('sync').addEventListener('click',()=>{ $('syncsheet').hidden=!$('syncsheet').hidden; $('gh-token').value=ghToken; });
+$('gh-close').addEventListener('click',()=>{ $('syncsheet').hidden=true; });
+$('gh-save').addEventListener('click',()=>{ ghToken=$('gh-token').value.trim(); try{ localStorage.setItem('shala-token',ghToken); }catch(e){} $('syncsheet').hidden=true; pull(); });
+$('gh-sync').addEventListener('click',pull);
+$('gh-copy').addEventListener('click',()=>{
+  const txt=JSON.stringify({edge, log},null,1);
+  (navigator.clipboard? navigator.clipboard.writeText(txt) : Promise.reject())
+    .then(()=>{ $('sync').textContent='☁ copied'; })
+    .catch(()=>{ window.prompt('Copy this and keep it somewhere safe:', txt); });
+});
+$('gh-paste').addEventListener('click',()=>{
+  const txt=window.prompt('Paste a backup here. This replaces what is in this browser.');
+  if(!txt) return;
+  try{ const d=JSON.parse(txt); if(Array.isArray(d.log)){ log=d.log; if(typeof d.edge==='number') edge=d.edge; persist(); render(); $('syncsheet').hidden=true; } }
+  catch(e){ window.alert('That did not look like a backup.'); }
+});
+async function pull(){
+  if(dbMode!=='git') return;
+  setSync('loading');
+  try{
+    const d=await ghLoad();
+    if(d&&Array.isArray(d.log)){ log=d.log; if(typeof d.edge==='number') edge=d.edge; try{ localStorage.setItem('shala-log',JSON.stringify(log)); localStorage.setItem('shala-edge',String(edge)); }catch(e){} render(); }
+    setSync(ghToken?'synced':'read-only');
+  }catch(e){ setSync('error '+e.message); }
+}
+if(location.protocol!=='file:' && /github\.io$/.test(location.hostname)){ dbMode='git'; $('sync').hidden=false; setSync(ghToken?'synced':'backup'); pull(); }
+else { $('sync').hidden=false; setSync('backup'); }
+
+render();
+})();
+</script>
+</head><body></body></html>
