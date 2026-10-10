@@ -14,7 +14,7 @@
   --bg:#f4f0e1; --card:#fffdf6; --ink:#2e3b35; --dim:#647267; --line:#dcd6bf;
   --sky:#bfe3f2; --sky2:#eaf6f1; --hill1:#b9dc8f; --hill2:#8cc46a;
   --moss:#3f7a4c; --leaf:#9ccc6a; --sun:#f4b942; --rose:#d9604f;
-  --patina:#7dbcab; --patina2:#a5d3c5; --copper:#c8854e; --white:#ffffff;
+  --patina:#7dbcab; --patina2:#a5d3c5; --copper:#c8854e; --orange:#e9a04e; --cocoa:#5b4636; --white:#ffffff;
   --display:"Fredoka","Arial Rounded MT Bold","Trebuchet MS",sans-serif;
   --body:"Nunito",-apple-system,"Segoe UI",Roboto,sans-serif;
   --jp:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
@@ -43,7 +43,7 @@ button,input{font:inherit; color:inherit}
 .titleblock{position:relative; align-self:start; display:grid; gap:10px; padding-bottom:20px}
 .kana{font:700 14px/1 var(--jp); color:var(--moss); letter-spacing:.14em}
 h1{font:700 clamp(34px,6.4vw,56px)/1 var(--display); margin:0; text-wrap:balance}
-.sub{margin:0; max-width:36ch; font-weight:600}
+.tagline{margin:0; max-width:36ch; font-weight:600}
 .readout{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
 .stat{background:var(--card); border:2px solid var(--ink); border-radius:999px; padding:4px 12px; font:500 13px/1.3 var(--display); font-variant-numeric:tabular-nums}
 .stat b{font-weight:700}
@@ -54,6 +54,16 @@ h1{font:700 clamp(34px,6.4vw,56px)/1 var(--display); margin:0; text-wrap:balance
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%)}
 .bot{background:none; border:0; padding:0; cursor:pointer; display:block; width:210px; border-radius:24px; -webkit-tap-highlight-color:transparent}
 .bot svg{display:block; width:100%; height:auto; overflow:visible}
+.cat{position:absolute; left:2%; bottom:6px; width:124px; background:none; border:0; padding:0; cursor:pointer; border-radius:20px; -webkit-tap-highlight-color:transparent}
+.cat svg{display:block; width:100%; height:auto; overflow:visible}
+.cat .pom{transform-box:fill-box; transform-origin:0% 60%; animation:pom 1.6s ease-in-out infinite}
+@keyframes pom{50%{transform:rotate(-22deg)}}
+.cat .ear{transform-box:fill-box; transform-origin:bottom; animation:ear 6s infinite}
+@keyframes ear{0%,90%,100%{transform:rotate(0)} 93%{transform:rotate(-12deg)} 96%{transform:rotate(6deg)}}
+.cat .ceye{transform-box:fill-box; transform-origin:center; animation:cblink 4.7s infinite}
+@keyframes cblink{0%,93%,100%{transform:scaleY(1)} 96%{transform:scaleY(.1)}}
+.cat.hop svg{animation:hop .45s ease-out}
+@keyframes hop{40%{transform:translateY(-14px)}}
 .bob{animation:bob 4s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-4px)}}
 .lid{transform-box:fill-box; transform-origin:top; transform:scaleY(0); animation:blink 5.5s infinite}
@@ -80,24 +90,19 @@ h1{font:700 clamp(34px,6.4vw,56px)/1 var(--display); margin:0; text-wrap:balance
 .chip[aria-pressed="true"]{background:var(--moss); color:var(--white)}
 .chip.go{background:var(--sun)}
 .chip.go:hover{background:var(--leaf)}
+.filters{border-top:2px dashed var(--line); padding-top:12px}
+.filters summary{cursor:pointer; list-style:none; display:flex; gap:8px; align-items:baseline; justify-content:space-between; border-radius:8px}
+.filters summary::-webkit-details-marker{display:none}
+.filters summary .label{margin:0}
+.filters summary .label::before{content:"+ "; font-weight:700}
+.filters[open] summary .label::before{content:"\2212  "}
+#fsum{font-size:13.5px; color:var(--dim); text-align:right; min-width:0}
+.fbody{display:grid; gap:12px; padding-top:12px}
+.sub{font:600 12px/1 var(--display); letter-spacing:.05em; text-transform:uppercase; color:var(--dim); margin:0 0 6px}
 .search{width:100%; background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:8px 14px}
 .search::placeholder{color:var(--dim)}
 
 main{display:grid; gap:12px; min-width:0}
-.map{background:var(--card); border:2px solid var(--line); border-radius:20px; padding:14px 14px 8px}
-.map .label{margin-bottom:4px}
-.mapnote{margin:0 0 6px; font-size:13.5px; color:var(--dim)}
-.mapbox{position:relative}
-#map{display:block; width:100%}
-#map text{font:600 10.5px var(--display); fill:var(--dim)}
-#map .dot{cursor:pointer; outline:none}
-#map .dot circle{fill:var(--white); stroke:var(--ink); stroke-width:1.5}
-#map .dot.top circle{fill:var(--sun)}
-#map .dot.seen circle{stroke-dasharray:3 2.5}
-#map .dot.off{opacity:.22}
-#map .dot text{fill:var(--ink); font-size:10px; pointer-events:none}
-#map .dot:hover circle,#map .dot:focus-visible circle{stroke-width:3.5; stroke:var(--rose)}
-.tip{position:absolute; pointer-events:none; background:var(--ink); color:var(--card); border-radius:10px; padding:6px 10px; font:500 13px/1.3 var(--display); transform:translate(-50%,-125%); white-space:nowrap; z-index:2}
 .mine{display:flex; flex-wrap:wrap; align-items:center; gap:8px; font:600 15px var(--display)}
 .mine output{min-width:2.4em; text-align:center; font-size:20px; font-variant-numeric:tabular-nums}
 .step{width:36px; height:36px; border-radius:50%; border:2px solid var(--ink); background:var(--white); font:600 18px/1 var(--display); cursor:pointer}
@@ -201,6 +206,7 @@ footer p{margin:0 0 6px}
   .poko{grid-template-columns:minmax(0,1fr) 132px}
   .bot{width:132px}
   .bubble{margin-bottom:64px}
+  .cat{width:78px; left:0; bottom:0}
   .console{grid-template-columns:minmax(0,1fr)}
   .deck{position:static}
   .sliders{grid-template-columns:1fr 1fr; gap:8px 16px}
@@ -229,7 +235,7 @@ footer p{margin:0 0 6px}
     <div class="titleblock">
       <div class="kana">アルヴィンのアニメリスト</div>
       <h1>Alvin's Anime List</h1>
-      <p class="sub">Twenty-five recent shows, ranked live by your dials, with a robot to argue with.</p>
+      <p class="tagline">Twenty-five recent shows, ranked live by your dials, with a robot to argue with.</p>
       <div class="readout" id="readout"></div>
     </div>
     <div class="poko">
@@ -238,6 +244,28 @@ footer p{margin:0 0 6px}
         <span class="sr" id="saysr" aria-live="polite"></span>
         <div class="chips" id="moods"></div>
       </div>
+      <button class="cat" id="cat" type="button" aria-label="Mochi the cat. Tap for a cosy pick.">
+        <svg viewBox="0 0 124 112" aria-hidden="true">
+          <defs><clipPath id="cbody"><ellipse cx="62" cy="80" rx="31" ry="27"/></clipPath><clipPath id="chead"><ellipse cx="54" cy="42" rx="27" ry="23"/></clipPath></defs>
+          <g class="pom"><circle cx="98" cy="88" r="10" fill="var(--orange)" stroke="var(--ink)" stroke-width="3"/></g>
+          <ellipse cx="62" cy="80" rx="31" ry="27" fill="var(--white)" stroke="var(--ink)" stroke-width="3"/>
+          <g clip-path="url(#cbody)"><circle cx="86" cy="66" r="17" fill="var(--orange)"/><circle cx="38" cy="100" r="13" fill="var(--cocoa)"/></g>
+          <ellipse cx="62" cy="80" rx="31" ry="27" fill="none" stroke="var(--ink)" stroke-width="3"/>
+          <ellipse cx="48" cy="104" rx="9" ry="6" fill="var(--white)" stroke="var(--ink)" stroke-width="3"/>
+          <ellipse cx="70" cy="104" rx="9" ry="6" fill="var(--white)" stroke="var(--ink)" stroke-width="3"/>
+          <g class="ear"><path d="M33 30 L28 6 L50 20Z" fill="var(--orange)" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/></g>
+          <g class="ear"><path d="M60 20 L80 6 L76 32Z" fill="var(--cocoa)" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/></g>
+          <ellipse cx="54" cy="42" rx="27" ry="23" fill="var(--white)" stroke="var(--ink)" stroke-width="3"/>
+          <g clip-path="url(#chead)"><circle cx="32" cy="24" r="17" fill="var(--orange)"/><circle cx="78" cy="24" r="16" fill="var(--cocoa)"/></g>
+          <ellipse cx="54" cy="42" rx="27" ry="23" fill="none" stroke="var(--ink)" stroke-width="3"/>
+          <path d="M36 62 Q54 72 72 62" fill="none" stroke="var(--rose)" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="54" cy="69" r="4.5" fill="var(--sun)" stroke="var(--ink)" stroke-width="2"/>
+          <g class="ceye"><ellipse class="cpupil" cx="43" cy="42" rx="3.6" ry="4.8" fill="var(--ink)"/><ellipse class="cpupil" cx="65" cy="42" rx="3.6" ry="4.8" fill="var(--ink)"/></g>
+          <path d="M51.5 49 L56.5 49 L54 52Z" fill="var(--rose)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M48 55 Q51 58 54 54 Q57 58 60 55" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M34 48 L22 46 M34 52 L23 54 M74 48 L86 46 M74 52 L85 54" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
       <button class="bot" id="bot" type="button" aria-label="Poko the robot. Tap for tonight's pick.">
         <svg viewBox="0 0 200 236" role="img" aria-hidden="true">
           <ellipse cx="100" cy="226" rx="62" ry="8" fill="var(--moss)" opacity=".35"/>
@@ -301,6 +329,10 @@ footer p{margin:0 0 6px}
   <div class="console">
     <aside class="deck" aria-label="Controls">
       <section>
+        <label class="label" for="q" style="display:block">Find</label>
+        <input class="search" id="q" type="search" placeholder="title, studio, year" autocomplete="off">
+      </section>
+      <section>
         <p class="label">Rank by</p>
         <div class="chips" id="sortby"></div>
       </section>
@@ -308,30 +340,18 @@ footer p{margin:0 0 6px}
         <p class="label">Dials</p>
         <div class="sliders" id="sliders"></div>
       </section>
-      <section>
-        <p class="label">Where it streams (US)</p>
-        <div class="chips" id="svc"></div>
-      </section>
-      <section>
-        <p class="label">Show me</p>
-        <div class="chips" id="status"></div>
-      </section>
-      <section>
-        <p class="label">Time I have</p>
-        <div class="chips" id="len"></div>
-      </section>
-      <section>
-        <label class="label" for="q" style="display:block">Search</label>
-        <input class="search" id="q" type="search" placeholder="title, studio, year" autocomplete="off">
-      </section>
+      <details class="filters" id="filters">
+        <summary><span class="label">Filters</span><span id="fsum">none on</span></summary>
+        <div class="fbody">
+          <div><p class="sub">Streams on (US)</p><div class="chips" id="svc"></div></div>
+          <div><p class="sub">Show me</p><div class="chips" id="status"></div></div>
+          <div><p class="sub">Time I have</p><div class="chips" id="len"></div></div>
+          <div><button class="chip" type="button" id="fclear" hidden>Clear filters</button></div>
+        </div>
+      </details>
     </aside>
 
     <main>
-      <section class="map" aria-label="You versus the crowd">
-        <p class="label">You vs the crowd</p>
-        <p class="mapnote">Higher is a better match for your dials. Further right is a higher fan rating. Numbers are your ranks. Tap a dot to open the show.</p>
-        <div class="mapbox"><svg id="map" role="group" aria-label="Each show plotted by fan rating and by match to your dials"></svg><div class="tip" id="tip" hidden></div></div>
-      </section>
       <ol class="list" id="list"></ol>
       <div class="empty" id="empty" hidden>Nothing matches. Clear a streamer or the search box.</div>
     </main>
@@ -366,7 +386,7 @@ footer p{margin:0 0 6px}
     <p><b>Match %</b> is each show's five trait scores plus its fan rating, weighted by your dials. The five trait scores are an editorial read, not data from anywhere. The five green bars on each row follow the first five dials, in order.</p>
     <p><b>Fan ratings</b> (★) are MyAnimeList user scores out of 10 for each show's first season, read on 10 Oct 2026. Scores on shows with few ratings move around more.</p>
     <p><b>Streaming and episode counts</b> were checked on JustWatch US, Wikipedia and MyAnimeList on 10 Oct 2026. Awards listed are Crunchyroll Anime Awards unless named otherwise. Catalogs rotate, so confirm before you sit down. Hours assume about 24 minutes an episode.</p>
-    <p>Seen marks, your queue, your own scores and dial settings are saved in this browser, and to anime-picks.json in your repo when ☁ Sync has a token. The "Open on" buttons run a title search on that service.</p>
+    <p>Seen marks, your queue, your own scores and dial settings are saved in this browser, and to anime-picks.json in your repo when ☁ Sync has a token. The "Open on" buttons run a title search on that service. The music is generated in your browser; no recordings are used.</p>
   </footer>
 </div>
 
@@ -580,6 +600,7 @@ var FILMS=[
 ];
 /* Update log: newest first. Append a row per round. */
 var LOG=[
+ ["2026-10-10","Added music made in the browser (koto, drum, robot bleeps), Mochi the cat with her own cosy pick, and a tidier control panel with filters folded away. Removed the you-versus-the-crowd map."],
  ["2026-10-10","Added \u2601 Sync: seen marks, queue, scores and dials save to anime-picks.json in the index repo."],
  ["2026-10-10","Added Coming up (18 dated and undated releases), nine films, the fan board, fan-favourite characters and awards on every show, and this log. Liar Game corrected to 26 episodes."],
  ["2026-10-10","Added the you-versus-the-crowd map, your own scores, Learn my taste, the time filter and watch links."],
@@ -604,7 +625,7 @@ var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce
 /* Poko talks */
 var sayT=null;
 function say(txt){
-  $("saysr").textContent=txt; clearInterval(sayT);
+  $("saysr").textContent=txt; clearInterval(sayT); if(typeof sfx==="function")sfx("talk");
   var n=$("say"); if(reduce){n.textContent=txt; return;}
   var i=0; n.textContent="";
   sayT=setInterval(function(){i+=2; n.textContent=txt.slice(0,i); if(i>=txt.length)clearInterval(sayT);},18);
@@ -633,6 +654,7 @@ var moodBtns=MOODS.map(function(m){return chip($("moods"),m.name,function(){S.w=
 chip($("moods"),"Learn my taste",learn,"learn");
 chip($("moods"),"Pick for me",pick,"go");
 chip($("moods"),"Pick a film",pickFilm,"go");
+var musicBtn=chip($("moods"),"\u266A Music",function(){toggleMusic();});
 $("bot").addEventListener("click",pick);
 var svcBtns={}; Object.keys(SVC).forEach(function(c){svcBtns[c]=chip($("svc"),SVC[c],function(){ if(S.svc[c])delete S.svc[c]; else S.svc[c]=1; update();});});
 var SORTS=[["dials","My dials"],["fans","Fan rating"]];
@@ -641,6 +663,7 @@ var STAT=[["all","All 25"],["unseen","Not seen"],["queue","My queue"],["bots","H
 var statBtns=STAT.map(function(s){return chip($("status"),s[1],function(){S.status=s[0]; update(); if(s[0]==="bots")say("My people. Four of them, counting loosely.");});});
 var LENS=[[0,"Any"],[6,"Under 6 h"],[12,"Under 12 h"]];
 var lenBtns=LENS.map(function(l){return chip($("len"),l[1],function(){S.len=l[0]; update(); if(l[0])say("Short ones only. A person with plans.");});});
+$("fclear").addEventListener("click",function(){S.svc={}; S.status="all"; S.len=0; update(); $("filters").querySelector("summary").focus();});
 $("q").addEventListener("input",function(e){S.q=e.target.value.trim().toLowerCase(); update();});
 
 /* rows */
@@ -774,35 +797,6 @@ function pick(){
   r.el.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
 }
 
-function drawMap(){
-  var svg=$("map"), NS="http://www.w3.org/2000/svg", W=Math.max(280,svg.parentNode.clientWidth||600), H=W<480?250:230, L=38, R=14, T=12, B=26;
-  svg.setAttribute("viewBox","0 0 "+W+" "+H); svg.setAttribute("height",H); svg.textContent="";
-  function add(tag,at,txt,par){var e=document.createElementNS(NS,tag); for(var k in at)e.setAttribute(k,at[k]); if(txt!=null)e.textContent=txt; (par||svg).appendChild(e); return e;}
-  var scs=rows.map(function(r){return r.sc;}), lo=Math.floor((Math.min.apply(null,scs)-3)/5)*5, hi=Math.ceil((Math.max.apply(null,scs)+3)/5)*5;
-  var x0=6.6,x1=9.45;
-  function X(m){return L+(m-x0)/(x1-x0)*(W-L-R);} function Y(v){return T+(hi-v)/(hi-lo)*(H-T-B);}
-  for(var v=lo;v<=hi;v+=(hi-lo>40?20:10)){add("line",{x1:L,x2:W-R,y1:Y(v),y2:Y(v),stroke:"var(--line)","stroke-width":1}); add("text",{x:L-6,y:Y(v)+3.5,"text-anchor":"end"},v+"%");}
-  [7,8,9].forEach(function(m){add("line",{x1:X(m),x2:X(m),y1:T,y2:H-B,stroke:"var(--line)","stroke-width":1}); add("text",{x:X(m),y:H-B+15,"text-anchor":"middle"},"★ "+m);});
-  function med(a){a=a.slice().sort(function(p,q){return p-q;}); return a[Math.floor(a.length/2)];}
-  var mx=med(D.map(function(d){return d.m;})), my=med(scs);
-  add("line",{x1:X(mx),x2:X(mx),y1:T,y2:H-B,stroke:"var(--dim)","stroke-width":1.2,"stroke-dasharray":"2 5"});
-  add("line",{x1:L,x2:W-R,y1:Y(my),y2:Y(my),stroke:"var(--dim)","stroke-width":1.2,"stroke-dasharray":"2 5"});
-  add("text",{x:L+6,y:T+11},"You, not the crowd"); add("text",{x:W-R-4,y:H-B-6,"text-anchor":"end"},"The crowd, not you");
-  var tip=$("tip");
-  rows.slice().sort(function(a,b){return b.dr-a.dr;}).forEach(function(r){
-    var d=r.d, cx=X(d.m), cy=Y(r.sc);
-    var g=add("g",{"class":"dot"+(r.dr<=3?" top":"")+(S.seen[d.id]?" seen":"")+(visible(r)?"":" off"),tabindex:0,role:"button","aria-label":d.t+": match "+Math.round(r.sc)+" percent, fan rating "+d.m.toFixed(2)});
-    add("circle",{cx:cx,cy:cy,r:16,fill:"transparent",stroke:"none",style:"fill:transparent;stroke:none"},null,g);
-    add("circle",{cx:cx,cy:cy,r:W<480?8.5:10},null,g); add("text",{x:cx,y:cy+3.5,"text-anchor":"middle"},r.dr,g);
-    function show(){tip.textContent=d.t+" · "+Math.round(r.sc)+"% · ★ "+d.m.toFixed(2); tip.style.left=Math.max(24,Math.min(76,cx/W*100))+"%"; tip.style.top=cy+"px"; tip.hidden=false;}
-    function hide(){tip.hidden=true;}
-    g.addEventListener("mouseenter",show); g.addEventListener("mouseleave",hide); g.addEventListener("focus",show); g.addEventListener("blur",hide);
-    g.addEventListener("click",function(){hide(); openRow(r);});
-    g.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault(); hide(); openRow(r);} });
-  });
-}
-var rzT=null; window.addEventListener("resize",function(){clearTimeout(rzT); rzT=setTimeout(drawMap,150);});
-
 function update(){
   ins.forEach(function(inp,i){inp.value=S.w[i]; outs[i].textContent=S.w[i];});
   moodBtns.forEach(function(b,i){b.setAttribute("aria-pressed",MOODS[i].w.join()===S.w.join()?"true":"false");});
@@ -837,13 +831,17 @@ function update(){
     if(r.open)fillDetail(r);
   });
   $("empty").hidden=shown>0;
+  var on=Object.keys(S.svc).map(function(c){return SVC[c];});
+  if(S.status!=="all")on.push(STAT.filter(function(x){return x[0]===S.status;})[0][1]);
+  if(S.len)on.push(LENS.filter(function(x){return x[0]===S.len;})[0][1]);
+  $("fsum").textContent=on.length?on.join(", "):"none on"; $("fclear").hidden=!on.length;
   if(first){
     sorted.forEach(function(r){ if(r.el.hidden||!first.has(r))return; var dy=first.get(r)-r.el.getBoundingClientRect().top; if(Math.abs(dy)<1)return;
       r.el.style.transition="none"; r.el.style.transform="translateY("+dy+"px)";
       requestAnimationFrame(function(){requestAnimationFrame(function(){r.el.style.transition="transform .4s cubic-bezier(.3,1.3,.5,1)"; r.el.style.transform="";});});
     });
   }
-  drawMap(); drawBoard();
+  drawBoard();
   /* Poko's chest gauge shows the top match */
   var top=Math.round(Math.max.apply(null,rows.map(function(r){return r.sc;})));
   $("needle").style.transform="rotate("+(-90+top*1.8)+"deg)"; $("gauge").textContent=top;
@@ -860,7 +858,82 @@ function look(x,y){
   var b=$("bot").getBoundingClientRect(); if(!b.width)return;
   var dx=x-(b.left+b.width/2), dy=y-(b.top+b.height*.34), m=Math.sqrt(dx*dx+dy*dy)||1, k=Math.min(1,m/160)*5.5;
   pupils.forEach(function(p){p.style.transform="translate("+(dx/m*k).toFixed(1)+"px,"+(dy/m*k).toFixed(1)+"px)";});
+  var c=$("cat").getBoundingClientRect(); if(!c.width)return;
+  var cx=x-(c.left+c.width*.44), cy=y-(c.top+c.height*.38), cm=Math.sqrt(cx*cx+cy*cy)||1, ck=Math.min(1,cm/160)*2.6;
+  cpupils.forEach(function(p){p.style.transform="translate("+(cx/cm*ck).toFixed(1)+"px,"+(cy/cm*ck).toFixed(1)+"px)";});
 }
+var cpupils=[].slice.call(document.querySelectorAll(".cpupil"));
+/* Mochi picks by comfort: wonder plus heart, nothing else */
+var lastCat=null;
+$("cat").addEventListener("click",function(){
+  var c=$("cat"); c.classList.remove("hop"); void c.offsetWidth; c.classList.add("hop"); sfx("meow");
+  var pool=rows.filter(function(r){return visible(r)&&!S.seen[r.d.id];}).sort(function(a,b){return (b.d.a[3]+b.d.a[4])-(a.d.a[3]+a.d.a[4]);}).slice(0,5);
+  if(pool.length>1)pool=pool.filter(function(r){return r!==lastCat;});
+  if(!pool.length){say("Mochi looked at your filters and went back to sleep."); return;}
+  var r=pool[Math.floor(Math.random()*pool.length)]; lastCat=r; openRow(r);
+  say("Mochi picks "+r.d.t+". She chose it by sitting on it. I checked: it is warm and nobody schemes much.");
+});
+
+/* ---- Music: made in the browser, no audio files. Hirajoshi scale on a plucked koto voice, with drums and robot blips. ---- */
+var AC=null, mOut=null, mBus=null, noiseBuf=null, musicOn=false, schedT=null, nextT=0, stepN=0, motif=[];
+var SC=[0,2,3,7,8];
+function semi(n){return SC[((n%5)+5)%5]+12*Math.floor(n/5);}
+function hz(sm){return 146.83*Math.pow(2,sm/12);}
+function audioInit(){
+  AC=new (window.AudioContext||window.webkitAudioContext)();
+  mOut=AC.createGain(); mOut.gain.value=0; var comp=AC.createDynamicsCompressor(); mOut.connect(comp); comp.connect(AC.destination);
+  mBus=AC.createGain(); mBus.connect(mOut);
+  var dl=AC.createDelay(1); dl.delayTime.value=0.357; var fb=AC.createGain(); fb.gain.value=0.3; var wet=AC.createGain(); wet.gain.value=0.24;
+  mBus.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(mOut);
+  noiseBuf=AC.createBuffer(1,AC.sampleRate*0.2,AC.sampleRate); var ch=noiseBuf.getChannelData(0); for(var i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;
+}
+function env(g,t,peak,dur){g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(peak,t+0.005); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);}
+function koto(t,sm,vel){
+  var f=hz(sm), g=AC.createGain(), lp=AC.createBiquadFilter(); lp.type="lowpass"; lp.frequency.setValueAtTime(3200,t); lp.frequency.exponentialRampToValueAtTime(700,t+0.5);
+  [["triangle",1],["square",0.22]].forEach(function(v){var o=AC.createOscillator(), og=AC.createGain(); o.type=v[0]; og.gain.value=v[1];
+    o.frequency.setValueAtTime(f*1.014,t); o.frequency.exponentialRampToValueAtTime(f,t+0.06); o.connect(og); og.connect(lp); o.start(t); o.stop(t+1.1);});
+  env(g,t,vel,1.0); lp.connect(g); g.connect(mBus);
+}
+function bass(t,sm){var o=AC.createOscillator(), g=AC.createGain(); o.type="sine"; o.frequency.setValueAtTime(hz(sm),t); env(g,t,0.2,0.5); o.connect(g); g.connect(mOut); o.start(t); o.stop(t+0.6);}
+function blip(t,sm,vel,len){var o=AC.createOscillator(), g=AC.createGain(), bp=AC.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=1900; bp.Q.value=1.5; o.type="square"; o.frequency.setValueAtTime(hz(sm),t);
+  g.gain.setValueAtTime(vel,t); g.gain.setValueAtTime(vel,t+len); g.gain.linearRampToValueAtTime(0.0001,t+len+0.01); o.connect(bp); bp.connect(g); g.connect(mBus); o.start(t); o.stop(t+len+0.03);}
+function taiko(t,vel){var o=AC.createOscillator(), g=AC.createGain(); o.type="sine"; o.frequency.setValueAtTime(120,t); o.frequency.exponentialRampToValueAtTime(44,t+0.2); env(g,t,vel,0.34); o.connect(g); g.connect(mOut); o.start(t); o.stop(t+0.4);}
+function clack(t,vel){var n=AC.createBufferSource(), g=AC.createGain(), hp=AC.createBiquadFilter(); n.buffer=noiseBuf; hp.type="highpass"; hp.frequency.value=5200; env(g,t,vel,0.04); n.connect(hp); hp.connect(g); g.connect(mBus); n.start(t); n.stop(t+0.06);}
+function robotTalk(t,n){for(var i=0;i<n;i++)blip(t+i*0.055,semi(10+Math.floor(Math.random()*8)),0.05,0.035);}
+function meow(t){var o=AC.createOscillator(), g=AC.createGain(), bp=AC.createBiquadFilter(); o.type="sawtooth"; bp.type="bandpass"; bp.Q.value=4;
+  o.frequency.setValueAtTime(520,t); o.frequency.linearRampToValueAtTime(790,t+0.14); o.frequency.linearRampToValueAtTime(470,t+0.46);
+  bp.frequency.setValueAtTime(900,t); bp.frequency.linearRampToValueAtTime(1700,t+0.16); bp.frequency.linearRampToValueAtTime(800,t+0.46);
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.5,t+0.06); g.gain.linearRampToValueAtTime(0.0001,t+0.5); o.connect(bp); bp.connect(g); g.connect(mBus); o.start(t); o.stop(t+0.55);}
+function sfx(kind){ if(!musicOn||!AC)return; var t=AC.currentTime+0.02; if(kind==="meow")meow(t); else robotTalk(t,4); }
+var RHY=[[0,3,6,8,12],[0,4,6,10,12,14],[0,2,4,8,11],[0,6,8,10,14]], ROOT=[0,0,-2,-1];
+function newMotif(){motif=[]; var cur=7+Math.floor(Math.random()*3);
+  for(var b=0;b<2;b++){RHY[Math.floor(Math.random()*RHY.length)].forEach(function(p){cur+=[-2,-1,-1,0,1,1,2][Math.floor(Math.random()*7)]; cur=Math.max(5,Math.min(13,cur)); motif.push({s:b*16+p,d:cur});});}}
+function playStep(s,t){
+  var bar=Math.floor(s/16), pos=s%16, root=ROOT[bar];
+  if(s===0)newMotif();
+  if(pos===0||pos===8)bass(t,semi(root)-12);
+  if(pos===0)taiko(t,0.55); else if(pos===8)taiko(t,0.3); else if(pos===14&&bar%2)taiko(t,0.22);
+  if(pos%4===2)clack(t,0.05);
+  var ms=s%32, shift=bar>=2?1:0;
+  motif.forEach(function(m){ if(m.s===ms){var d=m.d+(shift&&ms<16?1:0); if(s===60)d=10; koto(t,semi(d),0.2);} });
+  if(s===62)koto(t,semi(5),0.22);
+  if(bar%2&&pos>=8&&pos%2===0)blip(t,semi(root+[0,2,4,2][(pos-8)/2])+24,0.03,0.05);
+  if(s===46&&Math.random()<0.6)robotTalk(t,5);
+}
+function toggleMusic(){
+  if(!musicOn){
+    try{ if(!AC)audioInit(); AC.resume(); }catch(e){say("This browser will not let me play sound. Rude."); return;}
+    musicOn=true; mOut.gain.cancelScheduledValues(AC.currentTime); mOut.gain.linearRampToValueAtTime(0.55,AC.currentTime+0.4);
+    nextT=AC.currentTime+0.08; stepN=0; var sp=60/84/4;
+    schedT=setInterval(function(){ while(nextT<AC.currentTime+0.15){playStep(stepN,nextT); nextT+=sp; stepN=(stepN+1)%64;} },30);
+    say("Music on. Koto, a drum, and me doing the bleeps. Mochi does backing vocals if you tap her.");
+  } else {
+    musicOn=false; clearInterval(schedT); mOut.gain.cancelScheduledValues(AC.currentTime); mOut.gain.linearRampToValueAtTime(0,AC.currentTime+0.3);
+    say("Music off. I will hum internally.");
+  }
+  musicBtn.setAttribute("aria-pressed",musicOn?"true":"false");
+}
+document.addEventListener("visibilitychange",function(){ if(!AC||!musicOn)return; if(document.hidden)AC.suspend(); else{AC.resume(); nextT=AC.currentTime+0.08;} });
 window.addEventListener("pointermove",function(e){look(e.clientX,e.clientY);},{passive:true});
 window.addEventListener("pointerdown",function(e){look(e.clientX,e.clientY);},{passive:true});
 
