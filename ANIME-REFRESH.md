@@ -62,7 +62,7 @@ write-ups. Alvin wants every change dated so later rounds append instead of over
 
 - Open `anime.html` in headless Chromium at 1280px and 400px wide. There must be no page
   errors and no horizontal overflow (`document.documentElement.scrollWidth - innerWidth` is 0),
-  35 rows in the list, and the readout must show the new edition date.
+  35 rows in the list (25 to watch, the bench and Watched), and the readout must show the new edition date.
 - Use only values you read this run. If a source cannot be reached, leave that value as it
   is and name it in the log line as not re-checked. Never guess.
 - If the QC fails or the file would not parse, do not push. Report what went wrong.

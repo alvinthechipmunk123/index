@@ -85,6 +85,8 @@ h1{font:700 clamp(24px,4vw,34px)/1 var(--display); margin:0; text-wrap:balance}
 .acts2 .chip{padding:3px 9px; font-size:12.5px}
 .acts2 .lg{display:none}
 .acts2 .sm{display:inline}
+#sheetacts .lg,#menuacts .lg{display:none}
+#sheetacts .sm,#menuacts .sm{display:inline}
 .bot{background:none; border:0; padding:0; cursor:pointer; display:block; width:124px; border-radius:24px; -webkit-tap-highlight-color:transparent}
 .bot svg{display:block; width:100%; height:auto; overflow:visible}
 .cat{position:absolute; left:2%; bottom:2px; width:74px; background:none; border:0; padding:0; cursor:pointer; border-radius:20px; -webkit-tap-highlight-color:transparent}
@@ -160,7 +162,14 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .rank{width:44px; height:44px; border-radius:50%; border:2px solid var(--edge); display:grid; place-items:center; font:600 18px/1 var(--display); font-variant-numeric:tabular-nums; background:var(--surface)}
 .row.top3 .rank{background:var(--sun); color:var(--onsun)}
 .row.bench .rank{font-size:15px; background:var(--sky2)}
+.row.watched{opacity:.8}
+.row.watched .rank{font-size:16px; background:var(--seenbg)}
+.row.watched .blurb,.row.watched .sig,.row.watched .pct{display:none}
+.row.watched .head{padding:9px 14px}
+.tag.promo{background:var(--moss); border-color:var(--moss); color:var(--onacc)}
+.tag.next{border-color:var(--sun); color:var(--sun)}
 .benchdiv{padding:18px 4px 4px}
+.benchdiv.w{opacity:.85}
 .benchdiv h3{font:600 22px/1.2 var(--display); margin:0 0 2px}
 .benchdiv p{margin:0; color:var(--dim); font-size:14.5px; max-width:70ch}
 .main{display:grid; gap:2px; min-width:0}
@@ -227,9 +236,18 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .intel .wi + .wi{border-top:2px dashed var(--line); padding-top:8px}
 .intel .wi h4{font-size:15.5px}
 @media (max-width:760px){ .read{grid-template-columns:minmax(0,1fr)} }
+.bar{position:sticky; top:calc(env(safe-area-inset-top, 0px) + 6px); z-index:5; display:flex; gap:6px; align-items:center; background:var(--card); border:2px solid var(--edge); border-radius:999px; padding:5px 6px}
+.bar .search{flex:1 1 120px; min-width:0; border-width:0; background:transparent; padding:5px 10px}
+.bar .dd.rank{width:auto; flex:0 1 auto; max-width:38%; font-size:13px; padding:4px 6px}
+.bar .chip{flex:0 0 auto}
+.bar .chip[aria-expanded="true"]{background:var(--moss); color:var(--onacc)}
+.sheet{background:var(--card); border:2px solid var(--edge); border-radius:16px; padding:10px 12px; display:grid; gap:10px}
+.menu{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.menu .dd{width:auto; flex:1 1 140px}
+.mlabel{font:600 11px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss); margin-right:4px; flex-basis:100%}
 .jump{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
 .jump span{font:600 13px var(--display); color:var(--moss); text-transform:uppercase; letter-spacing:.06em; margin-right:4px}
-.chip.sync{margin-left:auto}
+.chip.sync{margin-left:0}
 .chip.sync.ok{background:var(--leaf); color:var(--onsun)}
 .chip.sync.warn{background:var(--sun); color:var(--onsun)}
 .syncrow{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px}
@@ -382,19 +400,44 @@ footer p{margin:0 0 6px}
     </div>
   </header>
 
-  <nav class="jump" aria-label="Sections">
-    <span>Jump to</span>
-    <button class="chip" type="button" data-go="list">The 25</button>
-    <button class="chip" type="button" data-go="benchdiv">Bench</button>
-    <button class="chip" type="button" data-go="wire">Insider</button>
-    <button class="chip" type="button" data-go="radar">Radar</button>
-    <button class="chip" type="button" data-go="coming">Coming up</button>
-    <button class="chip" type="button" data-go="films">Films</button>
-    <button class="chip" type="button" data-go="fans">Fan board</button>
-    <button class="chip" type="button" data-go="log">Update log</button>
-    <button class="chip" type="button" id="skinbtn"></button>
-    <button class="chip sync" type="button" id="syncbtn" aria-expanded="false" aria-controls="syncsheet">☁ Sync</button>
-  </nav>
+  <div class="bar" id="bar">
+    <input class="search" id="q" type="search" placeholder="Find a show" aria-label="Find a show" autocomplete="off">
+    <select class="dd rank" id="sel-sort" aria-label="Rank by"></select>
+    <button class="chip" type="button" id="filterbtn" aria-expanded="false" aria-controls="sheet">Filter</button>
+    <button class="chip" type="button" id="menubtn" aria-expanded="false" aria-controls="menu" aria-label="More">&#8943;</button>
+  </div>
+  <section class="sheet" id="sheet" hidden>
+    <div class="menu">
+      <select class="dd" id="sel-svc" aria-label="Streaming on"></select>
+      <select class="dd" id="sel-status" aria-label="Show"></select>
+      <select class="dd" id="sel-len" aria-label="Length"></select>
+      <button class="chip" type="button" id="fclear" hidden>Clear</button>
+    </div>
+    <details class="filters" id="dialbox">
+      <summary><span class="label">Dials</span><span id="dsum" class="fs"></span></summary>
+      <div class="fbody"><div class="sliders" id="sliders"></div></div>
+    </details>
+    <div class="menu" id="sheetacts"></div>
+  </section>
+  <section class="sheet" id="menu" hidden>
+    <div class="menu">
+      <span class="mlabel">Go to</span>
+      <button class="chip" type="button" data-go="list">The 25</button>
+      <button class="chip" type="button" data-go="benchdiv">Bench</button>
+      <button class="chip" type="button" data-go="watcheddiv">Watched</button>
+      <button class="chip" type="button" data-go="wire">Insider</button>
+      <button class="chip" type="button" data-go="radar">Radar</button>
+      <button class="chip" type="button" data-go="coming">Coming up</button>
+      <button class="chip" type="button" data-go="films">Films</button>
+      <button class="chip" type="button" data-go="fans">Fan board</button>
+      <button class="chip" type="button" data-go="log">Update log</button>
+    </div>
+    <div class="menu" id="menuacts">
+      <span class="mlabel">Settings</span>
+      <button class="chip" type="button" id="skinbtn"></button>
+      <button class="chip sync" type="button" id="syncbtn" aria-expanded="false" aria-controls="syncsheet">☁ Sync</button>
+    </div>
+  </section>
 
   <section class="panel" id="syncsheet" hidden>
     <h2>Save picks to your repo</h2>
@@ -410,18 +453,6 @@ footer p{margin:0 0 6px}
   </section>
 
   <div class="console">
-    <aside class="deck" aria-label="Controls">
-      <div class="fld grow"><input class="search" id="q" type="search" placeholder="Find a show" aria-label="Find a show" autocomplete="off"></div>
-      <div class="fld"><select class="dd" id="sel-sort" aria-label="Rank by"></select></div>
-      <div class="fld"><select class="dd" id="sel-svc" aria-label="Streaming on"></select></div>
-      <div class="fld"><select class="dd" id="sel-status" aria-label="Show"></select></div>
-      <div class="fld"><select class="dd" id="sel-len" aria-label="Length"></select></div>
-      <div class="fld end"><button class="chip" type="button" id="fclear" hidden>Clear</button></div>
-      <details class="filters" id="dialbox">
-        <summary><span class="label">Dials</span><span id="dsum" class="fs"></span></summary>
-        <div class="fbody"><div class="sliders" id="sliders"></div></div>
-      </details>
-    </aside>
 
     <main>
       <ol class="list" id="list"></ol>
@@ -764,6 +795,7 @@ var READ_DATE="2026-10-10", READ=[["More demand than hands", "Netflix’s anime 
 var STN={c:"Confirmed",r:"Reported",u:"Rumour"};
 /* Update log: newest first. Append a row per round. */
 var LOG=[
+ ["2026-10-10","One menu bar: find, rank, Filter and \u22ef. Watched shows leave the 25 for a Watched shelf at the bottom with their next season, and the top of the bench moves up to keep the 25 full."],
  ["2026-10-10","Jujutsu theme (black, cursed-energy blue, crimson) is now the default, with Frieren night and Day behind the theme button. Header and filter bar cut to about half their height."],
  ["2026-10-10","New night theme after the meteor-shower night in Frieren: deep blue sky, moon, shooting stars and blue flowers. The day theme is still there behind a switch."],
  ["2026-10-10","Added the Insider wire (34 sourced items with a four-point read), Ahead of the curve (15 items), insider notes on the shows they concern, and a News button on Poko. Filters became dropdowns in one bar. Coming up corrected: Solo Leveling continues as a film, Jujutsu Kaisen has a new director, Fool Night is dated 26 November."],
@@ -828,22 +860,28 @@ moodSel.addEventListener("change",function(){var m=MOODS[+moodSel.value]; if(!m)
 moodRow.appendChild(moodSel); $("moods").appendChild(moodRow);
 var acts2=el("div","acts2"); $("moods").appendChild(acts2);
 function btn2(id,lg,sm,fn,cls,toggle){var b=el("button","chip"+(cls?" "+cls:"")); b.type="button"; b.id=id; b.appendChild(el("span","lg",lg)); b.appendChild(el("span","sm",sm)); b.setAttribute("aria-label",lg); if(toggle)b.setAttribute("aria-pressed","false"); b.addEventListener("click",fn); acts2.appendChild(b); return b;}
-btn2("b-pick","Pick a show","Show",pick,"go");
-btn2("b-film","Pick a film","Film",pickFilm,"go");
-btn2("b-learn","Learn my taste","Learn",learn,"");
+btn2("b-pick","Pick a show","Pick",pick,"go");
 btn2("b-news","Insider news","News",function(){gossip();},"");
+acts2=$("sheetacts");
+btn2("b-film","Pick a film","Pick a film",pickFilm,"go");
+btn2("b-learn","Learn my taste","Learn my taste",learn,"");
+acts2=$("menuacts");
 var musicBtn=btn2("b-music","\u266A Music","\u266A Music",function(){toggleMusic();},"",true);
+function toggleSheet(id,btn){var sh=$(id), open=sh.hidden; ["sheet","menu"].forEach(function(x){$(x).hidden=true;}); $("filterbtn").setAttribute("aria-expanded","false"); $("menubtn").setAttribute("aria-expanded","false"); if(open){sh.hidden=false; $(btn).setAttribute("aria-expanded","true");}}
+$("filterbtn").addEventListener("click",function(){toggleSheet("sheet","filterbtn");});
+$("menubtn").addEventListener("click",function(){toggleSheet("menu","menubtn");});
 $("bot").addEventListener("click",pick);
-var SORTS=[["fans","Rank: fans"],["dials","Rank: my dials"]];
-var STAT=[["all","Show: all"],["unseen","Show: not seen"],["queue","Show: my queue"],["bots","Show: robots"]];
+var SORTS=[["fans","By fans"],["dials","By my dials"]];
+var STAT=[["all","Show: all"],["queue","Show: my queue"],["bots","Show: robots"],["watched","Show: watched"]];
 var LENS=[[0,"Any length"],[6,"Under 6 h"],[12,"Under 12 h"]];
 function fillSel(id,opts){var sel=$(id); opts.forEach(function(o){var op=el("option",null,o[1]); op.value=String(o[0]); sel.appendChild(op);}); return sel;}
 var selSort=fillSel("sel-sort",SORTS), selSvc=fillSel("sel-svc",[["","Streaming: any"]].concat(Object.keys(SVC).map(function(c){return [c,SVC[c]];}))), selStatus=fillSel("sel-status",STAT), selLen=fillSel("sel-len",LENS);
-selSort.addEventListener("change",function(){S.sort=selSort.value; if(S.sort==="dials")$("dialbox").open=true; update(); say(S.sort==="fans"?"Fine. Democracy. "+rows.filter(function(r){return r.d.fr===1&&!r.d.bench;})[0].d.t+" wins, as usual.":"Back to your dials. Sensible.");});
+selSort.addEventListener("change",function(){S.sort=selSort.value; if(S.sort==="dials"){$("sheet").hidden=false; $("filterbtn").setAttribute("aria-expanded","true"); $("dialbox").open=true;} update(); say(S.sort==="fans"?"Fine. Democracy. "+tiers("fans")[0].d.t+" wins, as usual.":"Back to your dials. Sensible.");});
 selSvc.addEventListener("change",function(){S.svc={}; if(selSvc.value)S.svc[selSvc.value]=1; update();});
 selStatus.addEventListener("change",function(){S.status=selStatus.value; update(); if(S.status==="bots")say("My people. Four of them, counting loosely.");});
 selLen.addEventListener("change",function(){S.len=+selLen.value; update(); if(S.len)say("Short ones only. A person with plans.");});
 $("fclear").addEventListener("click",function(){S.svc={}; S.status="all"; S.len=0; S.q=""; $("q").value=""; update(); selSvc.focus();});
+[].forEach.call(document.querySelectorAll("#menu [data-go]"),function(b){b.addEventListener("click",function(){$("menu").hidden=true; $("menubtn").setAttribute("aria-expanded","false");});});
 $("q").addEventListener("input",function(e){S.q=e.target.value.trim().toLowerCase(); update();});
 
 /* rows */
@@ -920,9 +958,9 @@ function fillDetail(r){
   var key=el("div","key"); var k1=el("span"); k1.appendChild(el("i")); k1.appendChild(document.createTextNode("this show")); var k2=el("span"); k2.appendChild(el("i","w")); k2.appendChild(document.createTextNode("your dials")); key.appendChild(k1); key.appendChild(k2); side.appendChild(key);
   var dl=el("dl","facts");
   function fact(a,b){dl.appendChild(el("dt",null,a)); dl.appendChild(el("dd",null,b));}
-  var gap=d.fr-r.dr;
+  var gap=r.frr-r.dr;
   fact("Fans", d.m.toFixed(2)+" / 10 from "+fmtV(d.v)+" ratings");
-  fact("Ranks", "Your dials #"+r.dr+", fans #"+d.fr+(d.bench?" of 10 on the bench.":" of 25.")+(gap>=7?" You would back it harder than the crowd does.":(gap<=-7?" The crowd likes it more than your dials do.":"")));
+  fact("Ranks", "Your dials #"+r.dr+", fans #"+r.frr+(r.tier==="bench"?" on the bench.":(r.tier==="watched"?" among watched.":" of 25."))+(gap>=7?" You would back it harder than the crowd does.":(gap<=-7?" The crowd likes it more than your dials do.":"")));
   var ch=CHAR[d.id]; fact("Fan favourite", ch[0]+", "+ch[1].toLocaleString("en-US")+" favourites. Then "+ch[2]+", "+ch[3].toLocaleString("en-US")+".");
   if(AWARD[d.id])fact("Awards", AWARD[d.id]);
   var nx=UP.filter(function(u){return u.id===d.id;}).map(function(u){return u.t+" ("+(u.d?fmtD(u.d):"no date yet")+")";});
@@ -940,15 +978,24 @@ function fillDetail(r){
   det.appendChild(copy); det.appendChild(side);
 }
 var rows=D.map(buildRow);
-var benchDiv=el("li","benchdiv"); benchDiv.id="benchdiv"; benchDiv.appendChild(el("h3",null,"The bench")); benchDiv.appendChild(el("p",null,"Ten more, added "+fmtD("2026-10-10")+" and ranked by the same dials. The big hits I left off the 25, plus some that only just missed."));
+var benchDiv=el("li","benchdiv"); benchDiv.id="benchdiv"; benchDiv.appendChild(el("h3",null,"The bench")); benchDiv.appendChild(el("p",null,"Ranked by the same rule as the 25. When you mark a show watched, the top of the bench moves up to keep the 25 full."));
+var watchedDiv=el("li","benchdiv w"); watchedDiv.id="watchedDiv"; watchedDiv.id="watcheddiv"; watchedDiv.appendChild(el("h3",null,"Watched")); watchedDiv.appendChild(el("p",null,"Out of the running. What is left of each is its next season, which also sits in Coming up."));
 var lastOrder="";
-function grp(cmp){return rows.filter(function(r){return !r.d.bench;}).sort(cmp).concat(rows.filter(function(r){return r.d.bench;}).sort(cmp));}
-function byDials(){rows.forEach(function(r){r.sc=score(r.d);}); var dl=grp(function(a,b){return b.sc-a.sc || b.d.m-a.d.m || a.d.t.localeCompare(b.d.t);}); var n=0,m=0; dl.forEach(function(r){r.dr=r.d.bench?++m:++n;}); return dl;}
-function sortedRows(){var dl=byDials(); return S.sort==="fans"?grp(function(a,b){return a.d.fr-b.d.fr;}):dl;}
+var CMP={fans:function(a,b){return b.d.m-a.d.m||b.sc-a.sc||a.d.t.localeCompare(b.d.t);},dials:function(a,b){return b.sc-a.sc||b.d.m-a.d.m||a.d.t.localeCompare(b.d.t);}};
+function tiers(mode){
+  rows.forEach(function(r){r.sc=score(r.d);}); var cmp=CMP[mode||S.sort];
+  var um=rows.filter(function(r){return !r.d.bench&&!S.seen[r.d.id];}).sort(cmp), ub=rows.filter(function(r){return r.d.bench&&!S.seen[r.d.id];}).sort(cmp), w=rows.filter(function(r){return S.seen[r.d.id];}).sort(cmp);
+  var need=Math.max(0,MAIN.length-um.length), main=um.concat(ub.slice(0,need)).sort(cmp), bench=ub.slice(need);
+  main.forEach(function(r,i){r.tier="main"; r.pos=i+1; r.promoted=!!r.d.bench;}); bench.forEach(function(r,i){r.tier="bench"; r.pos=i+1; r.promoted=false;}); w.forEach(function(r,i){r.tier="watched"; r.pos=i+1; r.promoted=false;});
+  [main,bench,w].forEach(function(g){g.slice().sort(CMP.dials).forEach(function(r,i){r.dr=i+1;}); g.slice().sort(CMP.fans).forEach(function(r,i){r.frr=i+1;});});
+  return main.concat(bench,w);
+}
+function byDials(){return tiers("dials");}
+function sortedRows(){return tiers();}
 function visible(r){
   var d=r.d, seen=!!S.seen[d.id], q=!!S.queue[d.id], active=Object.keys(S.svc);
   return (!active.length||d.s.some(function(c){return S.svc[c];}))
-    &&(S.status==="all"||(S.status==="unseen"&&!seen)||(S.status==="queue"&&q)||(S.status==="bots"&&d.bot))
+    &&(S.status==="all"||(S.status==="watched"&&seen)||(S.status==="queue"&&q)||(S.status==="bots"&&d.bot))
     &&(!S.len||hours(d)<=S.len)
     &&(!S.q||(d.t+" "+d.jp+" "+d.st+" "+d.y+" "+d.b).toLowerCase().indexOf(S.q)>=0);
 }
@@ -973,7 +1020,7 @@ function openRow(r){rows.forEach(function(x){ if(x!==r&&x.open)setOpen(x,false);
 var lastPick=null;
 function pick(){
   wave();
-  var pool=byDials().filter(function(r){return visible(r)&&!S.seen[r.d.id]&&!r.d.bench;}).slice(0,6);
+  var pool=byDials().filter(function(r){return visible(r)&&r.tier==="main";}).slice(0,6);
   if(pool.length>1)pool=pool.filter(function(r){return r!==lastPick;});
   if(!pool.length){say("You have seen everything I am allowed to show you. Loosen a filter."); return;}
   var r=pool[Math.floor(Math.random()*pool.length)]; lastPick=r;
@@ -991,21 +1038,23 @@ function update(){
   selSvc.classList.toggle("on",!!selSvc.value); selStatus.classList.toggle("on",S.status!=="all"); selLen.classList.toggle("on",!!S.len);
 
   var sorted=sortedRows();
-  var order=sorted.map(function(r){return r.d.id;}).join();
+  var order=sorted.map(function(r){return r.d.id+r.tier[0];}).join();
   var first=null;
   if(order!==lastOrder){
     if(lastOrder&&!reduce){first=new Map(); rows.forEach(function(r){ if(!r.el.hidden)first.set(r,r.el.getBoundingClientRect().top);});}
-    sorted.forEach(function(r,i){ if(r.d.bench&&!sorted[i-1].d.bench)list.appendChild(benchDiv); list.appendChild(r.el);}); lastOrder=order;
+    sorted.forEach(function(r,i){ var prev=i?sorted[i-1].tier:"main"; if(r.tier!==prev){ if(r.tier==="bench")list.appendChild(benchDiv); if(r.tier==="watched")list.appendChild(watchedDiv);} list.appendChild(r.el);}); lastOrder=order;
   }
   var shown=0;
   sorted.forEach(function(r,i){
     var d=r.d, seen=!!S.seen[d.id], q=!!S.queue[d.id];
-    var pos=(S.sort==="fans"?d.fr:r.dr), lab=(d.bench?"B":"")+pos; r.rank.textContent=lab; r.el.classList.toggle("bench",!!d.bench); r.el.classList.toggle("top3",!d.bench&&pos<=3);
+    var pos=r.pos, lab=r.tier==="bench"?"B"+pos:(r.tier==="watched"?"\u2713":String(pos)); r.rank.textContent=lab; r.el.classList.toggle("bench",r.tier==="bench"); r.el.classList.toggle("watched",r.tier==="watched"); r.el.classList.toggle("top3",r.tier==="main"&&pos<=3);
     r.pct.textContent=Math.round(r.sc); r.pct.appendChild(el("small",null,"%"));
-    r.head.setAttribute("aria-label",(d.bench?"Bench rank ":"Rank ")+pos+", "+d.t+", "+Math.round(r.sc)+" percent match, fan score "+d.m.toFixed(2));
+    r.head.setAttribute("aria-label",(r.tier==="bench"?"Bench rank ":(r.tier==="watched"?"Watched, ":"Rank "))+pos+", "+d.t+", "+Math.round(r.sc)+" percent match, fan score "+d.m.toFixed(2));
     r.tags.textContent="";
     if(q)r.tags.appendChild(el("span","tag queue","Queued"));
     if(seen)r.tags.appendChild(el("span","tag seen",S.mine[d.id]?"Seen · you gave it "+S.mine[d.id]:"Seen"));
+    if(r.promoted)r.tags.appendChild(el("span","tag promo","Up from the bench"));
+    if(r.tier==="watched"){var nu=UP.filter(function(u){return u.id===d.id;})[0]; r.tags.appendChild(el("span","tag next",nu?"Next: "+nu.t.replace(d.t+", ","")+(nu.d?", "+fmtD(nu.d):", no date"):"Nothing announced"));}
     if(d.now)r.tags.appendChild(el("span","tag now","New episodes weekly"));
     var nn=WIRE.filter(function(x){return x[1]===d.id;}).length; if(nn)r.tags.appendChild(el("span","tag news",nn===1?"1 insider item":nn+" insider items"));
     if(d.added>FIRST)r.tags.appendChild(el("span","tag now","Added "+fmtD(d.added)));
@@ -1016,8 +1065,8 @@ function update(){
     var ok=visible(r); r.el.hidden=!ok; if(ok)shown++;
     if(r.open)fillDetail(r);
   });
-  $("empty").hidden=shown>0; benchDiv.hidden=!rows.some(function(r){return r.d.bench&&!r.el.hidden;});
-  $("fclear").hidden=!(Object.keys(S.svc).length||S.status!=="all"||S.len||S.q);
+  $("empty").hidden=shown>0; benchDiv.hidden=!rows.some(function(r){return r.tier==="bench"&&!r.el.hidden;}); watchedDiv.hidden=!rows.some(function(r){return r.tier==="watched"&&!r.el.hidden;});
+  var nf=(Object.keys(S.svc).length?1:0)+(S.status!=="all"?1:0)+(S.len?1:0); $("fclear").hidden=!(nf||S.q); $("filterbtn").textContent=nf?"Filter \u00b7 "+nf:"Filter";
   if(first){
     sorted.forEach(function(r){ if(r.el.hidden||!first.has(r))return; var dy=first.get(r)-r.el.getBoundingClientRect().top; if(Math.abs(dy)<1)return;
       r.el.style.transition="none"; r.el.style.transform="translateY("+dy+"px)";
@@ -1032,7 +1081,7 @@ function update(){
   var totH=0,seenN=0,qN=0,qH=0;
   MAIN.forEach(function(d){totH+=hours(d); if(S.seen[d.id])seenN++; if(S.queue[d.id]){qN++; qH+=hours(d);}});
   var ro=$("readout"); ro.textContent="";
-  [[MAIN.length,"shows"],[BENCH.length,"on the bench"],[Math.round(totH),"hours"],[seenN,"seen"],[qN+(qN?" ("+Math.round(qH)+" h)":""),"queued"],["Edition",fmtD(EDITION)]]
+  [[rows.filter(function(r){return r.tier==="main";}).length,"to watch"],[rows.filter(function(r){return r.tier==="bench";}).length,"on the bench"],[seenN,"watched"],[qN+(qN?" ("+Math.round(qH)+" h)":""),"queued"],["Edition",fmtD(EDITION)]]
     .forEach(function(x){var s=el("span","stat"); s.appendChild(el("b",null,String(x[0]))); s.appendChild(document.createTextNode(" "+x[1])); ro.appendChild(s);});
 }
 /* eyes follow the pointer */
@@ -1050,7 +1099,7 @@ var cpupils=[].slice.call(document.querySelectorAll(".cpupil"));
 var lastCat=null;
 $("cat").addEventListener("click",function(){
   var c=$("cat"); c.classList.remove("hop"); void c.offsetWidth; c.classList.add("hop"); sfx("meow");
-  var pool=rows.filter(function(r){return visible(r)&&!S.seen[r.d.id]&&!r.d.bench;}).sort(function(a,b){return (b.d.a[3]+b.d.a[4])-(a.d.a[3]+a.d.a[4]);}).slice(0,5);
+  var pool=tiers().filter(function(r){return visible(r)&&r.tier==="main";}).sort(function(a,b){return (b.d.a[3]+b.d.a[4])-(a.d.a[3]+a.d.a[4]);}).slice(0,5);
   if(pool.length>1)pool=pool.filter(function(r){return r!==lastCat;});
   if(!pool.length){say("Mochi looked at your filters and went back to sleep."); return;}
   var r=pool[Math.floor(Math.random()*pool.length)]; lastCat=r; openRow(r);
@@ -1211,7 +1260,7 @@ function pickFilm(){
   say("Film night: "+f.t+". "+fmtRt(f.rt).trim()+". I will dim my eyes.");
 }
 /* ---- Fan board ---- */
-function drawBoard(){
+function drawBoard(){ if(!rows[0].tier)tiers();
   var ul=$("board"); ul.textContent="";
   function item(k,v,n){var li=el("li"); li.appendChild(el("span","k",k)); li.appendChild(el("span","v",v)); li.appendChild(el("span","n",n)); ul.appendChild(li);}
   var byM=MAIN.slice().sort(function(a,b){return b.m-a.m;}), byV=MAIN.slice().sort(function(a,b){return b.v-a.v;});
