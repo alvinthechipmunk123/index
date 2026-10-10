@@ -19,6 +19,10 @@ write-ups. Alvin wants every change dated so later rounds append instead of over
 - `UP` – Coming up. `d` is `YYYY-MM-DD`, `YYYY-MM` or `YYYY`; no `d` means announced
   without a date. `chk` is the day the entry was last checked.
 - `FILMS` – the film shelf. `s` is the US streamer name, empty if unknown.
+- `WIRE` – the Insider wire. Rows are `[date, show id or "", status, headline, what, why, outlet, url]`
+  with status `c` confirmed, `r` reported, `u` rumour.
+- `RADAR` – Ahead of the curve. Rows are `[group, title, when, status, headline, what, why-for-Alvin, outlet, url]`.
+- `READ` and `READ_DATE` – four short interpretive paragraphs built on the wire, and the day they were written.
 - `LOG` – the update log, newest first.
 - `EDITION` – the date shown in the header. `FIRST` is the first edition date; never change it.
 
@@ -36,10 +40,22 @@ write-ups. Alvin wants every change dated so later rounds append instead of over
    been reflected in the show's `ep` and write-up; say so in the log line. Add newly
    announced seasons or films for shows on the list.
 4. Films: update `m` and `s` the same way.
-5. Set `EDITION` to today. Add one row at the top of `LOG`: `["YYYY-MM-DD", "what changed"]`,
+5. Insider wire and radar: search for news since the last edition on the listed shows
+   (production, scheduling, source material, reception) and on the anime business
+   (streamers, studios, money, labour, AI). Add new rows at the top of `WIRE`, each read
+   from a fetched page with its exact URL, and mark it confirmed, reported or rumour.
+   Keep older rows; once there are more than 45, drop the oldest. In `RADAR`, update the
+   `when` field as dates land, move anything that has started airing into "This season",
+   and add newly announced work that fits Alvin's taste (strategy, mind games, politics,
+   finance, adult drama, Ghibli-like craft, science fiction). No gossip about anyone's
+   private life, health or relationships, and no unverified allegations about named people.
+   Rewrite `READ` only if the new items change the picture; every number in it must come
+   from a `WIRE` row. Set `READ_DATE` when you do. When a wire item changes a fact
+   elsewhere (a date in `UP`, an episode count, a streamer), change that too.
+6. Set `EDITION` to today. Add one row at the top of `LOG`: `["YYYY-MM-DD", "what changed"]`,
    naming the specific changes (which scores moved by 0.05 or more, which dates landed,
    which streamers changed). If nothing changed, say that.
-6. New shows are not added by the refresh. If something clearly belongs, mention it in the
+7. New shows are not added by the refresh. If something clearly belongs, mention it in the
    run summary for Alvin to decide.
 
 ## Before pushing

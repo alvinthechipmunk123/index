@@ -81,10 +81,16 @@ h1{font:700 clamp(28px,5vw,44px)/1 var(--display); margin:0; text-wrap:balance}
 #needle{transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
 
 /* controls */
-.console{display:grid; grid-template-columns:290px minmax(0,1fr); gap:20px; align-items:start}
-.deck{background:var(--card); border:2px solid var(--ink); border-radius:22px; padding:14px; display:grid; gap:12px; position:sticky; top:calc(env(safe-area-inset-top, 0px) + 12px)}
+.console{display:grid; grid-template-columns:minmax(0,1fr); gap:14px; align-items:start}
+.deck{background:var(--card); border:2px solid var(--ink); border-radius:22px; padding:12px 14px; display:grid; grid-template-columns:minmax(0,1.5fr) repeat(4,minmax(0,1fr)) auto; gap:10px 12px; align-items:end}
+.fld{display:grid; gap:4px; min-width:0}
+.fld label{font:600 12px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss)}
+.fld.end{align-self:end}
+.dd{width:100%; min-width:0; font:500 15px var(--display); color:var(--ink); background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:7px 10px}
+.dd.on{background:var(--moss); color:var(--white)}
+.deck .filters{grid-column:1/-1}
 .label{font:600 13px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss); margin:0 0 10px}
-.sliders{display:grid; gap:8px}
+.sliders{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 22px}
 .sl{display:grid; grid-template-columns:1fr auto; gap:0 8px; align-items:center}
 .sl label{font-weight:600; font-size:15px}
 .sl output{font:600 15px var(--display); color:var(--moss); font-variant-numeric:tabular-nums}
@@ -104,7 +110,7 @@ h1{font:700 clamp(28px,5vw,44px)/1 var(--display); margin:0; text-wrap:balance}
 #fsum,.fs{font-size:13.5px; color:var(--dim); text-align:right; min-width:0}
 .fbody{display:grid; gap:12px; padding-top:12px}
 .sub{font:600 12px/1 var(--display); letter-spacing:.05em; text-transform:uppercase; color:var(--dim); margin:0 0 6px}
-.search{width:100%; background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:8px 14px}
+.search{width:100%; min-width:0; background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:7px 14px}
 .search::placeholder{color:var(--dim)}
 
 main{display:grid; gap:12px; min-width:0}
@@ -131,7 +137,7 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .main{display:grid; gap:2px; min-width:0}
 .t{font:600 19px/1.2 var(--display); display:flex; flex-wrap:wrap; gap:2px 10px; align-items:baseline}
 .t .jp{font:500 13px var(--jp); color:var(--dim)}
-.blurb{font-size:14.5px; line-height:1.35}
+.blurb{font-size:14.5px; line-height:1.35; max-width:90ch}
 .meta{font-size:13.5px; color:var(--dim)}
 .tags{display:flex; flex-wrap:wrap; gap:4px; margin-top:4px}
 .tag{font:500 11.5px/1 var(--display); letter-spacing:.03em; border:1.5px solid var(--line); border-radius:999px; padding:3px 8px; color:var(--dim); background:var(--white)}
@@ -167,6 +173,31 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .facts{display:grid; grid-template-columns:auto 1fr; gap:4px 12px; margin:0; font-size:14.5px}
 .facts dt{font:600 12px/1.9 var(--display); color:var(--moss); text-transform:uppercase; letter-spacing:.05em}
 .facts dd{margin:0}
+.read{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 22px; margin:4px 0 16px; padding:14px 16px; background:var(--sky2); border-radius:16px}
+.read h3{font:600 17px/1.25 var(--display); margin:0 0 3px}
+.read p{margin:0; font-size:14.5px}
+.read .rh{grid-column:1/-1; font:600 12.5px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss); margin:0}
+.wirebar{display:flex; align-items:center; gap:10px; margin-bottom:6px}
+.wirebar label{font:600 12px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss)}
+.wirebar .dd{width:auto}
+.wi{padding:12px 0; border-top:2px dashed var(--line); display:grid; gap:4px; min-width:0}
+.wi .top{display:flex; flex-wrap:wrap; gap:6px 8px; align-items:center; font:500 13px/1.3 var(--display); color:var(--dim); font-variant-numeric:tabular-nums}
+.wi h4{font:600 17.5px/1.25 var(--display); margin:0}
+.wi p{margin:0; font-size:14.5px; max-width:78ch}
+.wi .why b{font-family:var(--display); font-weight:600; color:var(--moss)}
+.wi a{color:var(--ink); font-size:13.5px}
+.st{font:600 11.5px/1 var(--display); letter-spacing:.04em; border-radius:999px; padding:3px 8px; border:1.5px solid var(--moss); color:var(--moss); background:var(--white)}
+.st.r{border-color:var(--copper); color:var(--cocoa)}
+.st.u{border-color:var(--rose); background:var(--rose); color:var(--white)}
+.showlink{background:none; border:0; padding:0; cursor:pointer; font:600 13px var(--display); color:var(--ink); text-decoration:underline; text-decoration-color:var(--leaf); text-decoration-thickness:3px; text-underline-offset:3px}
+.rgroup{font:600 13px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss); margin:18px 0 0}
+.rgroup:first-child{margin-top:4px}
+.tag.news{border-color:var(--rose); color:var(--rose)}
+.intel{display:grid; gap:8px; background:var(--white); border:2px solid var(--line); border-radius:16px; padding:10px 12px; max-width:66ch}
+.intel .wi{border-top:0; padding:0}
+.intel .wi + .wi{border-top:2px dashed var(--line); padding-top:8px}
+.intel .wi h4{font-size:15.5px}
+@media (max-width:760px){ .read{grid-template-columns:minmax(0,1fr)} }
 .jump{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
 .jump span{font:600 13px var(--display); color:var(--moss); text-transform:uppercase; letter-spacing:.06em; margin-right:4px}
 .chip.sync{margin-left:auto}
@@ -226,8 +257,9 @@ footer p{margin:0 0 6px}
   .acts2 .lg{display:none}
   .acts2 .sm{display:inline}
   .cat{width:62px; left:0; bottom:0}
-  .console{grid-template-columns:minmax(0,1fr)}
-  .deck{position:static}
+  .deck{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .fld.grow{grid-column:1/-1}
+  .fld.end{grid-column:1/-1}
   .sliders{grid-template-columns:1fr 1fr; gap:8px 16px}
   .detail{grid-template-columns:minmax(0,1fr)}
 }
@@ -326,6 +358,8 @@ footer p{margin:0 0 6px}
     <span>Jump to</span>
     <button class="chip" type="button" data-go="list">The 25</button>
     <button class="chip" type="button" data-go="benchdiv">Bench</button>
+    <button class="chip" type="button" data-go="wire">Insider</button>
+    <button class="chip" type="button" data-go="radar">Radar</button>
     <button class="chip" type="button" data-go="coming">Coming up</button>
     <button class="chip" type="button" data-go="films">Films</button>
     <button class="chip" type="button" data-go="fans">Fan board</button>
@@ -348,26 +382,15 @@ footer p{margin:0 0 6px}
 
   <div class="console">
     <aside class="deck" aria-label="Controls">
-      <section>
-        <label class="label" for="q" style="display:block">Find</label>
-        <input class="search" id="q" type="search" placeholder="title, studio, year" autocomplete="off">
-      </section>
-      <section>
-        <p class="label">Rank by</p>
-        <div class="chips" id="sortby"></div>
-      </section>
+      <div class="fld grow"><label for="q">Find</label><input class="search" id="q" type="search" placeholder="title, studio, year" autocomplete="off"></div>
+      <div class="fld"><label for="sel-sort">Rank by</label><select class="dd" id="sel-sort"></select></div>
+      <div class="fld"><label for="sel-svc">Streaming on</label><select class="dd" id="sel-svc"></select></div>
+      <div class="fld"><label for="sel-status">Show</label><select class="dd" id="sel-status"></select></div>
+      <div class="fld"><label for="sel-len">Length</label><select class="dd" id="sel-len"></select></div>
+      <div class="fld end"><button class="chip" type="button" id="fclear" hidden>Clear</button></div>
       <details class="filters" id="dialbox">
         <summary><span class="label">Dials</span><span id="dsum" class="fs"></span></summary>
         <div class="fbody"><div class="sliders" id="sliders"></div></div>
-      </details>
-      <details class="filters" id="filters">
-        <summary><span class="label">Filters</span><span id="fsum">none on</span></summary>
-        <div class="fbody">
-          <div><p class="sub">Streams on (US)</p><div class="chips" id="svc"></div></div>
-          <div><p class="sub">Show me</p><div class="chips" id="status"></div></div>
-          <div><p class="sub">Time I have</p><div class="chips" id="len"></div></div>
-          <div><button class="chip" type="button" id="fclear" hidden>Clear filters</button></div>
-        </div>
       </details>
     </aside>
 
@@ -376,6 +399,21 @@ footer p{margin:0 0 6px}
       <div class="empty" id="empty" hidden>Nothing matches. Clear a streamer or the search box.</div>
     </main>
   </div>
+
+  <section class="panel" id="wire">
+    <h2>Insider wire</h2>
+    <p class="lede" id="wirelede"></p>
+    <div class="read" id="read"></div>
+    <div class="wirebar"><label for="sel-wire">Show</label><select class="dd" id="sel-wire"></select></div>
+    <div class="wlist" id="wlist"></div>
+    <button class="chip" type="button" id="wmore" hidden></button>
+  </section>
+
+  <section class="panel" id="radar">
+    <h2>Ahead of the curve</h2>
+    <p class="lede">What is likely to matter before most people are looking: this season\u2019s sleepers, 2027 shows that fit your taste, films from directors worth following, and one prize-winner nobody has adapted yet. Every item is sourced; \u201cwhy you\u201d is my judgement.</p>
+    <div id="rlist"></div>
+  </section>
 
   <section class="panel" id="coming">
     <h2>Coming up</h2>
@@ -548,7 +586,7 @@ var D=[
 {id:"tanya",t:"Saga of Tanya the Evil",jp:"幼女戦記",y:"2017–26",st:"NUT",ep:25,s:["CR"],a:[8,8,8,7,2,7],
  p:"A ruthless salaryman is reborn as a little girl in a not-quite-Germany at war and climbs the officer ranks purely to spite the god who put him there.",
  f:"Also yours already. It is on the list because season 2 started in July 2026, nine years after the first, in case that slipped past you.",
- w:"The 2019 film sits between the two seasons.",
+ w:"Season 2 ran 12 episodes and ended on 23 September 2026. The 2019 film sits between the two seasons.",
  r:"HR violations in every episode."},
 /* ----- the bench: added 2026-10-10 ----- */
 {id:"vinland",bench:1,added:"2026-10-10",t:"Vinland Saga",jp:"ヴィンランド・サガ",y:"2019–23",st:"Wit → MAPPA",ep:48,s:["CR","NF","HU","PV","HD"],a:[5,8,9,8,9,0],
@@ -639,29 +677,33 @@ var AWARD={
  apoc:"Seiun Award 2026 for Best Media. Anime News Network readers voted it the most underrated anime of 2025."};
 /* Coming up. d = date as YYYY-MM-DD, YYYY-MM or YYYY; no d = announced, undated. chk = day checked. */
 var UP=[
+ {d:"2026-11-27",t:"Takopi\u2019s Original Sin: Arigato, Mata Ashita",k:"Film",on:"cinemas in Japan",id:"takopi",n:"A compilation film with scenes that were not in the six episodes.",chk:"2026-10-10"},
+ {t:"Daemons of the Shadow Realm, season 2",k:"New season",id:"daemons",n:"Announced on 19 September, the day season 1 ended.",chk:"2026-10-10"},
+ {t:"Liar Game, season 2",k:"New season",id:"liar",n:"Announced 28 September. No date or platform yet.",chk:"2026-10-10"},
+ {t:"Gachiakuta, season 2",k:"New season",id:"gachi",n:"A first trailer is out. No date.",chk:"2026-10-10"},
  {t:"Vinland Saga, season 3",k:"New season",id:"vinland",n:"Listed as coming, no date.",chk:"2026-10-10"},
- {t:"Demon Slayer: Infinity Castle, second film",k:"Film",id:"kimetsu",n:"The middle film of three. No date.",chk:"2026-10-10"},
- {t:"Solo Leveling, season 3",k:"New season",id:"solo",n:"Listed for 2027 or 2028.",chk:"2026-10-10"},
+ {t:"Demon Slayer: Infinity Castle, second film",k:"Film",id:"kimetsu",n:"The middle film of three. Rumoured for September 2027; nothing official.",chk:"2026-10-10"},
+ {t:"Solo Leveling: Beyond the System",k:"Film",id:"solo",n:"The story continues as a film after season 2. No date, and no third TV season has been announced.",chk:"2026-10-10"},
  {t:"Kaiju No. 8, final arc",k:"Final season",id:"kaiju",n:"Announced, no date.",chk:"2026-10-10"},
  {t:"The Summer Hikaru Died, season 2",k:"New season",id:"hikaru",n:"Announced after the season 1 finale. No date.",chk:"2026-10-10"},
  {d:"2026-10-02",t:"The Apothecary Diaries, season 3",k:"New season",on:"Crunchyroll",id:"apoth",n:"New episode each week. It runs in two halves; the second starts April 2027.",chk:"2026-10-10"},
  {d:"2026-10-20",t:"Cyberpunk: Edgerunners 2",k:"New series",on:"Netflix",id:"edge",n:"Ten episodes. A separate story with a new cast: a young film obsessive documenting Night City. It topped the fan poll for most anticipated show of the season.",chk:"2026-10-10"},
- {d:"2026-10",t:"FX Fighter Kurumi-chan",k:"New series",on:"Crunchyroll",n:"Not on your list, and aimed straight at you. A student starts trading currencies on margin to win back the 20 million yen her mother lost in the 2008 crash. Early wins, then the market does what it does.",chk:"2026-10-10"},
+ {d:"2026-10-01",t:"FX Fighter Kurumi-chan",k:"New series",on:"Crunchyroll",n:"Not on your list, and aimed straight at you. A student starts trading currencies on margin to win back the 20 million yen her mother lost in the 2008 crash. It went from 37th in the pre-season poll to 3rd after one week.",chk:"2026-10-10"},
  {d:"2026-10",t:"Psyren",k:"New series",on:"streamer not confirmed",n:"A schoolboy is pulled into a lethal game set in a ruined future Japan. A long-requested adaptation of a 2000s manga.",chk:"2026-10-10"},
- {d:"2026-12-11",t:"The Apothecary Diaries: The Deceased Empress\u2019 Treasure",k:"Film",on:"cinemas in Japan",id:"apoth",n:"The first Apothecary Diaries film. That date is the Japanese release; no US date yet.",chk:"2026-10-10"},
- {d:"2026",t:"Fool Night",k:"New series",on:"Netflix",n:"A century of cloud has killed the sunlight, so the poor sell their bodies to be turned into plants. Dark science fiction; listed for 2026 with no day set.",chk:"2026-10-10"},
- {d:"2027-01",t:"Sakamoto Days, season 2",k:"New season",on:"Netflix had season 1",id:"sakamoto",n:"January 2027.",chk:"2026-10-10"},
+ {d:"2026-12-11",t:"The Apothecary Diaries: The Late Lady\u2019s Treasure",k:"Film",on:"cinemas in Japan",id:"apoth",n:"The first Apothecary Diaries film, with a new story by the novelist. That date is the Japanese release. Crunchyroll bought the Western rights on 8 October; no US date yet.",chk:"2026-10-10"},
+ {d:"2026-11-26",t:"Fool Night",k:"New series",on:"Netflix",n:"A century of cloud has killed the sunlight, so the poor sell their bodies to be turned into plants. Dark science fiction from Sunrise and Shaft.",chk:"2026-10-10"},
+ {d:"2027-01",t:"Sakamoto Days, season 2",k:"New season",on:"Netflix",id:"sakamoto",n:"With a new director, Daisuke Nakajima.",chk:"2026-10-10"},
  {d:"2027-04",t:"The Apothecary Diaries, season 3 part 2",k:"New season",on:"Crunchyroll",id:"apoth",n:"The second half of season 3.",chk:"2026-10-10"},
  {d:"2027",t:"Dandadan, season 3",k:"New season",on:"",id:"dandadan",n:"Confirmed for 2027, no month.",chk:"2026-10-10"},
  {d:"2027-10",t:"Frieren, season 3",k:"New season",on:"",id:"frieren",n:"The Golden Land arc, which manga readers rate as the best stretch of the story.",chk:"2026-10-10"},
  {d:"2027-10",t:"Delicious in Dungeon, season 2",k:"New season",on:"Netflix",id:"dungeon",n:"Finishes the story.",chk:"2026-10-10"},
  {t:"Chainsaw Man: Assassins Arc",k:"Sequel",id:"csm",n:"Announced December 2025. Follows the Reze Arc film.",chk:"2026-10-10"},
- {t:"Jujutsu Kaisen, season 3 part 2",k:"New season",id:"jjk",n:"The rest of the Culling Game.",chk:"2026-10-10"},
+ {t:"Jujutsu Kaisen: The Culling Game part 2",k:"New season",id:"jjk",n:"Billed as season 4. New director, Takeru Sato. A poster was shown in August and there is still no date.",chk:"2026-10-10"},
  {t:"Oshi no Ko, season 4",k:"Final season",id:"oshi",n:"Announced as the last one.",chk:"2026-10-10"},
  {t:"Witch Hat Atelier, season 2",k:"New season",on:"Crunchyroll",id:"witch",n:"Announced after the season 1 finale in June.",chk:"2026-10-10"},
- {t:"Nippon Sangoku sequel",k:"Sequel",id:"nippon",n:"Announced 3 September 2026.",chk:"2026-10-10"},
+ {t:"Nippon Sangoku, season 2",k:"New season",id:"nippon",n:"Confirmed in production on 2 September. No date, and the manga has been on hiatus since June.",chk:"2026-10-10"},
  {t:"Ranking of Kings film",k:"Film",id:"kings",n:"Announced in 2023 and quiet since.",chk:"2026-10-10"},
- {t:"Junket Bank",k:"New series",n:"A bank runs a secret casino where the stakes are fortunes and lives. Made for a Liar Game viewer. It was due 6 October and has been delayed indefinitely over production problems.",chk:"2026-10-10"}
+ {t:"Junket Bank",k:"New series",n:"A bank runs a secret casino where the stakes are fortunes and lives. Made for a Liar Game viewer. It was due in early October and was postponed indefinitely; the official statement blamed the production committee\u2019s project management.",chk:"2026-10-10"}
 ];
 /* Films. s = US subscription streamer as read on JustWatch; empty = could not read it. */
 var FILMS=[
@@ -684,8 +726,16 @@ var FILMS=[
  {id:"f_jjk0",t:"Jujutsu Kaisen 0",y:2021,rt:104,m:8.35,v:830,s:"",added:"2026-10-10",
   p:"The prequel film and a clean way into Jujutsu Kaisen. A boy haunted by his dead childhood friend is enrolled at the sorcery school instead of being executed."}
 ];
+/* Insider wire: [date, show id or "", status c=confirmed r=reported u=rumour, headline, what, why, outlet, url]. Append new rows at the top; checked 2026-10-10. */
+var WIRE=[["2026-10-08", "apoth", "c", "Crunchyroll buys the Apothecary Diaries film for the West", "The film opens in Japan on 11 December with an original story by the novelist, Natsu Hyuga. Crunchyroll took North American and worldwide rights outside Asia on 8 October. No US date yet.", "A US cinema run is now likely, and the story is new material, not a recap.", "Animation Magazine", "https://www.animationmagazine.net/2026/10/crunchyroll-acquires-the-apothecary-diaries-first-feature-film/"], ["2026-10-02", "apoth", "r", "Apothecary Diaries season 3 opens slow", "One early review, from But Why Tho?, gave episode 1 6.5 out of 10: a set-up episode, sombre, with the comedy turned down and a locust plague foreshadowed.", "Expect a slow first half, then a six-month wait for the second in April 2027.", "But Why Tho?", "https://butwhytho.net/2026/10/the-apothecary-diaries-season-3-episode-1/"], ["2026-09-28", "liar", "c", "Liar Game is getting a second season", "Madhouse’s staff announced it with a new illustration by the character designer, Kei Tsuchiya. No date or platform yet.", "The manga ran 19 volumes, so most of the games are still ahead.", "Final Weapon", "https://finalweapon.net/2026/09/28/liar-game-anime-continues-in-season-2/"], ["2026-09-28", "kimetsu", "c", "Demon Slayer: Infinity Castle is on Netflix", "The first film of the finale trilogy arrived on 28 September after taking more than $800 million in cinemas, the most of any Japanese film.", "The start of the ending is now easy to catch up on.", "What’s on Netflix", "https://www.whats-on-netflix.com/news/anime/demon-slayer-infinity-castle-netflix-release-date/"], ["2026-09-22", "kimetsu", "u", "Infinity Castle part 2 pointed at September 2027", "A box-office tracker lists an untitled Sony film for 17 September 2027, and a manga-news account suggested 15 September. Aniplex and ufotable have announced nothing.", "These are the only dated pointers there are, and they do not agree with each other.", "FandomWire", "https://fandomwire.com/demon-slayer-infinity-castle-part-2-release-date-hint/"], ["2026-09-19", "daemons", "c", "Daemons of the Shadow Realm renewed on finale day", "Season 2 was announced as the 24-episode first season ended. No date. Bones Film and director Masahiro Ando made season 1.", "A renewal announced at the finale was planned before the ratings came in.", "Anime Trending", "https://www.anitrendz.com/news/2026/09/19/daemons-of-the-shadow-realm-tv-anime-gets-2nd-season"], ["2026-09-11", "orb", "c", "Orb’s author has a new manga coming", "Uoto announced a series called Hallucination Meat for Weekly Spirits, likely starting within 2026, and teased a second one.", "The next work from the writer of Orb and 100 Meters, and a likely adaptation later.", "Popverse", "https://www.thepopverse.com/comics-manga-orb-100-meters-creator-2-new-uoto-works"], ["2026-09-02", "nippon", "c", "Nippon Sangoku season 2 is in production", "Announced with a video. Studio Kafka and director Kazuaki Terasawa return. No date, and the manga has been on hiatus since June.", "The cliffhanger gets resolved, but a paused manga could slow it.", "Final Weapon", "https://finalweapon.net/2026/09/03/nippon-sangoku-anime-continues-in-season-2/"], ["2026-09-01", "hikaru", "c", "The Summer Hikaru Died manga ends on 20 October", "Two chapters were left when the ending was announced: chapter 50 on 13 October and the last, chapter 51, on 20 October. Anime season 2 is confirmed with no date.", "Season 2 will adapt a finished story, so it can land the ending.", "Popverse", "https://www.thepopverse.com/comics-manga-the-summer-hikaru-died-release-schedule-date-anime"], ["2026-09-01", "witch", "r", "Witch Hat Atelier’s author says the story is a third done", "In an interview held in July, Kamome Shirahama put the manga at about a third of the way through. Season 2 is in production with no date.", "There are years of material ahead, and the staff say it gets darker.", "Anime Corner", "https://animecorner.me/witch-hat-atelier-manga-is-about-a-third-done-creator-estimates/"], ["2026-08-29", "jjk", "c", "Jujutsu Kaisen changes director and still has no date", "The Culling Game part 2, billed as season 4, got a poster at Juju Fes on 29 August. MAPPA’s earlier teaser named Takeru Sato, assistant director on season 3, as director.", "Two events without a date, plus a new director, point to a wait.", "VGTimes", "https://vgtimes.com/movies-and-tv-series/165859-jujutsu-kaisen-season-4-visual-revealed.html"], ["2026-08-20", "sakamoto", "c", "Sakamoto Days gets a new director for season 2", "Season 2 arrives in January 2027 with Daisuke Nakajima directing and Masaki Watanabe moved up to supervising director. Shonen Jump also says the manga is heading into its climax.", "A director change after the mixed reaction to season 1’s animation is the thing to watch.", "Final Weapon", "https://finalweapon.net/2026/08/20/sakamoto-days-season-2-gets-a-new-trailer-and-teaser-visual/"], ["2026-08-20", "edge", "c", "Edgerunners 2 lands 20 October with a new cast", "Ten episodes on Netflix, telling a separate story. Trigger animates again, Kai Ikarashi directs and Bartosz Sztybor runs the show.", "It has no link to the first series, so it can be watched cold.", "Anime Corner", "https://animecorner.me/cyberpunk-edgerunners-2-new-voiced-trailer-and-october-20-2026-release-date-revealed/"], ["2026-08-17", "takopi", "c", "Takopi returns as a film with new scenes", "Takopi’s Original Sin: Arigato, Mata Ashita opens in Japan on 27 November and adds scenes that were not in the six episodes.", "It is the only new Takopi animation in sight.", "Anime Trending", "https://anitrendz.net/news/2026/08/17/takopis-original-sin-compilation-film-sets-november-27-release-date/"], ["2026-08-16", "oshi", "c", "Oshi no Ko’s final season has a teaser and no date", "Season 4, announced as the last, got a teaser visual and trailer at a fan event on 16 August.", "The anime will finish the story; the manga ended in 2024.", "Anime Corner", "https://animecorner.me/oshi-no-ko-season-4-final-season-teaser-visual-and-trailer-revealed/"], ["2026-07-29", "gachi", "c", "Gachiakuta season 2 has a trailer and no date", "The first-look trailer went public on 29 July. Season 2 adapts the Information Broker arc at Bones Film.", "Production is active, but do not expect it before 2027.", "Animehunch", "https://animehunch.com/gachiakuta-season-2-gets-first-look-trailer/"], ["2026-07-04", "dungeon", "c", "Delicious in Dungeon season 2: October 2027, same team", "Trigger announced the date at Anime Expo. The director, story editor, character designer and composer all return, and it stays on Netflix.", "A long wait, but nobody who made season 1 has left.", "Anime News Network", "https://www.animenewsnetwork.com/news/2026-07-04/delicious-in-dungeon-anime-2nd-season-debuts-on-netflix-in-october-2027/.239298"], ["2026-07-03", "solo", "c", "Solo Leveling continues as a film, not a third season", "Crunchyroll announced Solo Leveling: Beyond the System at Anime Expo. A-1 Pictures animates and Tao Tajima directs. No date.", "The next chapter is in cinemas, and no third TV season has been announced.", "Anime News Network", "https://www.animenewsnetwork.com/news/2026-07-03/solo-leveling-series-gets-solo-leveling-beyond-the-system-anime-film/.239268"], ["2026-07-03", "edge", "r", "Edgerunners 2’s first episode went over well with 6,000 people", "Episode 1 had its world premiere at Anime Expo in the Crypto.com Arena. Gizmodo’s reviewer said it blew him away.", "It is the only first-hand reaction so far, and it is strongly positive.", "Gizmodo", "https://gizmodo.com/anime-expos-world-premiere-of-cyberpunk-edgerunners-2-absolutely-ruled-2000781342"], ["2026-05-19", "spy", "c", "Spy × Family cast event on 8 November is the one to watch", "A cast event is set for 8 November in Tokyo. Season 4 is unannounced; season 3 was revealed at the last event of this kind.", "A season 4 reveal there is my guess, not news.", "ComicBook.com", "https://comicbook.com/anime/news/spy-x-family-season-4-just-got-the-update-fans-have-been-waiting-for/"], ["2026-10-08", "", "c", "Crunchyroll signs up about 15 webtoon adaptations", "Crunchyroll, its joint venture Hayate and Line Digital Frontier agreed a slate of about 15 Webtoon titles. The first is The Remarried Empress, a court-intrigue series with 2.97 billion views, due in 2027.", "Korean webtoons are becoming a second supply line beside Japanese manga.", "Animehunch", "https://animehunch.com/the-remarried-empress-gets-anime-adaptation-set-for-2027-release/"], ["2026-10-07", "", "c", "Sony sets up a unit for Crunchyroll to originate anime", "Crunchyroll Storyworks, under Tohru Iokibe, will turn outside stories into anime and anime into live action. Sony also said the PlayStation 5 gets a dedicated anime space next spring.", "Crunchyroll is moving from renting finished shows to owning them, which takes bargaining power from Japan’s production committees.", "Deadline", "https://deadline.com/2026/10/sony-pictures-entertainment-crunchyroll-storyworks-japanese-anime-1237149139/"], ["2026-09-17", "", "c", "Report: the bottleneck in anime is studios, not money", "Media Partners Asia counts 21 anime deals since 2021, seven involving Sony, and sees spending growing about 10% a year to 2030. Netflix’s anime viewing hours rose 39% in three years, against 4.5% for everything else.", "Demand and capital are there and drawing capacity is not. That is why sequels take two years.", "Variety", "https://variety.com/2026/tv/news/jujutsu-kaisen-mappa-anime-lead-streaming-1236865122/"], ["2026-09-09", "", "c", "A gambling anime is pulled, and the financiers take the blame", "Junket Bank, due in early October, was postponed indefinitely. The official statement cited significant issues with the production committee’s project management.", "Studios usually carry the blame for delays. A financing committee naming itself is rare.", "CBR", "https://www.cbr.com/junket-bank-anime-release-date-lose/"], ["2026-09-08", "", "r", "A mascot film is Japan’s biggest release of 2026", "Chiikawa the Movie took ¥13.9 billion in 45 days and passed this year’s Detective Conan film.", "A character built on merchandise out-earned the annual Conan film with no overseas pre-sale.", "Automaton", "https://automaton-media.com/en/news/chiikawa-becomes-japans-highest-grossing-movie-this-year-with-over-13-9-billion-yen-in-the-box-office/"], ["2026-09-03", "", "r", "Production I.G’s profit falls 75% in a boom", "Ordinary profit fell 74.8% in the year to May. Its parent, IG Port, which also owns Wit Studio, grew animation revenue 10.7% and still lost about $8 million on it, citing delays and rising staff and outsourcing costs.", "Studios on fixed fees eat the cost inflation while the rights holders keep the upside.", "Automaton", "https://automaton-media.com/en/nongaming-news/ghost-in-the-shell-and-haikyuu-studio-production-i-g-reports-significant-profit-decline-in-the-past-fiscal-year/"], ["2026-09-02", "", "r", "A producer says 90% of late-night anime revenue is now foreign", "Bushiroad Move’s chief, Yusuke Onuki, wrote that one season costs about ¥350 million and that committees now approve projects at whatever minimum guarantee Western distributors will pay.", "A show gets made if it clears a foreign pre-sale. That explains the flood of safe genre work.", "Automaton", "https://automaton-media.com/en/news/is-anime-really-no-longer-being-made-for-japanese-audiences-domestic-fans-argue-recent-discussion-is-missing-the-point/"], ["2026-09-01", "", "r", "Japan asks AI firms to disclose their training data", "A non-binding code urges generative-AI providers to say what they trained on. Separately, draft Justice Ministry guidelines say cloning a voice for profit without permission could infringe publicity rights.", "Comply-or-explain, not law: artists and voice actors get visibility but no enforcement yet.", "Automaton", "https://automaton-media.com/en/news/japan-adopts-new-guidelines-urging-ai-companies-to-disclose-training-data-to-combat-ip-infringement/"], ["2026-08-24", "", "c", "One Piece will put a canon arc in cinemas", "Toei announced One Piece Film God Valley for summer 2027, adapting a flashback from the manga itself. Earlier One Piece films were side stories.", "After Demon Slayer’s $800 million, the big story beats go to the box office and streaming viewers wait.", "Cartoon Brew", "https://www.cartoonbrew.com/anime/two-one-piece-films-announced-toei-265884.html"], ["2026-08-21", "", "r", "Bilibili reopens its app to the world", "China’s main anime platform relaunched its international Android app without ID checks and is hiring in six cities abroad. This one rests on two smaller outlets.", "Chinese productions can now reach foreign viewers directly. To Be Hero X came out of Bilibili.", "TechDogs", "https://www.techdogs.com/tech-news/td-newsdesk/bilibili-goes-global-with-android-relaunch-ios-app-coming-soon"], ["2026-08-18", "", "c", "Crunchyroll puts its shop behind the paywall", "The store reopened only for subscribers on the $14 and $18 tiers. Manga and novels were delisted and the Blu-ray range was cut back hard.", "Fewer places to buy anime on disc, so what you can watch depends more on what stays licensed.", "Kotaku", "https://kotaku.com/crunchyroll-guts-online-store-just-as-anime-fans-feared-2000725383"], ["2026-08-14", "", "r", "Kadokawa’s anime arm loses money on rising revenue", "The segment lost ¥660 million in April to June although anime revenue rose 27.4%. 154 staff took early retirement, and the activist fund Oasis holds 15.25%.", "Cost inflation is now hitting the rights owners too, not only the studios.", "Automaton", "https://automaton-media.com/en/news/kadokawa-reports-significant-loss-in-anime-business-in-the-past-quarter-despite-rising-revenue-from-hits-like-rezero/"], ["2026-08-05", "", "c", "Bandai puts ¥4 billion into a new property with Twin Engine", "The toy maker and the company behind Vinland Saga and Witch Hat Atelier will build one new story across manga, anime and merchandise.", "Funding from the manga stage keeps the merchandise rights from day one and skips the publisher.", "Automaton", "https://automaton-media.com/en/news/bandai-and-witch-hat-atelier-studio-twin-engine-form-partnership-to-create-an-original-manga-and-anime-ip/"], ["2026-07-30", "", "c", "Crunchyroll passes 21 million subscribers and starts bundling", "Sony Pictures’ quarterly revenue fell 13% while Crunchyroll’s rose on subscriber growth. It launched its first US bundle, with Starz on Prime Video at $16.99 a month.", "It is the growth line in a shrinking division, and bundling means it is now chasing viewers beyond core fans.", "Variety", "https://variety.com/2026/film/news/sony-pictures-earnings-june-2026-music-playstation-sales-1236824839/"]];
+/* Ahead of the curve: [group, title, when, status, headline, what, why-for-Alvin, outlet, url]; checked 2026-10-10. */
+var RADAR=[["This season", "FX Fighter Kurumi-chan", "Airing now, Crunchyroll", "c", "The surprise of the season is about margin trading", "Passione’s series ranked 37th in Anime Corner’s pre-season poll and 3rd after week one. One review scored episode 1 at 4.5 out of 5. Reviews carry a content warning for suicide.", "A show about leverage and not taking profits, aimed at someone who trades.", "Anime Corner", "https://animecorner.me/fall-2026-anime-rankings-week-1/"], ["This season", "Fool Night", "26 Nov 2026, Netflix", "c", "Japan is watching this one more closely than the West", "From Sunrise and Shaft. It ranked 3rd in the Japanese anticipation ranking on Filmarks and only 14th in Anime Corner’s Western poll.", "Adult science fiction about poverty and a market in bodies. The gap between the two polls is the edge.", "Final Weapon", "https://finalweapon.net/2026/08/20/fool-night-anime-premieres-november-26-on-netflix/"], ["Coming in 2027", "Historie", "January 2027", "c", "The Parasyte author’s Alexander-era epic finally gets an anime", "Liden Films adapts Hitoshi Iwaaki’s manga, running since 2004, about Eumenes, secretary to Alexander the Great. About 10,700 people are tracking it on MyAnimeList, 15th on the winter list. No streamer named yet.", "Court politics and strategy written for adults, the closest thing on the 2027 slate to Game of Thrones, and almost nobody is watching for it.", "Anime News Network", "https://www.animenewsnetwork.com/news/2026-05-24/historie-tv-anime-announces-lead-voice-actor-january-2027-premiere/.237768"], ["Coming in 2027", "Mobile Suit Gundam RG Xarx-Zero", "April 2027", "c", "The Stand Alone Complex director builds a new Gundam setting", "Kenji Kamiyama directs and co-created the world with the novelist Toh EnJoe: humanity has abandoned Earth to a self-replicating alien ecosystem.", "Kamiyama makes political science fiction, and this needs no back catalogue.", "Automaton", "https://automaton-media.com/en/news/mobile-suit-gundam-rg-xarx-zero-to-release-in-april-2027-a-brand-new-anime-directed-by-kenji-kamiyama/"], ["Coming in 2027", "LONA", "Spring 2027", "c", "A Wit Studio original written by a television dramatist", "Created and scripted by Akiko Nogi and directed by Takashi Katagiri. A government lab enters the last memories of the dead after people who should be dead start attacking the living.", "Procedural science fiction for adults from a live-action writer, not a manga adaptation.", "Wikipedia", "https://en.wikipedia.org/wiki/LONA_(TV_series)"], ["Coming in 2027", "Spice and Wolf, season 2", "2027", "c", "The medieval trading show is coming back", "Passione returns with the same chief director and composer. Season 1, 25 episodes, is on Crunchyroll now.", "The plots are trades: currency, credit and arbitrage.", "Final Weapon", "https://finalweapon.net/2026/08/31/spice-and-wolf-merchant-meets-the-wise-wolf-season-2-2027-premiere/"], ["Coming in 2027", "The Bugle Call: Song of War", "2027", "c", "A fantasy war manga goes to a brand-new studio", "CA Soa, a new CyberAgent studio, adapts the Jump SQ series about a bugler drafted into a special unit. The manga is in its final battle.", "Campaign storytelling in the Tanya vein, from a studio with no track record.", "Anime News Network", "https://www.animenewsnetwork.com/news/2026-06-29/the-bugle-call-song-of-war-fantasy-war-manga-gets-tv-anime-in-2027/.239122"], ["Just announced", "Manchuria Opium Squad", "No date", "c", "A 1930s drug-trade crime manga gets an anime", "Announced on 4 October by Pony Canyon with no studio or staff yet. A botanist in Manchukuo turns to making opium and is pulled into gangs and state pressure. 22 volumes.", "A rise-through-the-trade crime story in the vein of The Wire, and the newest announcement on this page.", "Anime Trending", "https://anitrendz.net/news/2026/10/04/manchuria-opium-squad-announces-anime-adaptation/"], ["No anime yet", "Hon Nara Uru Hodo", "Nothing announced", "c", "This year’s most-awarded manga has no adaptation", "Ao Kojima’s series about a second-hand bookshop won the Manga Taisho and the Tezuka Cultural Prize grand prize in 2026 and topped a third major list. Three volumes so far.", "Quiet adult drama. A sweep like that makes it the obvious thing to be adapted next.", "Wikipedia", "https://en.wikipedia.org/wiki/Hon_Nara_Uru_Hodo"], ["Films", "Studio Ghibli", "Nothing dated", "r", "Ghibli has no next film in production", "The studio’s president told Bloomberg it will not force a film without the right idea. Hayao Miyazaki, 85, still comes in daily, and only he knows what he is working on.", "Sets expectations: nothing from Ghibli is dated for 2026 or 2027.", "Cartoon Brew", "https://www.cartoonbrew.com/anime/studio-ghibli-future-hayao-miyazaki-265713.html"], ["Films", "Makoto Shinkai’s next film", "No date", "c", "It has a distributor before it has a title", "Crunchyroll and Sony took distribution outside Asia in August. Shinkai said the Japanese announcement is probably not far off.", "His first film since Suzume, and a formal reveal looks close.", "Anime Corner", "https://animecorner.me/makoto-shinkais-next-anime-film-secures-global-distribution-by-crunchyroll-director-says-theatrical-release-is-probably-not-far-away/"], ["Films", "Ghost: End of Night", "11 Feb 2027, Japan", "c", "An original Madhouse film from the director of Sonny Boy", "Shingo Natsume directs and co-writes. It screens at the Tokyo International Film Festival, 26 October to 4 November.", "An original from a director with his own style, not a franchise film.", "Cartoon Brew", "https://www.cartoonbrew.com/festivals/39th-tokyo-full-lineup-magic-atlas-267332.html"], ["Films", "Armored Trooper Votoms: Die Graue Hexe", "20 Nov 2026, Japan", "c", "Mamoru Oshii directs a two-part military science-fiction film", "Sunrise and Production I.G produce, with music by Kenji Kawai. Part 2 has no date.", "The director of Ghost in the Shell on war and conspiracy material.", "Kantenna", "https://kantenna.com/topic/votoms-die-graue-hexe-mamoru-oshii-theatrical-2026"], ["Films", "The Credits Roll into the Sea", "2027", "c", "Kyoto Animation is making a film about a 65-year-old film student", "Taichi Ishidate, director of Violet Evergarden, adapts the manga about a widow who enrols in film school.", "A grown-up premise from the most craft-minded studio in the business.", "Anime Corner", "https://animecorner.me/the-credits-roll-into-the-sea-gets-anime-movie-by-kyoto-animation-in-2027/"], ["Films", "Katsuhiro Otomo’s new studio", "No date", "r", "The creator of Akira has opened a studio with something in production", "The studio is called Oval Gear, and a press release says a new work is under way. Otomo has not directed a feature since 2004.", "Any new Otomo work is a science-fiction event. This is the earliest signal of one.", "GamesRadar", "https://www.gamesradar.com/entertainment/anime-movies/akira-creator-opens-a-new-anime-studio-to-pass-on-his-visual-expression-and-artistic-style-to-the-next-generation/"]];
+/* The read: interpretation of the wire, dated. [heading, text] */
+var READ_DATE="2026-10-10", READ=[["More demand than hands", "Netflix’s anime viewing is up 39% in three years and spending is forecast to grow 10% a year. In the same period Production I.G’s profit fell 75% and Kadokawa’s anime arm lost money on higher revenue. The money goes to whoever owns the rights; the studios doing the drawing are on fixed fees with rising costs. You feel it as waiting: Frieren and Delicious in Dungeon are both October 2027, and Jujutsu Kaisen has a new director and no date."], ["Sony is building the toll road", "In ten weeks Crunchyroll bought the Western rights to the Apothecary Diaries film and the next Shinkai film, set up a unit to originate its own shows, signed about 15 webtoons and put its shop behind the paywall. Netflix answers with exclusives: Edgerunners 2, Delicious in Dungeon, Sakamoto Days, Fool Night. Plan on needing both."], ["The best parts are moving to cinemas", "Demon Slayer’s $800 million changed the sums. One Piece is putting a canon arc in cinemas, Solo Leveling continues as a film, Chainsaw Man did it with Reze Arc, and both Apothecary Diaries and Takopi have films before the year is out. If you only stream, you wait longer."], ["Foreign pre-sales pick the slate", "With about 90% of late-night revenue coming from abroad, committees approve whatever clears a Western minimum guarantee. The adult, plot-heavy shows on this list mostly exist because one platform wanted them: Nippon Sangoku on Prime, Orb and Pluto on Netflix. Historie in January is the test of whether that kind of show can still get made without a big streamer named."]];
+var STN={c:"Confirmed",r:"Reported",u:"Rumour"};
 /* Update log: newest first. Append a row per round. */
 var LOG=[
+ ["2026-10-10","Added the Insider wire (34 sourced items with a four-point read), Ahead of the curve (15 items), insider notes on the shows they concern, and a News button on Poko. Filters became dropdowns in one bar. Coming up corrected: Solo Leveling continues as a film, Jujutsu Kaisen has a new director, Fool Night is dated 26 November."],
  ["2026-10-10","Each show box now carries a one-line description. The list opens in fan-rating order, the dials fold away, and the header and control boxes are smaller. Frieren marked seen."],
  ["2026-10-10","Added the bench (ten more shows), trailer links, and a compact mood picker in Poko\u2019s bubble. Chainsaw Man and Jujutsu Kaisen marked seen. A monthly refresh is scheduled for the first of each month."],
  ["2026-10-10","Added music made in the browser (koto, drum, robot bleeps), Mochi the cat with her own cosy pick, and a tidier control panel with filters folded away. Removed the you-versus-the-crowd map."],
@@ -750,16 +800,19 @@ function btn2(id,lg,sm,fn,cls,toggle){var b=el("button","chip"+(cls?" "+cls:""))
 btn2("b-pick","Pick a show","Show",pick,"go");
 btn2("b-film","Pick a film","Film",pickFilm,"go");
 btn2("b-learn","Learn my taste","Learn",learn,"");
+btn2("b-news","Insider news","News",function(){gossip();},"");
 var musicBtn=btn2("b-music","\u266A Music","\u266A Music",function(){toggleMusic();},"",true);
 $("bot").addEventListener("click",pick);
-var svcBtns={}; Object.keys(SVC).forEach(function(c){svcBtns[c]=chip($("svc"),SVC[c],function(){ if(S.svc[c])delete S.svc[c]; else S.svc[c]=1; update();});});
-var SORTS=[["dials","My dials"],["fans","Fan rating"]];
-var sortBtns=SORTS.map(function(s){return chip($("sortby"),s[1],function(){S.sort=s[0]; if(s[0]==="dials")$("dialbox").open=true; update(); say(s[0]==="fans"?"Fine. Democracy. "+rows.filter(function(r){return r.d.fr===1;})[0].d.t+" wins, as usual.":"Back to your dials. Sensible.");});});
-var STAT=[["all","All 25"],["unseen","Not seen"],["queue","My queue"],["bots","Has robots"]];
-var statBtns=STAT.map(function(s){return chip($("status"),s[1],function(){S.status=s[0]; update(); if(s[0]==="bots")say("My people. Four of them, counting loosely.");});});
-var LENS=[[0,"Any"],[6,"Under 6 h"],[12,"Under 12 h"]];
-var lenBtns=LENS.map(function(l){return chip($("len"),l[1],function(){S.len=l[0]; update(); if(l[0])say("Short ones only. A person with plans.");});});
-$("fclear").addEventListener("click",function(){S.svc={}; S.status="all"; S.len=0; update(); $("filters").querySelector("summary").focus();});
+var SORTS=[["fans","Fan rating"],["dials","My dials"]];
+var STAT=[["all","Everything"],["unseen","Not seen"],["queue","My queue"],["bots","Has robots"]];
+var LENS=[[0,"Any length"],[6,"Under 6 hours"],[12,"Under 12 hours"]];
+function fillSel(id,opts){var sel=$(id); opts.forEach(function(o){var op=el("option",null,o[1]); op.value=String(o[0]); sel.appendChild(op);}); return sel;}
+var selSort=fillSel("sel-sort",SORTS), selSvc=fillSel("sel-svc",[["","Anywhere"]].concat(Object.keys(SVC).map(function(c){return [c,SVC[c]];}))), selStatus=fillSel("sel-status",STAT), selLen=fillSel("sel-len",LENS);
+selSort.addEventListener("change",function(){S.sort=selSort.value; if(S.sort==="dials")$("dialbox").open=true; update(); say(S.sort==="fans"?"Fine. Democracy. "+rows.filter(function(r){return r.d.fr===1&&!r.d.bench;})[0].d.t+" wins, as usual.":"Back to your dials. Sensible.");});
+selSvc.addEventListener("change",function(){S.svc={}; if(selSvc.value)S.svc[selSvc.value]=1; update();});
+selStatus.addEventListener("change",function(){S.status=selStatus.value; update(); if(S.status==="bots")say("My people. Four of them, counting loosely.");});
+selLen.addEventListener("change",function(){S.len=+selLen.value; update(); if(S.len)say("Short ones only. A person with plans.");});
+$("fclear").addEventListener("click",function(){S.svc={}; S.status="all"; S.len=0; S.q=""; $("q").value=""; update(); selSvc.focus();});
 $("q").addEventListener("input",function(e){S.q=e.target.value.trim().toLowerCase(); update();});
 
 /* rows */
@@ -813,6 +866,8 @@ function fillDetail(r){
   var d=r.d, det=r.det; det.textContent="";
   var copy=el("div","copy");
   copy.appendChild(block("The setup",d.p)); copy.appendChild(block("Why you, specifically",d.f)); copy.appendChild(block("Before you start",d.w));
+  var wi=WIRE.filter(function(x){return x[1]===d.id;}).sort(function(a,b){return a[0]<b[0]?1:-1;});
+  if(wi.length){var ib=el("div"); ib.appendChild(el("h3",null,"Insider")); var bx=el("div","intel"); wi.forEach(function(x){bx.appendChild(wireEl(x,true));}); ib.appendChild(bx); copy.appendChild(ib);}
   var q=el("div","quip"); q.appendChild(miniBot()); q.appendChild(el("span",null,"Poko: “"+d.r+"”")); copy.appendChild(q);
   var acts=el("div","acts");
   var bs=el("button","act",S.seen[d.id]?"✓ Seen":"Mark seen"); bs.type="button"; bs.setAttribute("aria-pressed",S.seen[d.id]?"true":"false");
@@ -901,10 +956,8 @@ function update(){
   ins.forEach(function(inp,i){inp.value=S.w[i]; outs[i].textContent=S.w[i];});
   var mi="custom"; MOODS.forEach(function(m,i){ if(m.w.join()===S.w.join())mi=String(i); }); moodSel.value=mi;
   $("dsum").textContent=(mi==="custom"?"my own":MOODS[+mi].name)+(S.sort==="dials"?"":" · not ranking");
-  Object.keys(svcBtns).forEach(function(c){svcBtns[c].setAttribute("aria-pressed",S.svc[c]?"true":"false");});
-  statBtns.forEach(function(b,i){b.setAttribute("aria-pressed",STAT[i][0]===S.status?"true":"false");});
-  lenBtns.forEach(function(b,i){b.setAttribute("aria-pressed",LENS[i][0]===S.len?"true":"false");});
-  sortBtns.forEach(function(b,i){b.setAttribute("aria-pressed",SORTS[i][0]===S.sort?"true":"false");});
+  selSort.value=S.sort; selSvc.value=Object.keys(S.svc)[0]||""; selStatus.value=S.status; selLen.value=String(S.len);
+  selSvc.classList.toggle("on",!!selSvc.value); selStatus.classList.toggle("on",S.status!=="all"); selLen.classList.toggle("on",!!S.len);
 
   var sorted=sortedRows();
   var order=sorted.map(function(r){return r.d.id;}).join();
@@ -923,6 +976,7 @@ function update(){
     if(q)r.tags.appendChild(el("span","tag queue","Queued"));
     if(seen)r.tags.appendChild(el("span","tag seen",S.mine[d.id]?"Seen · you gave it "+S.mine[d.id]:"Seen"));
     if(d.now)r.tags.appendChild(el("span","tag now","New episodes weekly"));
+    var nn=WIRE.filter(function(x){return x[1]===d.id;}).length; if(nn)r.tags.appendChild(el("span","tag news",nn===1?"1 insider item":nn+" insider items"));
     if(d.added>FIRST)r.tags.appendChild(el("span","tag now","Added "+fmtD(d.added)));
     if(d.bot)r.tags.appendChild(el("span","tag robo","Robots"));
     d.s.forEach(function(c){r.tags.appendChild(el("span","tag"+(S.svc[c]?" on":""),SVC[c]));});
@@ -932,10 +986,7 @@ function update(){
     if(r.open)fillDetail(r);
   });
   $("empty").hidden=shown>0; benchDiv.hidden=!rows.some(function(r){return r.d.bench&&!r.el.hidden;});
-  var on=Object.keys(S.svc).map(function(c){return SVC[c];});
-  if(S.status!=="all")on.push(STAT.filter(function(x){return x[0]===S.status;})[0][1]);
-  if(S.len)on.push(LENS.filter(function(x){return x[0]===S.len;})[0][1]);
-  $("fsum").textContent=on.length?on.join(", "):"none on"; $("fclear").hidden=!on.length;
+  $("fclear").hidden=!(Object.keys(S.svc).length||S.status!=="all"||S.len||S.q);
   if(first){
     sorted.forEach(function(r){ if(r.el.hidden||!first.has(r))return; var dy=first.get(r)-r.el.getBoundingClientRect().top; if(Math.abs(dy)<1)return;
       r.el.style.transition="none"; r.el.style.transform="translateY("+dy+"px)";
@@ -1037,6 +1088,46 @@ function toggleMusic(){
 document.addEventListener("visibilitychange",function(){ if(!AC||!musicOn)return; if(document.hidden)AC.suspend(); else{AC.resume(); nextT=AC.currentTime+0.08;} });
 window.addEventListener("pointermove",function(e){look(e.clientX,e.clientY);},{passive:true});
 window.addEventListener("pointerdown",function(e){look(e.clientX,e.clientY);},{passive:true});
+
+/* ---- Insider wire and radar ---- */
+var byId={}; D.forEach(function(d){byId[d.id]=d;});
+function wireEl(x,inShow){
+  var a=el("article","wi"), top=el("div","top"); top.appendChild(document.createTextNode(fmtD(x[0]))); top.appendChild(el("span","st "+x[2],STN[x[2]]));
+  if(x[1]&&!inShow){var b=el("button","showlink",byId[x[1]].t); b.type="button"; b.addEventListener("click",function(){var r=rows.filter(function(r){return r.d.id===x[1];})[0]; if(r.el.hidden){S.svc={}; S.status="all"; S.len=0; S.q=""; $("q").value=""; update();} openRow(r);}); top.appendChild(b);}
+  a.appendChild(top); a.appendChild(el("h4",null,x[3])); a.appendChild(el("p",null,x[4]));
+  var w=el("p","why"); w.appendChild(el("b",null,"Why it matters: ")); w.appendChild(document.createTextNode(x[5])); a.appendChild(w);
+  var l=el("a",null,"Source: "+x[6]+" \u2197"); l.href=x[7]; l.target="_blank"; l.rel="noopener"; a.appendChild(l); return a;
+}
+var wireAll=false;
+function drawWire(){
+  var f=$("sel-wire").value, items=WIRE.slice().sort(function(a,b){return a[0]<b[0]?1:(a[0]>b[0]?-1:0);}).filter(function(x){return f==="all"||(f==="shows"&&x[1])||(f==="biz"&&!x[1]);});
+  var box=$("wlist"); box.textContent=""; (wireAll?items:items.slice(0,8)).forEach(function(x){box.appendChild(wireEl(x));});
+  var m=$("wmore"); m.hidden=items.length<=8; m.textContent=wireAll?"Show fewer":"Show all "+items.length;
+}
+function drawRead(){
+  var r=$("read"); r.textContent=""; r.appendChild(el("p","rh","The read, "+fmtD(READ_DATE)+". My interpretation of the items below, not reporting."));
+  READ.forEach(function(x){var d=el("div"); d.appendChild(el("h3",null,x[0])); d.appendChild(el("p",null,x[1])); r.appendChild(d);});
+  $("wirelede").textContent=WIRE.length+" sourced items on your shows and on the business behind them, newest first, checked "+fmtD(EDITION)+". Each one is marked confirmed, reported or rumour. No private-life gossip; this is production, money and scheduling.";
+}
+function drawRadar(){
+  var box=$("rlist"), last=""; box.textContent="";
+  RADAR.forEach(function(x){
+    if(x[0]!==last){box.appendChild(el("p","rgroup",x[0])); last=x[0];}
+    var a=el("article","wi"), top=el("div","top"); top.appendChild(el("b",null,x[1])); top.appendChild(document.createTextNode(x[2])); top.appendChild(el("span","st "+x[3],STN[x[3]]));
+    a.appendChild(top); a.appendChild(el("h4",null,x[4])); a.appendChild(el("p",null,x[5]));
+    var w=el("p","why"); w.appendChild(el("b",null,"Why you: ")); w.appendChild(document.createTextNode(x[6])); a.appendChild(w);
+    var l=el("a",null,"Source: "+x[7]+" \u2197"); l.href=x[8]; l.target="_blank"; l.rel="noopener"; a.appendChild(l); box.appendChild(a);
+  });
+}
+[["all","Everything"],["shows","Your shows"],["biz","The business"]].forEach(function(o){var op=el("option",null,o[1]); op.value=o[0]; $("sel-wire").appendChild(op);});
+$("sel-wire").addEventListener("change",function(){wireAll=false; drawWire();});
+$("wmore").addEventListener("click",function(){wireAll=!wireAll; drawWire();});
+var lastNews=null;
+function gossip(){
+  wave(); var pool=WIRE.concat(RADAR.map(function(x){return [null,"",x[3],x[1]+": "+x[4],"",x[6]];})); if(pool.length>1)pool=pool.filter(function(x){return x!==lastNews;});
+  var x=pool[Math.floor(Math.random()*pool.length)]; lastNews=x;
+  say((x[2]==="u"?"Unconfirmed, so hold it loosely: ":(x[2]==="r"?"Reported, not official: ":"Word is: "))+x[3]+". "+x[5]);
+}
 
 /* ---- Coming up ---- */
 function upKey(u){ if(!u.d)return "9999"; var p=u.d.split("-"); return p[0]+"-"+(p[1]||"13")+"-"+(p[2]||"32"); }
@@ -1152,7 +1243,7 @@ $("gh-save").addEventListener("click",function(){ghToken=$("gh-token").value.tri
 $("gh-forget").addEventListener("click",function(){ghToken=""; try{localStorage.removeItem("anime-gh-token");}catch(e){} $("gh-token").value=""; setSync("add token to save","warn");});
 ghToken=SYNC_ON?findToken():"";
 
-update(); drawUp(); drawFilms(); drawLog(); ghRefresh();
+update(); drawUp(); drawFilms(); drawLog(); drawRead(); drawWire(); drawRadar(); ghRefresh();
 say("Hello Alvin. I am Poko. The list starts in fan order. Tap me and I will pick tonight's show.");
 })();
 </script>
