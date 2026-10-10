@@ -154,6 +154,11 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .facts dd{margin:0}
 .jump{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
 .jump span{font:600 13px var(--display); color:var(--moss); text-transform:uppercase; letter-spacing:.06em; margin-right:4px}
+.chip.sync{margin-left:auto}
+.chip.sync.ok{background:var(--leaf)}
+.chip.sync.warn{background:var(--sun)}
+.syncrow{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px}
+.syncrow input{flex:1 1 240px; min-width:0; background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:8px 14px}
 .panel{background:var(--card); border:2px solid var(--ink); border-radius:22px; padding:18px; min-width:0}
 .panel h2{font:600 24px/1.2 var(--display); margin:0 0 4px}
 .lede{margin:0 0 12px; color:var(--dim); font-size:14.5px; max-width:72ch}
@@ -277,7 +282,21 @@ footer p{margin:0 0 6px}
     <button class="chip" type="button" data-go="films">Films</button>
     <button class="chip" type="button" data-go="fans">Fan board</button>
     <button class="chip" type="button" data-go="log">Update log</button>
+    <button class="chip sync" type="button" id="syncbtn" aria-expanded="false" aria-controls="syncsheet">☁ Sync</button>
   </nav>
+
+  <section class="panel" id="syncsheet" hidden>
+    <h2>Save picks to your repo</h2>
+    <p class="lede" id="syncnote"></p>
+    <div id="syncform">
+      <div class="syncrow">
+        <input type="password" id="gh-token" placeholder="fine-grained token (Contents: read/write on index)" autocomplete="off" aria-label="GitHub token">
+        <button class="act sm" type="button" id="gh-save">Save token</button>
+        <button class="act sm" type="button" id="gh-forget">Forget token</button>
+      </div>
+      <p class="lede">The token stays in this browser. Seen marks, queue, your scores and dial settings are written to <b>anime-picks.json</b> in the index repo a moment after each change. On a new device the picks load on their own; paste the token once to save from it.</p>
+    </div>
+  </section>
 
   <div class="console">
     <aside class="deck" aria-label="Controls">
@@ -347,7 +366,7 @@ footer p{margin:0 0 6px}
     <p><b>Match %</b> is each show's five trait scores plus its fan rating, weighted by your dials. The five trait scores are an editorial read, not data from anywhere. The five green bars on each row follow the first five dials, in order.</p>
     <p><b>Fan ratings</b> (★) are MyAnimeList user scores out of 10 for each show's first season, read on 10 Oct 2026. Scores on shows with few ratings move around more.</p>
     <p><b>Streaming and episode counts</b> were checked on JustWatch US, Wikipedia and MyAnimeList on 10 Oct 2026. Awards listed are Crunchyroll Anime Awards unless named otherwise. Catalogs rotate, so confirm before you sit down. Hours assume about 24 minutes an episode.</p>
-    <p>Seen marks, your queue and your own scores are saved in this browser only. The "Open on" buttons run a title search on that service.</p>
+    <p>Seen marks, your queue, your own scores and dial settings are saved in this browser, and to anime-picks.json in your repo when ☁ Sync has a token. The "Open on" buttons run a title search on that service.</p>
   </footer>
 </div>
 
@@ -561,6 +580,7 @@ var FILMS=[
 ];
 /* Update log: newest first. Append a row per round. */
 var LOG=[
+ ["2026-10-10","Added \u2601 Sync: seen marks, queue, scores and dials save to anime-picks.json in the index repo."],
  ["2026-10-10","Added Coming up (18 dated and undated releases), nine films, the fan board, fan-favourite characters and awards on every show, and this log. Liar Game corrected to 26 episodes."],
  ["2026-10-10","Added the you-versus-the-crowd map, your own scores, Learn my taste, the time filter and watch links."],
  ["2026-10-10","Added fan ratings from MyAnimeList, the rank-by-fans switch and the fan-rating dial."],
@@ -568,9 +588,11 @@ var LOG=[
  ["2026-10-10","First edition."]
 ];
 var KEY="alvin-anime-v2";
-var S={w:MOODS[0].w.slice(),seen:{liar:1,tanya:1},queue:{},svc:{},status:"all",q:"",sort:"dials",mine:{},len:0};
-try{var sv=JSON.parse(localStorage.getItem(KEY)||"null"); if(sv){ if(sv.w&&sv.w.length===6)S.w=sv.w; if(sv.seen)S.seen=sv.seen; if(sv.queue)S.queue=sv.queue; if(sv.mine)S.mine=sv.mine; }}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify({w:S.w,seen:S.seen,queue:S.queue,mine:S.mine}));}catch(e){}}
+var S={w:MOODS[0].w.slice(),seen:{liar:1,tanya:1},queue:{},svc:{},status:"all",q:"",sort:"dials",mine:{},len:0,ts:""};
+try{var sv=JSON.parse(localStorage.getItem(KEY)||"null"); if(sv){ if(sv.w&&sv.w.length===6)S.w=sv.w; if(sv.seen)S.seen=sv.seen; if(sv.queue)S.queue=sv.queue; if(sv.mine)S.mine=sv.mine; if(sv.ts)S.ts=sv.ts; }}catch(e){}
+function writeLocal(){try{localStorage.setItem(KEY,JSON.stringify({w:S.w,seen:S.seen,queue:S.queue,mine:S.mine,ts:S.ts}));}catch(e){}}
+var syncT=null;
+function save(){S.ts=new Date().toISOString(); writeLocal(); clearTimeout(syncT); syncT=setTimeout(function(){ghSave();},1500);}
 
 function $(id){return document.getElementById(id);}
 function el(tag,cls,txt){var n=document.createElement(tag); if(cls)n.className=cls; if(txt!=null)n.textContent=txt; return n;}
@@ -914,7 +936,48 @@ function drawBoard(){
 function drawLog(){var ul=$("loglist"); ul.textContent=""; LOG.forEach(function(x){var li=el("li"); li.appendChild(el("b",null,fmtD(x[0]))); li.appendChild(document.createTextNode(x[1])); ul.appendChild(li);});}
 [].forEach.call(document.querySelectorAll("[data-go]"),function(b){b.addEventListener("click",function(){$(b.getAttribute("data-go")).scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});});});
 
-update(); drawUp(); drawFilms(); drawLog();
+/* ---- Sync picks to the repo (works on the GitHub Pages copy; the claude.ai page cannot make outside calls) ---- */
+var GH={owner:"alvinthechipmunk123",repo:"index",path:"anime-picks.json"};
+var GHAPI="https://api.github.com/repos/"+GH.owner+"/"+GH.repo+"/contents/"+GH.path;
+var SYNC_ON=/\.github\.io$/.test(location.hostname)||location.protocol==="file:";
+var ghToken="", ghSha=null, ghBusy=false, ghDirty=false;
+function findToken(){try{var t=localStorage.getItem("anime-gh-token"); if(t)return t;
+  for(var i=0;i<localStorage.length;i++){var v=localStorage.getItem(localStorage.key(i))||""; if(/^(github_pat_|ghp_)[A-Za-z0-9_]+$/.test(v))return v;}}catch(e){} return "";}
+function ghHeaders(){var h={"Accept":"application/vnd.github+json"}; if(ghToken)h["Authorization"]="Bearer "+ghToken; return h;}
+function b64enc(str){return btoa(unescape(encodeURIComponent(str)));}
+function b64dec(b){return decodeURIComponent(escape(atob(b.replace(/\n/g,""))));}
+function setSync(txt,cls){var b=$("syncbtn"); b.textContent="\u2601 "+txt; b.className="chip sync"+(cls?" "+cls:""); $("syncnote").textContent=SYNC_ON?"Status: "+txt+".":"This copy cannot reach GitHub, so picks here stay in this browser. Open alvinthechipmunk123.github.io/index/anime.html and they save to the repo from there.";}
+function picks(){return {updated:S.ts||new Date().toISOString(),w:S.w,seen:S.seen,queue:S.queue,mine:S.mine};}
+function ghLoad(){return fetch(GHAPI+"?t="+Date.now(),{headers:ghHeaders(),cache:"no-store"}).then(function(r){
+  if(r.status===404){ghSha=null; return null;} if(!r.ok)throw new Error("GitHub "+r.status+(r.status===401?" (token?)":""));
+  return r.json().then(function(j){ghSha=j.sha; return JSON.parse(b64dec(j.content));});});}
+function ghPut(){var body={message:"anime: picks "+new Date().toISOString().slice(0,10),content:b64enc(JSON.stringify(picks(),null,1))}; if(ghSha)body.sha=ghSha;
+  return fetch(GHAPI,{method:"PUT",headers:Object.assign({"Content-Type":"application/json"},ghHeaders()),body:JSON.stringify(body)});}
+function ghSave(){
+  if(!SYNC_ON||!ghToken)return; if(ghBusy){ghDirty=true; return;} ghBusy=true; setSync("saving\u2026");
+  ghPut().then(function(r){ if(r.status===409||r.status===422)return ghLoad().then(function(){return ghPut();}); return r; })
+  .then(function(r){ if(!r.ok)throw new Error("GitHub "+r.status+(r.status===401||r.status===403?" (token?)":"")); return r.json(); })
+  .then(function(j){ghSha=j.content.sha; setSync("saved to git","ok");})
+  .catch(function(e){setSync("not saved: "+e.message,"warn");})
+  .then(function(){ghBusy=false; if(ghDirty){ghDirty=false; ghSave();}});
+}
+function ghRefresh(){
+  if(!SYNC_ON){setSync("browser only"); $("syncform").hidden=true; return;}
+  setSync("checking\u2026");
+  ghLoad().then(function(data){
+    if(data&&(!S.ts||data.updated>S.ts)){
+      if(data.w&&data.w.length===6)S.w=data.w; S.seen=data.seen||{}; S.queue=data.queue||{}; S.mine=data.mine||{}; S.ts=data.updated;
+      writeLocal(); update(); drawFilms(); setSync(ghToken?"synced with git":"loaded from git, add token to save",ghToken?"ok":"warn");
+    } else if(ghToken&&(!data||S.ts>data.updated)){ if(!S.ts)S.ts=new Date().toISOString(); ghSave(); }
+    else setSync(ghToken?"synced with git":"add token to save",ghToken?"ok":"warn");
+  }).catch(function(e){setSync("could not reach git: "+e.message,"warn");});
+}
+$("syncbtn").addEventListener("click",function(){var sh=$("syncsheet"); sh.hidden=!sh.hidden; $("syncbtn").setAttribute("aria-expanded",sh.hidden?"false":"true"); $("gh-token").value=ghToken;});
+$("gh-save").addEventListener("click",function(){ghToken=$("gh-token").value.trim(); try{localStorage.setItem("anime-gh-token",ghToken);}catch(e){} $("syncsheet").hidden=true; $("syncbtn").setAttribute("aria-expanded","false"); ghRefresh();});
+$("gh-forget").addEventListener("click",function(){ghToken=""; try{localStorage.removeItem("anime-gh-token");}catch(e){} $("gh-token").value=""; setSync("add token to save","warn");});
+ghToken=SYNC_ON?findToken():"";
+
+update(); drawUp(); drawFilms(); drawLog(); ghRefresh();
 say("Hello Alvin. I am Poko. Turn the dials, or tap me and I will pick tonight's show.");
 })();
 </script>
