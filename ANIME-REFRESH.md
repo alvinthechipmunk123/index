@@ -51,10 +51,19 @@ write-ups. Alvin wants every change dated so later rounds append instead of over
   is and name it in the log line as not re-checked. Never guess.
 - If the QC fails or the file would not parse, do not push. Report what went wrong.
 
-## Publishing
+## Publishing: ping Alvin first
 
-- Commit `anime.html` to `main` in `alvinthechipmunk123/index` with a message like
-  `anime: monthly refresh YYYY-MM-DD`.
-- Do not touch `anime-picks.json`; that file holds Alvin's own seen marks and scores.
-- Then update the claude.ai artifact at the URL above with the same page (read it first;
-  the artifact body is `anime.html` without the doctype, html, head and body wrapper tags).
+Alvin asked to be pinged before anything is pushed. So:
+
+1. Do all the checks and prepare the updated `anime.html` locally. Run the QC.
+2. Do NOT commit, push or republish yet.
+3. Send Alvin a short message listing exactly what would change (scores that moved,
+   dates that landed or shifted, streamer changes, anything not re-checked) and ask for
+   a yes. Then stop and wait for his reply in that session.
+4. Only after he says yes: commit `anime.html` to `main` in `alvinthechipmunk123/index`
+   with a message like `anime: monthly refresh YYYY-MM-DD`, then update the claude.ai
+   artifact at the URL above with the same page (read it first; the artifact body is
+   `anime.html` without the doctype, html, head and body wrapper tags).
+5. If he says no or asks for changes, do what he says instead.
+
+Never touch `anime-picks.json`; that file holds Alvin's own seen marks and scores.

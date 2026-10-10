@@ -29,7 +29,7 @@ button,input{font:inherit; color:inherit}
 
 /* scene */
 .scene{position:relative; overflow:hidden; border-radius:28px; border:2px solid var(--ink);
-  background:linear-gradient(var(--sky),var(--sky2) 70%); padding:24px 24px 0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,500px); gap:12px 24px; align-items:end; min-height:300px}
+  background:linear-gradient(var(--sky),var(--sky2) 70%); padding:18px 22px 0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,470px); gap:8px 24px; align-items:end; min-height:0}
 .sun{position:absolute; right:38%; top:-46px; width:130px; height:130px; border-radius:50%; background:var(--sun); opacity:.75}
 .cloud{position:absolute; height:26px; border-radius:26px; background:var(--white); opacity:.7; animation:drift 60s linear infinite}
 .cloud::before,.cloud::after{content:""; position:absolute; background:var(--white); border-radius:50%}
@@ -40,26 +40,26 @@ button,input{font:inherit; color:inherit}
 .c3{width:130px; top:54px; left:-20%; animation-duration:95s; animation-delay:-70s}
 @keyframes drift{to{transform:translateX(140vw)}}
 .hills{position:absolute; left:0; right:0; bottom:0; width:100%; height:46%; display:block}
-.titleblock{position:relative; align-self:start; display:grid; gap:10px; padding-bottom:20px}
+.titleblock{position:relative; align-self:start; display:grid; gap:7px; padding-bottom:16px}
 .kana{font:700 14px/1 var(--jp); color:var(--moss); letter-spacing:.14em}
-h1{font:700 clamp(34px,6.4vw,56px)/1 var(--display); margin:0; text-wrap:balance}
+h1{font:700 clamp(28px,5vw,44px)/1 var(--display); margin:0; text-wrap:balance}
 .tagline{margin:0; max-width:36ch; font-weight:600}
 .readout{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
-.stat{background:var(--card); border:2px solid var(--ink); border-radius:999px; padding:4px 12px; font:500 13px/1.3 var(--display); font-variant-numeric:tabular-nums}
+.stat{background:var(--card); border:1.5px solid var(--ink); border-radius:999px; padding:2px 10px; font:500 12.5px/1.3 var(--display); font-variant-numeric:tabular-nums}
 .stat b{font-weight:700}
-.poko{position:relative; display:grid; grid-template-columns:minmax(0,1fr) 210px; gap:6px; align-items:end}
-.bubble{position:relative; background:var(--card); border:2px solid var(--ink); border-radius:20px; padding:12px 14px; margin-bottom:120px; display:grid; grid-template-columns:minmax(0,1fr); gap:10px; min-width:0}
+.poko{position:relative; display:grid; grid-template-columns:minmax(0,1fr) 160px; gap:6px; align-items:end}
+.bubble{position:relative; background:var(--card); border:2px solid var(--ink); border-radius:20px; padding:10px 12px; margin-bottom:84px; display:grid; grid-template-columns:minmax(0,1fr); gap:10px; min-width:0}
 .bubble::after{content:""; position:absolute; right:-11px; bottom:22px; width:18px; height:18px; background:var(--card); border-right:2px solid var(--ink); border-top:2px solid var(--ink); transform:rotate(45deg)}
-.say{margin:0; min-height:3em; font:500 16px/1.4 var(--display)}
+.say{margin:0; min-height:2.7em; font:500 15px/1.35 var(--display)}
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%)}
 .ctl{display:grid; grid-template-columns:minmax(0,1fr); gap:8px}
 .moodrow{display:flex; align-items:center; gap:8px; font:600 13px var(--display); color:var(--moss); text-transform:uppercase; letter-spacing:.06em}
 .moodsel{flex:1; min-width:0; font:500 15px var(--display); color:var(--ink); background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:5px 10px}
 .acts2{display:flex; flex-wrap:wrap; gap:6px}
 .acts2 .sm{display:none}
-.bot{background:none; border:0; padding:0; cursor:pointer; display:block; width:210px; border-radius:24px; -webkit-tap-highlight-color:transparent}
+.bot{background:none; border:0; padding:0; cursor:pointer; display:block; width:160px; border-radius:24px; -webkit-tap-highlight-color:transparent}
 .bot svg{display:block; width:100%; height:auto; overflow:visible}
-.cat{position:absolute; left:2%; bottom:6px; width:124px; background:none; border:0; padding:0; cursor:pointer; border-radius:20px; -webkit-tap-highlight-color:transparent}
+.cat{position:absolute; left:2%; bottom:4px; width:98px; background:none; border:0; padding:0; cursor:pointer; border-radius:20px; -webkit-tap-highlight-color:transparent}
 .cat svg{display:block; width:100%; height:auto; overflow:visible}
 .cat .pom{transform-box:fill-box; transform-origin:0% 60%; animation:pom 1.6s ease-in-out infinite}
 @keyframes pom{50%{transform:rotate(-22deg)}}
@@ -82,7 +82,7 @@ h1{font:700 clamp(34px,6.4vw,56px)/1 var(--display); margin:0; text-wrap:balance
 
 /* controls */
 .console{display:grid; grid-template-columns:290px minmax(0,1fr); gap:20px; align-items:start}
-.deck{background:var(--card); border:2px solid var(--ink); border-radius:22px; padding:16px; display:grid; gap:18px; position:sticky; top:calc(env(safe-area-inset-top, 0px) + 12px)}
+.deck{background:var(--card); border:2px solid var(--ink); border-radius:22px; padding:14px; display:grid; gap:12px; position:sticky; top:calc(env(safe-area-inset-top, 0px) + 12px)}
 .label{font:600 13px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss); margin:0 0 10px}
 .sliders{display:grid; gap:8px}
 .sl{display:grid; grid-template-columns:1fr auto; gap:0 8px; align-items:center}
@@ -101,7 +101,7 @@ h1{font:700 clamp(34px,6.4vw,56px)/1 var(--display); margin:0; text-wrap:balance
 .filters summary .label{margin:0}
 .filters summary .label::before{content:"+ "; font-weight:700}
 .filters[open] summary .label::before{content:"\2212  "}
-#fsum{font-size:13.5px; color:var(--dim); text-align:right; min-width:0}
+#fsum,.fs{font-size:13.5px; color:var(--dim); text-align:right; min-width:0}
 .fbody{display:grid; gap:12px; padding-top:12px}
 .sub{font:600 12px/1 var(--display); letter-spacing:.05em; text-transform:uppercase; color:var(--dim); margin:0 0 6px}
 .search{width:100%; background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:8px 14px}
@@ -131,6 +131,7 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .main{display:grid; gap:2px; min-width:0}
 .t{font:600 19px/1.2 var(--display); display:flex; flex-wrap:wrap; gap:2px 10px; align-items:baseline}
 .t .jp{font:500 13px var(--jp); color:var(--dim)}
+.blurb{font-size:14.5px; line-height:1.35}
 .meta{font-size:13.5px; color:var(--dim)}
 .tags{display:flex; flex-wrap:wrap; gap:4px; margin-top:4px}
 .tag{font:500 11.5px/1 var(--display); letter-spacing:.03em; border:1.5px solid var(--line); border-radius:999px; padding:3px 8px; color:var(--dim); background:var(--white)}
@@ -211,15 +212,20 @@ footer p{margin:0 0 6px}
 @media (max-width:900px){
   .scene{grid-template-columns:minmax(0,1fr); padding:20px 16px 0; min-height:0}
   .titleblock{padding-bottom:4px}
-  .sun{right:-30px}
-  .poko{grid-template-columns:minmax(0,1fr) 132px}
-  .bot{width:132px}
-  .bubble{margin-bottom:64px}
+  .sun{right:-40px; top:-60px}
+  .tagline{display:none}
+  .scene{padding:14px 14px 0}
+  .jump{flex-wrap:nowrap; overflow-x:auto; padding-bottom:2px}
+  .jump .chip,.jump span{flex:none}
+  .chip.sync{margin-left:0}
+  .poko{grid-template-columns:minmax(0,1fr) 108px}
+  .bot{width:108px}
+  .bubble{margin-bottom:50px}
   .acts2{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .acts2 .chip{padding:5px 4px; text-align:center}
   .acts2 .lg{display:none}
   .acts2 .sm{display:inline}
-  .cat{width:78px; left:0; bottom:0}
+  .cat{width:62px; left:0; bottom:0}
   .console{grid-template-columns:minmax(0,1fr)}
   .deck{position:static}
   .sliders{grid-template-columns:1fr 1fr; gap:8px 16px}
@@ -248,7 +254,7 @@ footer p{margin:0 0 6px}
     <div class="titleblock">
       <div class="kana">アルヴィンのアニメリスト</div>
       <h1>Alvin's Anime List</h1>
-      <p class="tagline">Twenty-five recent shows, ranked live by your dials, with a robot to argue with.</p>
+      <p class="tagline">Twenty-five recent shows in fan order, or ranked by your own dials, with a robot to argue with.</p>
       <div class="readout" id="readout"></div>
     </div>
     <div class="poko">
@@ -350,10 +356,10 @@ footer p{margin:0 0 6px}
         <p class="label">Rank by</p>
         <div class="chips" id="sortby"></div>
       </section>
-      <section>
-        <p class="label">Dials</p>
-        <div class="sliders" id="sliders"></div>
-      </section>
+      <details class="filters" id="dialbox">
+        <summary><span class="label">Dials</span><span id="dsum" class="fs"></span></summary>
+        <div class="fbody"><div class="sliders" id="sliders"></div></div>
+      </details>
       <details class="filters" id="filters">
         <summary><span class="label">Filters</span><span id="fsum">none on</span></summary>
         <div class="fbody">
@@ -425,7 +431,7 @@ var D=[
  r:"Professional pride with no customers. I relate."},
 {id:"frieren",t:"Frieren: Beyond Journey's End",jp:"葬送のフリーレン",y:"2023–26",st:"Madhouse",ep:38,s:["CR","NF","HU"],a:[4,6,3,10,10,10],
  p:"An elf mage outlives the party that saved the world. She walks the same road again and realises, fifty years late, that those were her people.",
- f:"Nobody in it schemes. Put it on anyway. It is the best-made show of the decade, season 2 wrapped this spring, and it is the closest thing on TV to a Ghibli film that runs 38 episodes.",
+ f:"You have seen it, so it is marked. Season 2 wrapped this spring if you are behind, and season 3 is dated October 2027. It stays on the list as the fans\u2019 number one and the benchmark for the Ghibli-afternoon mood.",
  w:"Slow and quiet on purpose. The mage exam late in season 1 is where it shows its teeth.",
  r:"She needed fifty years to notice a feeling. I boot faster. Barely."},
 {id:"apoth",now:1,t:"The Apothecary Diaries",jp:"薬屋のひとりごと",y:"2023–",st:"Toho Animation × OLM",ep:49,s:["CR","NF","HU"],a:[9,1,5,8,7,9],
@@ -597,6 +603,8 @@ var D=[
  w:"13 episodes and a complete story.",
  r:"A deadline of thirty days. I have worked to tighter."}
 ];
+var BLURB={"apoc": "Robot staff keep a Tokyo hotel spotless a century after the humans left.", "frieren": "An immortal elf retraces her old quest and learns, late, what her friends meant to her.", "apoth": "A poison-obsessed pharmacist solves the imperial court's mysteries from the servants' quarters.", "nippon": "A careful civil servant sets out to reunify a collapsed Japan split into three kingdoms.", "dungeon": "A broke rescue party cooks and eats its way down a monster dungeon.", "witch": "A girl discovers that magic is drawn in ink, and that anyone could learn it.", "orb": "In the 1400s, one forbidden idea about the sky is passed from hand to hand.", "dandadan": "A ghost believer and an alien believer find out they are both right.", "spy": "A spy, an assassin and a telepath pretend to be a family. Only the kid knows.", "pluto": "A robot detective hunts whoever is destroying the world's greatest robots.", "kings": "A tiny deaf prince and his shadow friend against a court full of plotters.", "taxi": "A walrus cab driver whose fares all lead to one missing girl.", "daemons": "Twins who command paired spirits, and the hidden village that kept them apart.", "hell": "A ninja on death row is sent to a monstrous island to find the elixir of immortality.", "sakamoto": "A retired legendary hitman runs a corner shop. Old colleagues keep dropping in.", "oshi": "A murdered idol's twins climb through show business to find who did it.", "summer": "A time loop on a small island, played like chess against copies of the dead.", "tomo": "Five friends, one debt, and games built to make them betray each other.", "kongming": "China's greatest strategist wakes up in Shibuya and manages a singer's career.", "edge": "A street kid rebuilds himself with military hardware and joins Night City's mercenaries.", "jjk": "A schoolboy hosts the worst sorcerer in history and gets trained instead of executed.", "csm": "A boy buried in debt becomes a chainsaw devil on the government payroll.", "heaven": "Two teenagers cross ruined Japan looking for Heaven while other children grow up sealed away.", "liar": "An honest student and a swindler in a tournament of lies with real money on the table.", "tanya": "A ruthless salaryman reborn as a child officer in an alternate Great War.", "vinland": "A Viking boy's revenge story that turns into an argument about violence.", "herox": "Heroes whose power comes from public trust, ranked and traded like stocks.", "jwitch": "A reclusive novelist takes in her orphaned teenage niece.", "takopi": "A cheerful alien tries to fix a miserable child's life and cannot.", "hikaru": "His best friend came back from the mountain as something else.", "gachi": "A framed slum kid fights his way up from the pit where the city throws everything away.", "kaiju": "A 32-year-old monster cleaner turns into a monster and joins the force that hunts them.", "kimetsu": "A kind boy becomes a swordsman to cure his demon sister.", "solo": "The weakest monster hunter alive becomes the only one who can level up.", "lazarus": "Thirty days to find the man whose miracle drug is about to kill everyone."};
+D.forEach(function(d){d.b=BLURB[d.id]||"";});
 var MAIN=D.filter(function(d){return !d.bench;}), BENCH=D.filter(function(d){return d.bench;});
 
 /* MyAnimeList user score and number of ratings (thousands), first-season entry, read 10 Oct 2026 */
@@ -678,6 +686,7 @@ var FILMS=[
 ];
 /* Update log: newest first. Append a row per round. */
 var LOG=[
+ ["2026-10-10","Each show box now carries a one-line description. The list opens in fan-rating order, the dials fold away, and the header and control boxes are smaller. Frieren marked seen."],
  ["2026-10-10","Added the bench (ten more shows), trailer links, and a compact mood picker in Poko\u2019s bubble. Chainsaw Man and Jujutsu Kaisen marked seen. A monthly refresh is scheduled for the first of each month."],
  ["2026-10-10","Added music made in the browser (koto, drum, robot bleeps), Mochi the cat with her own cosy pick, and a tidier control panel with filters folded away. Removed the you-versus-the-crowd map."],
  ["2026-10-10","Added \u2601 Sync: seen marks, queue, scores and dials save to anime-picks.json in the index repo."],
@@ -688,8 +697,8 @@ var LOG=[
  ["2026-10-10","First edition."]
 ];
 var KEY="alvin-anime-v2";
-var S={w:MOODS[0].w.slice(),seen:{liar:1,tanya:1,csm:1,jjk:1},queue:{},svc:{},status:"all",q:"",sort:"dials",mine:{},len:0,ts:"",seed:2};
-function seed(){ if(!(S.seed>=2)){S.seen.csm=1; S.seen.jjk=1; delete S.queue.csm; delete S.queue.jjk; S.seed=2; return true;} return false; }
+var S={w:MOODS[0].w.slice(),seen:{liar:1,tanya:1,csm:1,jjk:1,frieren:1},queue:{},svc:{},status:"all",q:"",sort:"fans",mine:{},len:0,ts:"",seed:3};
+function seed(){ var ch=false; if(!(S.seed>=2)){S.seen.csm=1; S.seen.jjk=1; delete S.queue.csm; delete S.queue.jjk; ch=true;} if(!(S.seed>=3)){S.seen.frieren=1; delete S.queue.frieren; ch=true;} S.seed=3; return ch; }
 try{var sv=JSON.parse(localStorage.getItem(KEY)||"null"); if(sv){ if(sv.w&&sv.w.length===6)S.w=sv.w; if(sv.seen)S.seen=sv.seen; if(sv.queue)S.queue=sv.queue; if(sv.mine)S.mine=sv.mine; if(sv.ts)S.ts=sv.ts; S.seed=sv.seed||0; seed(); }}catch(e){}
 function writeLocal(){try{localStorage.setItem(KEY,JSON.stringify({w:S.w,seen:S.seen,queue:S.queue,mine:S.mine,ts:S.ts,seed:S.seed}));}catch(e){}}
 var syncT=null;
@@ -717,7 +726,7 @@ var outs=[],ins=[],dialT=null;
 KEYS.forEach(function(k,i){
   var w=el("div","sl"), lb=el("label",null,LABEL[k]), o=el("output"), inp=el("input");
   inp.type="range"; inp.min=0; inp.max=10; inp.step=1; inp.id="w-"+k; lb.htmlFor=inp.id; o.htmlFor=inp.id;
-  inp.addEventListener("input",function(){S.w[i]=+inp.value; save(); update();
+  inp.addEventListener("input",function(){S.w[i]=+inp.value; S.sort="dials"; save(); update();
     clearTimeout(dialT); dialT=setTimeout(function(){say(dialLine(i));},350);});
   w.appendChild(lb); w.appendChild(o); w.appendChild(inp); $("sliders").appendChild(w); outs.push(o); ins.push(inp);
 });
@@ -734,7 +743,7 @@ var moodRow=el("label","moodrow"); moodRow.appendChild(el("span",null,"Mood"));
 var moodSel=el("select","moodsel"); moodSel.id="moodsel";
 MOODS.forEach(function(m,i){var o=el("option",null,m.name); o.value=String(i); moodSel.appendChild(o);});
 var moodCustom=el("option",null,"My own dials"); moodCustom.value="custom"; moodCustom.disabled=true; moodSel.appendChild(moodCustom);
-moodSel.addEventListener("change",function(){var m=MOODS[+moodSel.value]; if(!m)return; S.w=m.w.slice(); save(); update(); wave(); say(m.line+" Top of the pile: "+byDials()[0].d.t+".");});
+moodSel.addEventListener("change",function(){var m=MOODS[+moodSel.value]; if(!m)return; S.w=m.w.slice(); S.sort="dials"; save(); update(); wave(); say(m.line+" Top of the pile: "+byDials()[0].d.t+".");});
 moodRow.appendChild(moodSel); $("moods").appendChild(moodRow);
 var acts2=el("div","acts2"); $("moods").appendChild(acts2);
 function btn2(id,lg,sm,fn,cls,toggle){var b=el("button","chip"+(cls?" "+cls:"")); b.type="button"; b.id=id; b.appendChild(el("span","lg",lg)); b.appendChild(el("span","sm",sm)); b.setAttribute("aria-label",lg); if(toggle)b.setAttribute("aria-pressed","false"); b.addEventListener("click",fn); acts2.appendChild(b); return b;}
@@ -745,7 +754,7 @@ var musicBtn=btn2("b-music","\u266A Music","\u266A Music",function(){toggleMusic
 $("bot").addEventListener("click",pick);
 var svcBtns={}; Object.keys(SVC).forEach(function(c){svcBtns[c]=chip($("svc"),SVC[c],function(){ if(S.svc[c])delete S.svc[c]; else S.svc[c]=1; update();});});
 var SORTS=[["dials","My dials"],["fans","Fan rating"]];
-var sortBtns=SORTS.map(function(s){return chip($("sortby"),s[1],function(){S.sort=s[0]; update(); say(s[0]==="fans"?"Fine. Democracy. "+rows.filter(function(r){return r.d.fr===1;})[0].d.t+" wins, as usual.":"Back to your dials. Sensible.");});});
+var sortBtns=SORTS.map(function(s){return chip($("sortby"),s[1],function(){S.sort=s[0]; if(s[0]==="dials")$("dialbox").open=true; update(); say(s[0]==="fans"?"Fine. Democracy. "+rows.filter(function(r){return r.d.fr===1;})[0].d.t+" wins, as usual.":"Back to your dials. Sensible.");});});
 var STAT=[["all","All 25"],["unseen","Not seen"],["queue","My queue"],["bots","Has robots"]];
 var statBtns=STAT.map(function(s){return chip($("status"),s[1],function(){S.status=s[0]; update(); if(s[0]==="bots")say("My people. Four of them, counting loosely.");});});
 var LENS=[[0,"Any"],[6,"Under 6 h"],[12,"Under 12 h"]];
@@ -787,7 +796,7 @@ function buildRow(d){
   var rank=el("span","rank"), main=el("span","main"), t=el("span","t");
   t.appendChild(el("span",null,d.t)); t.appendChild(el("span","jp",d.jp));
   var meta=el("span","meta",d.y+" · "+d.st+" · "+d.ep+" eps · ~"+fmtH(hours(d))+" h"), tags=el("span","tags");
-  main.appendChild(t); main.appendChild(meta); main.appendChild(tags);
+  main.appendChild(t); main.appendChild(el("span","blurb",d.b)); main.appendChild(meta); main.appendChild(tags);
   var sc=el("span","score"), pct=el("span","pct"), sig=el("span","sig"); sig.setAttribute("aria-hidden","true");
   for(var i=0;i<5;i++){var b=el("i"); b.style.height=Math.max(3,d.a[i]*2.2)+"px"; sig.appendChild(b);}
   var fan=el("span","fan"); fan.appendChild(el("b",null,"★")); fan.appendChild(document.createTextNode(" "+d.m.toFixed(2))); fan.title="MyAnimeList fan score";
@@ -855,7 +864,7 @@ function visible(r){
   return (!active.length||d.s.some(function(c){return S.svc[c];}))
     &&(S.status==="all"||(S.status==="unseen"&&!seen)||(S.status==="queue"&&q)||(S.status==="bots"&&d.bot))
     &&(!S.len||hours(d)<=S.len)
-    &&(!S.q||(d.t+" "+d.jp+" "+d.st+" "+d.y).toLowerCase().indexOf(S.q)>=0);
+    &&(!S.q||(d.t+" "+d.jp+" "+d.st+" "+d.y+" "+d.b).toLowerCase().indexOf(S.q)>=0);
 }
 function learn(){
   wave();
@@ -865,6 +874,7 @@ function learn(){
   var mr=0; ids.forEach(function(id){mr+=S.mine[id];}); mr/=n;
   var spread=0; ids.forEach(function(id){spread+=Math.abs(S.mine[id]-mr);});
   if(spread<0.5){say("You gave everything the same score. Give me something to work with."); return;}
+  S.sort="dials";
   for(var k=0;k<5;k++){
     var mt=0; ids.forEach(function(id){mt+=byId[id].a[k];}); mt/=n;
     var cov=0; ids.forEach(function(id){cov+=(S.mine[id]-mr)*(byId[id].a[k]-mt);}); cov/=n;
@@ -890,6 +900,7 @@ function pick(){
 function update(){
   ins.forEach(function(inp,i){inp.value=S.w[i]; outs[i].textContent=S.w[i];});
   var mi="custom"; MOODS.forEach(function(m,i){ if(m.w.join()===S.w.join())mi=String(i); }); moodSel.value=mi;
+  $("dsum").textContent=(mi==="custom"?"my own":MOODS[+mi].name)+(S.sort==="dials"?"":" · not ranking");
   Object.keys(svcBtns).forEach(function(c){svcBtns[c].setAttribute("aria-pressed",S.svc[c]?"true":"false");});
   statBtns.forEach(function(b,i){b.setAttribute("aria-pressed",STAT[i][0]===S.status?"true":"false");});
   lenBtns.forEach(function(b,i){b.setAttribute("aria-pressed",LENS[i][0]===S.len?"true":"false");});
@@ -1142,7 +1153,7 @@ $("gh-forget").addEventListener("click",function(){ghToken=""; try{localStorage.
 ghToken=SYNC_ON?findToken():"";
 
 update(); drawUp(); drawFilms(); drawLog(); ghRefresh();
-say("Hello Alvin. I am Poko. Turn the dials, or tap me and I will pick tonight's show.");
+say("Hello Alvin. I am Poko. The list starts in fan order. Tap me and I will pick tonight's show.");
 })();
 </script>
 
