@@ -5,21 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Anime List">
-<meta name="theme-color" content="#10173a">
+<meta name="theme-color" content="#050509">
 <title>Alvin's Anime List</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&family=Zen+Maru+Gothic:wght@500;700&display=swap">
 <style>
 /* Layout: a framed scene up top holds the title, Poko the robot and Mochi the cat; below, one filter bar drives a live-reordering list.
    Skin: night by default, after the meteor-shower night in Frieren (deep blue sky, violet horizon, pale moon, blue flowers). A day skin is kept as an option. */
 :root{
-  --bg:#141a30; --card:#1c2543; --surface:#253158; --ink:#e9ecf8; --dim:#a4aed2; --line:#35426e; --edge:#55659c;
-  --scene:linear-gradient(#10173a 0%,#252a66 55%,#51407f 100%); --sky:#2a376b; --sky2:#2b3462; --hill1:#23496b; --hill2:#183a52;
-  --moss:#8fdcc4; --leaf:#5fc7b0; --sun:#f1c45e; --rose:#f08d7c; --onacc:#101a33; --onsun:#27301f; --warnink:#f0c9a2;
-  --orb:#f6efd4; --glow:0 0 50px 12px rgba(246,239,212,.28); --cloud:rgba(210,220,255,.13); --bloom:#9fd4ff; --seenbg:#3b4d8c; --art:#22302c;
+  /* Jujutsu skin: near-black with cursed-energy blue (Infinity) and crimson (Sukuna), purple haze over a dark skyline */
+  --bg:#0b0b13; --card:#14141f; --surface:#1d1d2c; --ink:#ededf5; --dim:#9d9bb6; --line:#2a2a3f; --edge:#4b4b70;
+  --scene:linear-gradient(#050509 0%,#120f28 50%,#2b1446 100%); --sky:#242438; --sky2:#1a1a2b; --hill1:#1a1630; --hill2:#0d0b19;
+  --moss:#5fbcff; --leaf:#3d8fe0; --sun:#d8394b; --rose:#ff5d6c; --onacc:#0a0a14; --onsun:#ffffff; --warnink:#f0c9a2;
+  --orb:#eef0ff; --glow:0 0 60px 16px rgba(95,188,255,.3); --cloud:rgba(150,90,230,.16); --bloom:#7cc6ff; --seenbg:#27364f; --art:#22302c;
   --patina:#7dbcab; --patina2:#a5d3c5; --copper:#c8854e; --orange:#e9a04e; --cocoa:#5b4636; --white:#ffffff; --cream:#fffdf6;
   --display:"Fredoka","Arial Rounded MT Bold","Trebuchet MS",sans-serif;
   --body:"Nunito",-apple-system,"Segoe UI",Roboto,sans-serif;
   --jp:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+  color-scheme:dark;
+}
+:root[data-skin="night"]{
+  --bg:#141a30; --card:#1c2543; --surface:#253158; --ink:#e9ecf8; --dim:#a4aed2; --line:#35426e; --edge:#55659c;
+  --scene:linear-gradient(#10173a 0%,#252a66 55%,#51407f 100%); --sky:#2a376b; --sky2:#2b3462; --hill1:#23496b; --hill2:#183a52;
+  --moss:#8fdcc4; --leaf:#5fc7b0; --sun:#f1c45e; --rose:#f08d7c; --onacc:#101a33; --onsun:#27301f; --warnink:#f0c9a2;
+  --orb:#f6efd4; --glow:0 0 50px 12px rgba(246,239,212,.28); --cloud:rgba(210,220,255,.13); --bloom:#9fd4ff; --seenbg:#3b4d8c; --art:#22302c;
   color-scheme:dark;
 }
 :root[data-skin="day"]{
@@ -37,14 +45,16 @@ button,input{font:inherit; color:inherit}
 :focus-visible{outline:3px solid var(--rose); outline-offset:2px}
 
 /* scene */
-.scene{position:relative; overflow:hidden; border-radius:28px; border:2px solid var(--edge);
-  background:var(--scene); padding:18px 22px 0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,470px); gap:8px 24px; align-items:end; min-height:0}
+.scene{position:relative; overflow:hidden; min-height:0; padding-right:26px; border-radius:28px; border:2px solid var(--edge);
+  background:var(--scene); padding:12px 18px 0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,560px); gap:6px 18px; align-items:end; min-height:0}
 .sun{position:absolute; right:38%; top:-46px; width:130px; height:130px; border-radius:50%; background:var(--orb); box-shadow:var(--glow); opacity:.9}
 .stars{position:absolute; inset:0 0 40% 0; opacity:.9; background-image:radial-gradient(1.4px 1.4px at 8% 22%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 17% 61%,#fff 50%,transparent 51%),radial-gradient(1.6px 1.6px at 26% 12%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 33% 44%,#fff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 44% 9%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 52% 52%,#fff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 63% 18%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 71% 68%,#fff 50%,transparent 51%),radial-gradient(1.3px 1.3px at 79% 30%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 88% 8%,#fff 50%,transparent 51%),radial-gradient(1.4px 1.4px at 94% 47%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 3% 78%,#fff 50%,transparent 51%)}
 .meteor{position:absolute; width:90px; height:2px; border-radius:2px; background:linear-gradient(90deg,rgba(255,255,255,0),#fff); opacity:0; transform:rotate(-28deg); animation:meteor 9s linear infinite}
 .me1{top:14%; left:30%} .me2{top:6%; left:62%; animation-delay:3.4s; animation-duration:11s} .me3{top:26%; left:8%; animation-delay:6.1s; animation-duration:13s}
 @keyframes meteor{0%{opacity:0; transform:translate(60px,-34px) rotate(-28deg)} 4%{opacity:.95} 12%{opacity:0; transform:translate(-120px,62px) rotate(-28deg)} 100%{opacity:0; transform:translate(-120px,62px) rotate(-28deg)}}
 :root[data-skin="day"] .stars,:root[data-skin="day"] .meteor{display:none}
+:root:not([data-skin]) .meteor{background:linear-gradient(90deg,rgba(95,188,255,0),#9fd8ff)}
+:root:not([data-skin]) .sun{opacity:.8; width:84px; height:84px; top:-14px; right:44%}
 .cloud{position:absolute; height:26px; border-radius:26px; background:var(--cloud); animation:drift 60s linear infinite}
 .cloud::before,.cloud::after{content:""; position:absolute; background:inherit; border-radius:50%}
 .cloud::before{width:34px; height:34px; left:16px; top:-16px}
@@ -54,26 +64,30 @@ button,input{font:inherit; color:inherit}
 .c3{width:130px; top:54px; left:-20%; animation-duration:95s; animation-delay:-70s}
 @keyframes drift{to{transform:translateX(140vw)}}
 .hills{position:absolute; left:0; right:0; bottom:0; width:100%; height:46%; display:block}
-.titleblock{position:relative; align-self:start; display:grid; gap:7px; padding-bottom:16px}
+.titleblock{position:relative; align-self:start; display:grid; gap:5px; padding-bottom:10px}
+.tagline{display:none}
 .kana{font:700 14px/1 var(--jp); color:var(--moss); letter-spacing:.14em}
-h1{font:700 clamp(28px,5vw,44px)/1 var(--display); margin:0; text-wrap:balance}
+h1{font:700 clamp(24px,4vw,34px)/1 var(--display); margin:0; text-wrap:balance}
 .tagline{margin:0; max-width:36ch; font-weight:600}
-.readout{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
-.stat{background:var(--card); border:1.5px solid var(--edge); border-radius:999px; padding:2px 10px; font:500 12.5px/1.3 var(--display); font-variant-numeric:tabular-nums}
+.readout{display:flex; flex-wrap:wrap; gap:2px 10px; margin-top:2px; font:500 12.5px/1.4 var(--display); color:var(--dim)}
+.stat{font-variant-numeric:tabular-nums; color:var(--ink)}
+.stat b{color:var(--moss)}
 .stat b{font-weight:700}
-.poko{position:relative; display:grid; grid-template-columns:minmax(0,1fr) 160px; gap:6px; align-items:end}
-.bubble{position:relative; background:var(--card); border:2px solid var(--edge); border-radius:20px; padding:10px 12px; margin-bottom:84px; display:grid; grid-template-columns:minmax(0,1fr); gap:10px; min-width:0}
+.poko{position:relative; display:grid; grid-template-columns:minmax(0,1fr) 124px; gap:6px; align-items:end}
+.bubble{position:relative; background:var(--card); border:2px solid var(--edge); border-radius:20px; padding:8px 10px; margin-bottom:50px; display:grid; grid-template-columns:minmax(0,1fr); gap:10px; min-width:0}
 .bubble::after{content:""; position:absolute; right:-11px; bottom:22px; width:18px; height:18px; background:var(--card); border-right:2px solid var(--edge); border-top:2px solid var(--edge); transform:rotate(45deg)}
-.say{margin:0; min-height:2.7em; font:500 15px/1.35 var(--display)}
+.say{margin:0; min-height:2.6em; font:500 13.5px/1.3 var(--display)}
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%)}
-.ctl{display:grid; grid-template-columns:minmax(0,1fr); gap:8px}
-.moodrow{display:flex; align-items:center; gap:8px; font:600 13px var(--display); color:var(--moss); text-transform:uppercase; letter-spacing:.06em}
-.moodsel{flex:1; min-width:0; font:500 15px var(--display); color:var(--ink); background:var(--surface); border:2px solid var(--edge); border-radius:999px; padding:5px 10px}
-.acts2{display:flex; flex-wrap:wrap; gap:6px}
-.acts2 .sm{display:none}
-.bot{background:none; border:0; padding:0; cursor:pointer; display:block; width:160px; border-radius:24px; -webkit-tap-highlight-color:transparent}
+.ctl{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.moodrow{display:flex; align-items:center; gap:6px; font:600 11px var(--display); color:var(--moss); text-transform:uppercase; letter-spacing:.06em; flex:1 1 150px; min-width:0}
+.moodsel{flex:1; min-width:0; font:500 13px var(--display); color:var(--ink); background:var(--surface); border:2px solid var(--edge); border-radius:999px; padding:3px 8px}
+.acts2{display:flex; flex-wrap:wrap; gap:5px}
+.acts2 .chip{padding:3px 9px; font-size:12.5px}
+.acts2 .lg{display:none}
+.acts2 .sm{display:inline}
+.bot{background:none; border:0; padding:0; cursor:pointer; display:block; width:124px; border-radius:24px; -webkit-tap-highlight-color:transparent}
 .bot svg{display:block; width:100%; height:auto; overflow:visible}
-.cat{position:absolute; left:2%; bottom:4px; width:98px; background:none; border:0; padding:0; cursor:pointer; border-radius:20px; -webkit-tap-highlight-color:transparent}
+.cat{position:absolute; left:2%; bottom:2px; width:74px; background:none; border:0; padding:0; cursor:pointer; border-radius:20px; -webkit-tap-highlight-color:transparent}
 .cat svg{display:block; width:100%; height:auto; overflow:visible}
 .cat .pom{transform-box:fill-box; transform-origin:0% 60%; animation:pom 1.6s ease-in-out infinite}
 @keyframes pom{50%{transform:rotate(-22deg)}}
@@ -96,13 +110,14 @@ h1{font:700 clamp(28px,5vw,44px)/1 var(--display); margin:0; text-wrap:balance}
 
 /* controls */
 .console{display:grid; grid-template-columns:minmax(0,1fr); gap:14px; align-items:start}
-.deck{background:var(--card); border:2px solid var(--edge); border-radius:22px; padding:12px 14px; display:grid; grid-template-columns:minmax(0,1.5fr) repeat(4,minmax(0,1fr)) auto; gap:10px 12px; align-items:end}
+.deck{background:var(--card); border:2px solid var(--edge); border-radius:18px; padding:8px 10px; display:grid; grid-template-columns:minmax(0,1.3fr) repeat(4,minmax(0,1fr)) auto; gap:6px 8px; align-items:center}
 .fld{display:grid; gap:4px; min-width:0}
 .fld label{font:600 12px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss)}
 .fld.end{align-self:end}
-.dd{width:100%; min-width:0; font:500 15px var(--display); color:var(--ink); background:var(--surface); border:2px solid var(--edge); border-radius:999px; padding:7px 10px}
+.dd{width:100%; min-width:0; font:500 13.5px var(--display); color:var(--ink); background:var(--surface); border:2px solid var(--edge); border-radius:999px; padding:5px 8px}
 .dd.on{background:var(--moss); color:var(--onacc)}
-.deck .filters{grid-column:1/-1}
+.deck .filters{grid-column:1/-1; font-size:12px}
+.deck .filters .label{font-size:12px}
 .label{font:600 13px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss); margin:0 0 10px}
 .sliders{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 22px}
 .sl{display:grid; grid-template-columns:1fr auto; gap:0 8px; align-items:center}
@@ -115,7 +130,7 @@ h1{font:700 clamp(28px,5vw,44px)/1 var(--display); margin:0; text-wrap:balance}
 .chip[aria-pressed="true"]{background:var(--moss); color:var(--onacc)}
 .chip.go{background:var(--sun); color:var(--onsun)}
 .chip.go:hover{background:var(--leaf)}
-.filters{border-top:2px dashed var(--line); padding-top:12px}
+.filters{border-top:2px dashed var(--line); padding-top:6px}
 .filters summary{cursor:pointer; list-style:none; display:flex; gap:8px; align-items:baseline; justify-content:space-between; border-radius:8px}
 .filters summary::-webkit-details-marker{display:none}
 .filters summary .label{margin:0}
@@ -124,7 +139,7 @@ h1{font:700 clamp(28px,5vw,44px)/1 var(--display); margin:0; text-wrap:balance}
 #fsum,.fs{font-size:13.5px; color:var(--dim); text-align:right; min-width:0}
 .fbody{display:grid; gap:12px; padding-top:12px}
 .sub{font:600 12px/1 var(--display); letter-spacing:.05em; text-transform:uppercase; color:var(--dim); margin:0 0 6px}
-.search{width:100%; min-width:0; background:var(--surface); border:2px solid var(--edge); border-radius:999px; padding:7px 14px}
+.search{width:100%; min-width:0; font-size:14px; background:var(--surface); border:2px solid var(--edge); border-radius:999px; padding:5px 12px}
 .search::placeholder{color:var(--dim)}
 
 main{display:grid; gap:12px; min-width:0}
@@ -258,19 +273,15 @@ footer p{margin:0 0 6px}
   .scene{grid-template-columns:minmax(0,1fr); padding:20px 16px 0; min-height:0}
   .titleblock{padding-bottom:4px}
   .sun{right:-40px; top:-60px}
-  .tagline{display:none}
-  .scene{padding:14px 14px 0}
+  .scene{padding:12px 12px 0}
   .jump{flex-wrap:nowrap; overflow-x:auto; padding-bottom:2px}
   .jump .chip,.jump span{flex:none}
   .chip.sync{margin-left:0}
-  .poko{grid-template-columns:minmax(0,1fr) 108px}
-  .bot{width:108px}
-  .bubble{margin-bottom:50px}
-  .acts2{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-  .acts2 .chip{padding:5px 4px; text-align:center}
-  .acts2 .lg{display:none}
-  .acts2 .sm{display:inline}
-  .cat{width:62px; left:0; bottom:0}
+  .poko{grid-template-columns:minmax(0,1fr) 92px}
+  .bot{width:92px}
+  .bubble{margin-bottom:36px}
+  .moodrow{flex-basis:100%}
+  .cat{width:54px; left:0; bottom:0}
   .deck{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .fld.grow{grid-column:1/-1}
   .fld.end{grid-column:1/-1}
@@ -400,11 +411,11 @@ footer p{margin:0 0 6px}
 
   <div class="console">
     <aside class="deck" aria-label="Controls">
-      <div class="fld grow"><label for="q">Find</label><input class="search" id="q" type="search" placeholder="title, studio, year" autocomplete="off"></div>
-      <div class="fld"><label for="sel-sort">Rank by</label><select class="dd" id="sel-sort"></select></div>
-      <div class="fld"><label for="sel-svc">Streaming on</label><select class="dd" id="sel-svc"></select></div>
-      <div class="fld"><label for="sel-status">Show</label><select class="dd" id="sel-status"></select></div>
-      <div class="fld"><label for="sel-len">Length</label><select class="dd" id="sel-len"></select></div>
+      <div class="fld grow"><input class="search" id="q" type="search" placeholder="Find a show" aria-label="Find a show" autocomplete="off"></div>
+      <div class="fld"><select class="dd" id="sel-sort" aria-label="Rank by"></select></div>
+      <div class="fld"><select class="dd" id="sel-svc" aria-label="Streaming on"></select></div>
+      <div class="fld"><select class="dd" id="sel-status" aria-label="Show"></select></div>
+      <div class="fld"><select class="dd" id="sel-len" aria-label="Length"></select></div>
       <div class="fld end"><button class="chip" type="button" id="fclear" hidden>Clear</button></div>
       <details class="filters" id="dialbox">
         <summary><span class="label">Dials</span><span id="dsum" class="fs"></span></summary>
@@ -753,6 +764,7 @@ var READ_DATE="2026-10-10", READ=[["More demand than hands", "Netflix’s anime 
 var STN={c:"Confirmed",r:"Reported",u:"Rumour"};
 /* Update log: newest first. Append a row per round. */
 var LOG=[
+ ["2026-10-10","Jujutsu theme (black, cursed-energy blue, crimson) is now the default, with Frieren night and Day behind the theme button. Header and filter bar cut to about half their height."],
  ["2026-10-10","New night theme after the meteor-shower night in Frieren: deep blue sky, moon, shooting stars and blue flowers. The day theme is still there behind a switch."],
  ["2026-10-10","Added the Insider wire (34 sourced items with a four-point read), Ahead of the curve (15 items), insider notes on the shows they concern, and a News button on Poko. Filters became dropdowns in one bar. Coming up corrected: Solo Leveling continues as a film, Jujutsu Kaisen has a new director, Fool Night is dated 26 November."],
  ["2026-10-10","Each show box now carries a one-line description. The list opens in fan-rating order, the dials fold away, and the header and control boxes are smaller. Frieren marked seen."],
@@ -822,11 +834,11 @@ btn2("b-learn","Learn my taste","Learn",learn,"");
 btn2("b-news","Insider news","News",function(){gossip();},"");
 var musicBtn=btn2("b-music","\u266A Music","\u266A Music",function(){toggleMusic();},"",true);
 $("bot").addEventListener("click",pick);
-var SORTS=[["fans","Fan rating"],["dials","My dials"]];
-var STAT=[["all","Everything"],["unseen","Not seen"],["queue","My queue"],["bots","Has robots"]];
-var LENS=[[0,"Any length"],[6,"Under 6 hours"],[12,"Under 12 hours"]];
+var SORTS=[["fans","Rank: fans"],["dials","Rank: my dials"]];
+var STAT=[["all","Show: all"],["unseen","Show: not seen"],["queue","Show: my queue"],["bots","Show: robots"]];
+var LENS=[[0,"Any length"],[6,"Under 6 h"],[12,"Under 12 h"]];
 function fillSel(id,opts){var sel=$(id); opts.forEach(function(o){var op=el("option",null,o[1]); op.value=String(o[0]); sel.appendChild(op);}); return sel;}
-var selSort=fillSel("sel-sort",SORTS), selSvc=fillSel("sel-svc",[["","Anywhere"]].concat(Object.keys(SVC).map(function(c){return [c,SVC[c]];}))), selStatus=fillSel("sel-status",STAT), selLen=fillSel("sel-len",LENS);
+var selSort=fillSel("sel-sort",SORTS), selSvc=fillSel("sel-svc",[["","Streaming: any"]].concat(Object.keys(SVC).map(function(c){return [c,SVC[c]];}))), selStatus=fillSel("sel-status",STAT), selLen=fillSel("sel-len",LENS);
 selSort.addEventListener("change",function(){S.sort=selSort.value; if(S.sort==="dials")$("dialbox").open=true; update(); say(S.sort==="fans"?"Fine. Democracy. "+rows.filter(function(r){return r.d.fr===1&&!r.d.bench;})[0].d.t+" wins, as usual.":"Back to your dials. Sensible.");});
 selSvc.addEventListener("change",function(){S.svc={}; if(selSvc.value)S.svc[selSvc.value]=1; update();});
 selStatus.addEventListener("change",function(){S.status=selStatus.value; update(); if(S.status==="bots")say("My people. Four of them, counting loosely.");});
@@ -1263,16 +1275,18 @@ $("gh-forget").addEventListener("click",function(){ghToken=""; try{localStorage.
 ghToken=SYNC_ON?findToken():"";
 
 /* ---- skin: night (default) or day; remembered per device ---- */
-var skin="night"; try{skin=localStorage.getItem("anime-skin")||"night";}catch(e){}
-function applySkin(talk){ if(skin==="day")document.documentElement.setAttribute("data-skin","day"); else document.documentElement.removeAttribute("data-skin");
-  $("skinbtn").textContent=skin==="day"?"\u263E Night":"\u2600 Day"; $("skinbtn").setAttribute("aria-label",skin==="day"?"Switch to the night theme":"Switch to the day theme");
-  var m=document.querySelector('meta[name="theme-color"]'); if(m)m.setAttribute("content",skin==="day"?"#bfe3f2":"#10173a");
-  if(talk)say(skin==="day"?"Daylight. I can see my moss again.":"Night. Watch for the meteor shower. It only comes round every fifty years."); }
-$("skinbtn").addEventListener("click",function(){skin=skin==="day"?"night":"day"; try{localStorage.setItem("anime-skin",skin);}catch(e){} applySkin(true);});
+var SKINS=[["jjk","Jujutsu","\u2727 Jujutsu","#050509","Cursed energy. Keep your hands where I can see them."],["night","Frieren night","\u263E Frieren night","#10173a","Night. Watch for the meteor shower. It only comes round every fifty years."],["day","Day","\u2600 Day","#bfe3f2","Daylight. I can see my moss again."]];
+var skin="jjk"; try{skin=localStorage.getItem("anime-skin")||"jjk";}catch(e){} if(!SKINS.some(function(k){return k[0]===skin;}))skin="jjk";
+function applySkin(talk){ var i=SKINS.findIndex(function(k){return k[0]===skin;}), cur=SKINS[i], nxt=SKINS[(i+1)%SKINS.length];
+  if(skin==="jjk")document.documentElement.removeAttribute("data-skin"); else document.documentElement.setAttribute("data-skin",skin);
+  $("skinbtn").textContent=nxt[2]; $("skinbtn").setAttribute("aria-label","Switch to the "+nxt[1]+" theme");
+  var m=document.querySelector('meta[name="theme-color"]'); if(m)m.setAttribute("content",cur[3]);
+  if(talk)say(cur[4]); }
+$("skinbtn").addEventListener("click",function(){var i=SKINS.findIndex(function(k){return k[0]===skin;}); skin=SKINS[(i+1)%SKINS.length][0]; try{localStorage.setItem("anime-skin",skin);}catch(e){} applySkin(true);});
 applySkin(false);
 
 update(); drawUp(); drawFilms(); drawLog(); drawRead(); drawWire(); drawRadar(); ghRefresh();
-say("Hello Alvin. I am Poko. The list starts in fan order. Tap me and I will pick tonight's show.");
+say("Hello Alvin. Fan order. Tap me for tonight's pick.");
 })();
 </script>
 
