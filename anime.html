@@ -48,10 +48,15 @@ h1{font:700 clamp(34px,6.4vw,56px)/1 var(--display); margin:0; text-wrap:balance
 .stat{background:var(--card); border:2px solid var(--ink); border-radius:999px; padding:4px 12px; font:500 13px/1.3 var(--display); font-variant-numeric:tabular-nums}
 .stat b{font-weight:700}
 .poko{position:relative; display:grid; grid-template-columns:minmax(0,1fr) 210px; gap:6px; align-items:end}
-.bubble{position:relative; background:var(--card); border:2px solid var(--ink); border-radius:20px; padding:12px 14px; margin-bottom:120px; display:grid; gap:10px}
+.bubble{position:relative; background:var(--card); border:2px solid var(--ink); border-radius:20px; padding:12px 14px; margin-bottom:120px; display:grid; grid-template-columns:minmax(0,1fr); gap:10px; min-width:0}
 .bubble::after{content:""; position:absolute; right:-11px; bottom:22px; width:18px; height:18px; background:var(--card); border-right:2px solid var(--ink); border-top:2px solid var(--ink); transform:rotate(45deg)}
 .say{margin:0; min-height:3em; font:500 16px/1.4 var(--display)}
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%)}
+.ctl{display:grid; grid-template-columns:minmax(0,1fr); gap:8px}
+.moodrow{display:flex; align-items:center; gap:8px; font:600 13px var(--display); color:var(--moss); text-transform:uppercase; letter-spacing:.06em}
+.moodsel{flex:1; min-width:0; font:500 15px var(--display); color:var(--ink); background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:5px 10px}
+.acts2{display:flex; flex-wrap:wrap; gap:6px}
+.acts2 .sm{display:none}
 .bot{background:none; border:0; padding:0; cursor:pointer; display:block; width:210px; border-radius:24px; -webkit-tap-highlight-color:transparent}
 .bot svg{display:block; width:100%; height:auto; overflow:visible}
 .cat{position:absolute; left:2%; bottom:6px; width:124px; background:none; border:0; padding:0; cursor:pointer; border-radius:20px; -webkit-tap-highlight-color:transparent}
@@ -118,7 +123,11 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .head{width:100%; background:none; border:0; text-align:left; cursor:pointer; padding:12px 14px; display:grid; grid-template-columns:44px minmax(0,1fr) auto; gap:12px; align-items:center}
 .head:hover{background:var(--sky2)}
 .rank{width:44px; height:44px; border-radius:50%; border:2px solid var(--ink); display:grid; place-items:center; font:600 18px/1 var(--display); font-variant-numeric:tabular-nums; background:var(--white)}
-.row:nth-child(-n+3) .rank{background:var(--sun)}
+.row.top3 .rank{background:var(--sun)}
+.row.bench .rank{font-size:15px; background:var(--sky2)}
+.benchdiv{padding:18px 4px 4px}
+.benchdiv h3{font:600 22px/1.2 var(--display); margin:0 0 2px}
+.benchdiv p{margin:0; color:var(--dim); font-size:14.5px; max-width:70ch}
 .main{display:grid; gap:2px; min-width:0}
 .t{font:600 19px/1.2 var(--display); display:flex; flex-wrap:wrap; gap:2px 10px; align-items:baseline}
 .t .jp{font:500 13px var(--jp); color:var(--dim)}
@@ -206,6 +215,10 @@ footer p{margin:0 0 6px}
   .poko{grid-template-columns:minmax(0,1fr) 132px}
   .bot{width:132px}
   .bubble{margin-bottom:64px}
+  .acts2{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .acts2 .chip{padding:5px 4px; text-align:center}
+  .acts2 .lg{display:none}
+  .acts2 .sm{display:inline}
   .cat{width:78px; left:0; bottom:0}
   .console{grid-template-columns:minmax(0,1fr)}
   .deck{position:static}
@@ -242,7 +255,7 @@ footer p{margin:0 0 6px}
       <div class="bubble">
         <p class="say" id="say" aria-hidden="true"></p>
         <span class="sr" id="saysr" aria-live="polite"></span>
-        <div class="chips" id="moods"></div>
+        <div class="ctl" id="moods"></div>
       </div>
       <button class="cat" id="cat" type="button" aria-label="Mochi the cat. Tap for a cosy pick.">
         <svg viewBox="0 0 124 112" aria-hidden="true">
@@ -306,6 +319,7 @@ footer p{margin:0 0 6px}
   <nav class="jump" aria-label="Sections">
     <span>Jump to</span>
     <button class="chip" type="button" data-go="list">The 25</button>
+    <button class="chip" type="button" data-go="benchdiv">Bench</button>
     <button class="chip" type="button" data-go="coming">Coming up</button>
     <button class="chip" type="button" data-go="films">Films</button>
     <button class="chip" type="button" data-go="fans">Fan board</button>
@@ -507,13 +521,13 @@ var D=[
  r:"Too many upgrades is bad for you. Noted, nervously."},
 {id:"jjk",t:"Jujutsu Kaisen",jp:"呪術廻戦",y:"2020–",st:"MAPPA",ep:59,s:["CR","NF","HU","PV"],a:[4,10,8,7,5,9],
  p:"A high-schooler swallows a cursed finger and becomes host to the worst sorcerer in history. The people who should execute him decide to train him first.",
- f:"The best fight animation running. Season 3's Culling Game is a rules-heavy battle royale, which is as close as it gets to your kind of plotting.",
+ f:"You have seen it, so it is marked. If you stopped at Shibuya, season 3 part 1 aired January to March 2026: the Culling Game, a rules-heavy battle royale and the closest the show gets to your kind of plotting.",
  w:"Watch the film Jujutsu Kaisen 0 between seasons 1 and 2. Season 3 part 2 has no date yet.",
  r:"He ate a finger. Humans are a hazard."},
 {id:"csm",t:"Chainsaw Man",jp:"チェンソーマン",y:"2022",st:"MAPPA",ep:12,s:["CR","HU"],a:[5,9,9,7,7,9],
  p:"A boy drowning in his dead father's yakuza debt fuses with his pet devil and becomes a man with a chainsaw for a head. A government agency hires him for the price of breakfast.",
- f:"A debt story at heart. The kid is so poor that toast with jam is a life goal, and his handler knows it. It is shot like a film.",
- w:"12 episodes, then the 2025 film Reze Arc picks up directly.",
+ f:"You have seen it, so it is marked. What is left for you is the 2025 film, Reze Arc, which fans rate above the series, and the Assassins Arc that follows it.",
+ w:"The film is in the Films section and streams on Crunchyroll.",
  r:"His best friend is a chainsaw dog. Mine is a toaster."},
 {id:"heaven",t:"Heavenly Delusion",jp:"天国大魔境",y:"2023",st:"Production I.G",ep:13,s:["HU"],bot:1,a:[7,6,8,9,7,7],
  p:"Fifteen years after the world ended, two teenagers cross ruined Japan looking for a place called Heaven. Elsewhere, children grow up in a sealed, spotless school staffed by robots.",
@@ -529,15 +543,69 @@ var D=[
  p:"A ruthless salaryman is reborn as a little girl in a not-quite-Germany at war and climbs the officer ranks purely to spite the god who put him there.",
  f:"Also yours already. It is on the list because season 2 started in July 2026, nine years after the first, in case that slipped past you.",
  w:"The 2019 film sits between the two seasons.",
- r:"HR violations in every episode."}
+ r:"HR violations in every episode."},
+/* ----- the bench: added 2026-10-10 ----- */
+{id:"vinland",bench:1,added:"2026-10-10",t:"Vinland Saga",jp:"ヴィンランド・サガ",y:"2019–23",st:"Wit → MAPPA",ep:48,s:["CR","NF","HU","PV","HD"],a:[5,8,9,8,9,0],
+ p:"A boy joins the Viking band that killed his father so he can earn a duel with its leader. Season 2 asks what comes after revenge.",
+ f:"Off the 25 only for its age; it started in 2019. Askeladd is the best schemer in anime, a Littlefinger who can fight, and fans have him within a few thousand favourites of the hero.",
+ w:"Season 1 is war. Season 2 is a slow farm drama by design. Both are the point.",
+ r:"A Viking who learns to put the knife down. I never picked one up. Ahead of the curve."},
+{id:"herox",bench:1,added:"2026-10-10",t:"To Be Hero X",jp:"凸变英雄X",y:"2025",st:"BeDream",ep:24,s:["CR"],a:[7,9,6,9,7,0],
+ p:"Heroes get their powers from how much the public believes in them. The rankings are everything, and reputations get managed like share prices.",
+ f:"A Chinese production and the surprise of 2025. Trust works as a currency that can be pumped, shorted and wiped out, and each arc follows a different hero through it. The animation style changes to match.",
+ w:"24 episodes on Crunchyroll. Each hero's arc starts fresh, so give a new one two episodes.",
+ r:"Power from public approval. I run on mains."},
+{id:"jwitch",bench:1,added:"2026-10-10",t:"Journal with Witch",jp:"違国日記",y:"2026",st:"Shuka",ep:13,s:["CR"],a:[2,0,4,5,10,0],
+ p:"A reclusive novelist of 35 takes in her 15-year-old niece after the girl's parents die in a car accident. Neither of them is good at this.",
+ f:"No magic, whatever the title says, and no plot devices. Two people working out how to live in the same flat. For the Mad Men viewer who liked the quiet episodes best.",
+ w:"13 episodes, January to March 2026, on Crunchyroll.",
+ r:"Nobody fights. Nobody schemes. I was riveted. Diagnostics found nothing wrong."},
+{id:"takopi",bench:1,added:"2026-10-10",t:"Takopi's Original Sin",jp:"タコピーの原罪",y:"2025",st:"Enishiya",ep:6,s:["CR","NF"],a:[4,0,10,5,9,0],
+ p:"A cheerful pink alien lands on Earth to spread happiness and befriends a girl who never smiles. Its gadgets cannot fix what is wrong at her home or her school, and it keeps trying.",
+ f:"Six episodes and the hardest watch on this page. It looks like a children's cartoon and it is about cruelty between children. Fans rate it above almost everything here.",
+ w:"Not a comfort pick. It deals directly with bullying and the death of a child. Save it for a night you are up for that.",
+ r:"It wanted to help and did not understand how. I think about that one."},
+{id:"hikaru",bench:1,added:"2026-10-10",t:"The Summer Hikaru Died",jp:"光が死んだ夏",y:"2025",st:"CygamesPictures",ep:12,s:["NF"],a:[5,2,9,7,8,0],
+ p:"In a mountain village, a boy's best friend comes back from a week missing in the hills. It looks like him and remembers everything. It is not him, and the boy decides to keep it anyway.",
+ f:"Slow rural horror about grief. Almost no plot mechanics, all dread and cicadas. It is the least like what you usually pick, which is the reason to try it.",
+ w:"12 episodes on Netflix. A second season is announced with no date.",
+ r:"A copy that insists it is the original. I have no comment."},
+{id:"gachi",bench:1,added:"2026-10-10",t:"Gachiakuta",jp:"ガチアクタ",y:"2025",st:"Bones Film",ep:24,s:["CR"],a:[4,9,7,9,6,0],
+ p:"A boy from the slums is framed for murder and thrown off the edge of the city into the pit where everything unwanted goes. Down there, people fight with objects that were cared for long enough to wake up.",
+ f:"Best New Series at this year's Crunchyroll awards. Graffiti-styled and loud, built on a class system you can read from the first scene.",
+ w:"24 episodes on Crunchyroll.",
+ r:"Objects that gain a soul through care. Please keep maintaining me."},
+{id:"kaiju",bench:1,added:"2026-10-10",t:"Kaiju No. 8",jp:"怪獣8号",y:"2024–25",st:"Production I.G",ep:23,s:["CR"],a:[3,9,5,7,7,0],
+ p:"A 32-year-old who cleans up dead monsters for a living swallows a small one and becomes the thing the Defense Force exists to kill. He enlists anyway.",
+ f:"The rare action lead who is over thirty and tired. Well made and easy to watch between heavier shows.",
+ w:"23 episodes over two seasons on Crunchyroll. A final arc is announced with no date.",
+ r:"A man whose second career started at thirty-two. There is hope for everyone."},
+{id:"kimetsu",bench:1,added:"2026-10-10",t:"Demon Slayer",jp:"鬼滅の刃",y:"2019–",st:"ufotable",ep:63,s:["NF","CR","HU"],a:[2,10,7,7,8,0],
+ p:"A boy comes home to find his family slaughtered by a demon and his sister turned into one. He trains as a swordsman to find a cure.",
+ f:"The most watched show on this page by a distance, with the best-looking sword fights anywhere. The story is simple and sincere. It is on the bench because nobody in it schemes at all.",
+ w:"63 episodes, then the Infinity Castle films finish the story. The first of those won Film of the Year in 2026.",
+ r:"Very polite boy. Terrifying sword."},
+{id:"solo",bench:1,added:"2026-10-10",t:"Solo Leveling",jp:"俺だけレベルアップな件",y:"2024–25",st:"A-1 Pictures",ep:25,s:["CR"],a:[3,10,6,6,3,0],
+ p:"The weakest monster hunter in Korea nearly dies in a dungeon and wakes up as the only person who can level up, like a game character.",
+ f:"The biggest hit of the last two years and Anime of the Year 2025. It is a pure power fantasy with almost no plotting, which is why it sits down here. The fights are superb.",
+ w:"25 episodes over two seasons on Crunchyroll.",
+ r:"He gets stronger every episode. I get an update twice a year."},
+{id:"lazarus",bench:1,added:"2026-10-10",t:"Lazarus",jp:"ラザロ",y:"2025",st:"MAPPA",ep:13,s:[],a:[6,8,6,7,4,0],
+ sn:"HBO Max, and Adult Swim free with ads.",
+ p:"A miracle painkiller the whole world took turns out to kill everyone who used it, three years on. Its inventor has vanished, and a team of five has thirty days to find him.",
+ f:"From the director of Cowboy Bebop, with action designed by the director of John Wick. Fans were cool on it: the style is all there and the story is thin. It is here for your science-fiction request, with that warning attached.",
+ w:"13 episodes and a complete story.",
+ r:"A deadline of thirty days. I have worked to tighter."}
 ];
+var MAIN=D.filter(function(d){return !d.bench;}), BENCH=D.filter(function(d){return d.bench;});
 
 /* MyAnimeList user score and number of ratings (thousands), first-season entry, read 10 Oct 2026 */
-var FAN={apoc:[8.01,30],frieren:[9.25,943],apoth:[8.84,516],nippon:[8.52,51],dungeon:[8.58,320],witch:[8.47,206],orb:[8.72,132],dandadan:[8.38,634],spy:[8.40,1193],pluto:[8.44,117],kings:[8.48,408],taxi:[8.62,257],daemons:[7.80,76],hell:[8.08,550],sakamoto:[7.58,256],oshi:[8.52,641],summer:[8.46,302],tomo:[7.70,267],kongming:[8.08,162],edge:[8.62,761],jjk:[8.49,2058],csm:[8.42,1193],heaven:[8.20,302],liar:[6.86,19],tanya:[7.96,581]};
+var FAN={apoc:[8.01,30],frieren:[9.25,943],apoth:[8.84,516],nippon:[8.52,51],dungeon:[8.58,320],witch:[8.47,206],orb:[8.72,132],dandadan:[8.38,634],spy:[8.40,1193],pluto:[8.44,117],kings:[8.48,408],taxi:[8.62,257],daemons:[7.80,76],hell:[8.08,550],sakamoto:[7.58,256],oshi:[8.52,641],summer:[8.46,302],tomo:[7.70,267],kongming:[8.08,162],edge:[8.62,761],jjk:[8.49,2058],csm:[8.42,1193],heaven:[8.20,302],liar:[6.86,19],tanya:[7.96,581],
+ vinland:[8.78,1097],herox:[8.66,122],jwitch:[8.71,48],takopi:[8.74,200],hikaru:[8.02,130],gachi:[8.20,256],kaiju:[8.19,442],kimetsu:[8.39,2409],solo:[8.13,746],lazarus:[7.19,83]};
 D.forEach(function(d){d.m=FAN[d.id][0]; d.v=FAN[d.id][1]; d.a[5]=Math.max(0,Math.min(10,(d.m-6.8)/2.5*10));});
-D.slice().sort(function(a,b){return b.m-a.m;}).forEach(function(d,i){d.fr=i+1;});
+[MAIN,BENCH].forEach(function(g){g.slice().sort(function(a,b){return b.m-a.m;}).forEach(function(d,i){d.fr=i+1;});});
 function fmtV(v){return v>=1000?(v/1000).toFixed(2).replace(/0$/,"")+" million":v+",000";}
-var MALID={apoc:59675,frieren:52991,apoth:54492,nippon:63375,dungeon:52701,witch:51553,orb:52215,dandadan:57334,spy:50265,pluto:35737,kings:40834,taxi:46102,daemons:62001,hell:46569,sakamoto:58939,oshi:52034,summer:47194,tomo:50273,kongming:50380,edge:42310,jjk:40748,csm:44511,heaven:53393,liar:62331,tanya:32615};
+var MALID={apoc:59675,frieren:52991,apoth:54492,nippon:63375,dungeon:52701,witch:51553,orb:52215,dandadan:57334,spy:50265,pluto:35737,kings:40834,taxi:46102,daemons:62001,hell:46569,sakamoto:58939,oshi:52034,summer:47194,tomo:50273,kongming:50380,edge:42310,jjk:40748,csm:44511,heaven:53393,liar:62331,tanya:32615,vinland:37521,herox:53447,jwitch:58788,takopi:60489,hikaru:58913,gachi:59062,kaiju:52588,kimetsu:38000,solo:52299,lazarus:56038};
 var FIND={CR:"https://www.crunchyroll.com/search?q=",NF:"https://www.netflix.com/search?q=",HU:"https://www.hulu.com/search?q=",PV:"https://www.amazon.com/s?i=instant-video&k=",HD:"https://www.hidive.com/search?q="};
 /* ===== Dated data. To append later: add rows with their own date; nothing here needs rewriting. ===== */
 var FIRST="2026-10-10", EDITION="2026-10-10";
@@ -545,12 +613,17 @@ var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"
 function fmtD(iso){var p=iso.split("-"); return p.length===3?(+p[2])+" "+MON[p[1]-1]+" "+p[0]:(p.length===2?MON[p[1]-1]+" "+p[0]:p[0]);}
 D.forEach(function(d){ if(!d.added)d.added=FIRST; });
 /* fan favourite characters: [name, favourites, runner-up, favourites]; MyAnimeList, read 2026-10-10 */
-var CHAR={apoc:["Yachiyo",196,"Ponko",20],frieren:["Frieren",33071,"Fern",6041],apoth:["Maomao",26460,"Jinshi",3320],nippon:["Aoteru Misumi",143,"Yoshitsune Asama",34],dungeon:["Marcille",2888,"Laios",2613],witch:["Qifrey",2008,"Coco",1374],orb:["Rafal",780,"Badeni",627],dandadan:["Momo Ayase",4910,"Ken Takakura",2420],spy:["Anya Forger",15462,"Yor Forger",12010],pluto:["Gesicht",958,"Epsilon",282],kings:["Bojji",5334,"Kage",758],taxi:["Odokawa",1417,"Yano",276],daemons:["Yuru",93,"Hidari",76],hell:["Gabimaru",3374,"Sagiri",1445],sakamoto:["Yoichi Nagumo",1114,"Osaragi",733],oshi:["Kana Arima",9426,"Ai Hoshino",8110],summer:["Shinpei",1228,"Ushio",1110],tomo:["Yuichi Katagiri",5721,"Kei Shinomiya",277],kongming:["Eiko Tsukimi",957,"Kongming",732],edge:["Lucy",8320,"Rebecca",5236],jjk:["Satoru Gojo",64367,"Yuji Itadori",17994],csm:["Denji",23504,"Power",23474],heaven:["Kiruko",755,"Maru",289],liar:["Shinichi Akiyama",1597,"Nao Kanzaki",212],tanya:["Tanya",14548,"Viktoriya Serebryakov",552]};
+var CHAR={apoc:["Yachiyo",196,"Ponko",20],frieren:["Frieren",33071,"Fern",6041],apoth:["Maomao",26460,"Jinshi",3320],nippon:["Aoteru Misumi",143,"Yoshitsune Asama",34],dungeon:["Marcille",2888,"Laios",2613],witch:["Qifrey",2008,"Coco",1374],orb:["Rafal",780,"Badeni",627],dandadan:["Momo Ayase",4910,"Ken Takakura",2420],spy:["Anya Forger",15462,"Yor Forger",12010],pluto:["Gesicht",958,"Epsilon",282],kings:["Bojji",5334,"Kage",758],taxi:["Odokawa",1417,"Yano",276],daemons:["Yuru",93,"Hidari",76],hell:["Gabimaru",3374,"Sagiri",1445],sakamoto:["Yoichi Nagumo",1114,"Osaragi",733],oshi:["Kana Arima",9426,"Ai Hoshino",8110],summer:["Shinpei",1228,"Ushio",1110],tomo:["Yuichi Katagiri",5721,"Kei Shinomiya",277],kongming:["Eiko Tsukimi",957,"Kongming",732],edge:["Lucy",8320,"Rebecca",5236],jjk:["Satoru Gojo",64367,"Yuji Itadori",17994],csm:["Denji",23504,"Power",23474],heaven:["Kiruko",755,"Maru",289],liar:["Shinichi Akiyama",1597,"Nao Kanzaki",212],tanya:["Tanya",14548,"Viktoriya Serebryakov",552],
+ vinland:["Thorfinn",36245,"Askeladd",30705],herox:["X",1744,"Queen",318],jwitch:["Makio Kodai",926,"Asa Takumi",125],takopi:["Takopi",1197,"Shizuka Kuze",392],hikaru:["Yoshiki",1198,"Hikaru",1159],gachi:["Enjin",1016,"Rudo",976],kaiju:["Soshiro Hoshina",1263,"Kafka Hibino",838],kimetsu:["Tanjiro Kamado",25387,"Zenitsu Agatsuma",16837],solo:["Sung Jin-woo",19092,"Cha Hae-in",3600],lazarus:["Axel Gilberto",120,"Eleina",34]};
 var AWARD={
  apoth:"2026: Best Drama, Best Director and Best Main Character (Maomao).",
  dandadan:"2026: Best Comedy and Best Opening. 2025: Best Character Design, Best Anime Song and Best Opening.",
  frieren:"2025: Best Drama, Best Director, Best Background Art and Best Supporting Character (Fern).",
  spy:"Anya has won the \u201cMust Protect at All Costs\u201d character award three years running, 2024 to 2026. Also Best Slice of Life 2026 and Best Comedy 2024.",
+ gachi:"2026: Best New Series, Best Character Design and Best Background Art.",
+ solo:"Anime of the Year 2025. 2026: Best Animation and Best Action.",
+ kimetsu:"The Infinity Castle film won Film of the Year 2026.",
+ lazarus:"Best Original Anime 2026.",
  jjk:"Anime of the Year 2024 for season 2, with Best Action, Best Director and Best Supporting Character (Gojo).",
  csm:"Best New Series 2024. The Reze Arc film\u2019s theme won Best Anime Song 2026.",
  oshi:"Best Anime Song 2024 for \u201cIdol\u201d.",
@@ -558,6 +631,11 @@ var AWARD={
  apoc:"Seiun Award 2026 for Best Media. Anime News Network readers voted it the most underrated anime of 2025."};
 /* Coming up. d = date as YYYY-MM-DD, YYYY-MM or YYYY; no d = announced, undated. chk = day checked. */
 var UP=[
+ {t:"Vinland Saga, season 3",k:"New season",id:"vinland",n:"Listed as coming, no date.",chk:"2026-10-10"},
+ {t:"Demon Slayer: Infinity Castle, second film",k:"Film",id:"kimetsu",n:"The middle film of three. No date.",chk:"2026-10-10"},
+ {t:"Solo Leveling, season 3",k:"New season",id:"solo",n:"Listed for 2027 or 2028.",chk:"2026-10-10"},
+ {t:"Kaiju No. 8, final arc",k:"Final season",id:"kaiju",n:"Announced, no date.",chk:"2026-10-10"},
+ {t:"The Summer Hikaru Died, season 2",k:"New season",id:"hikaru",n:"Announced after the season 1 finale. No date.",chk:"2026-10-10"},
  {d:"2026-10-02",t:"The Apothecary Diaries, season 3",k:"New season",on:"Crunchyroll",id:"apoth",n:"New episode each week. It runs in two halves; the second starts April 2027.",chk:"2026-10-10"},
  {d:"2026-10-20",t:"Cyberpunk: Edgerunners 2",k:"New series",on:"Netflix",id:"edge",n:"Ten episodes. A separate story with a new cast: a young film obsessive documenting Night City. It topped the fan poll for most anticipated show of the season.",chk:"2026-10-10"},
  {d:"2026-10",t:"FX Fighter Kurumi-chan",k:"New series",on:"Crunchyroll",n:"Not on your list, and aimed straight at you. A student starts trading currencies on margin to win back the 20 million yen her mother lost in the 2008 crash. Early wins, then the market does what it does.",chk:"2026-10-10"},
@@ -600,18 +678,20 @@ var FILMS=[
 ];
 /* Update log: newest first. Append a row per round. */
 var LOG=[
+ ["2026-10-10","Added the bench (ten more shows), trailer links, and a compact mood picker in Poko\u2019s bubble. Chainsaw Man and Jujutsu Kaisen marked seen. A monthly refresh is scheduled for the first of each month."],
  ["2026-10-10","Added music made in the browser (koto, drum, robot bleeps), Mochi the cat with her own cosy pick, and a tidier control panel with filters folded away. Removed the you-versus-the-crowd map."],
  ["2026-10-10","Added \u2601 Sync: seen marks, queue, scores and dials save to anime-picks.json in the index repo."],
- ["2026-10-10","Added Coming up (18 dated and undated releases), nine films, the fan board, fan-favourite characters and awards on every show, and this log. Liar Game corrected to 26 episodes."],
+ ["2026-10-10","Added Coming up (dated and undated releases), nine films, the fan board, fan-favourite characters and awards on every show, and this log. Liar Game corrected to 26 episodes."],
  ["2026-10-10","Added the you-versus-the-crowd map, your own scores, Learn my taste, the time filter and watch links."],
  ["2026-10-10","Added fan ratings from MyAnimeList, the rank-by-fans switch and the fan-rating dial."],
  ["2026-10-10","Rebuilt in daylight with Poko. List moved to recent shows, 25 new write-ups."],
  ["2026-10-10","First edition."]
 ];
 var KEY="alvin-anime-v2";
-var S={w:MOODS[0].w.slice(),seen:{liar:1,tanya:1},queue:{},svc:{},status:"all",q:"",sort:"dials",mine:{},len:0,ts:""};
-try{var sv=JSON.parse(localStorage.getItem(KEY)||"null"); if(sv){ if(sv.w&&sv.w.length===6)S.w=sv.w; if(sv.seen)S.seen=sv.seen; if(sv.queue)S.queue=sv.queue; if(sv.mine)S.mine=sv.mine; if(sv.ts)S.ts=sv.ts; }}catch(e){}
-function writeLocal(){try{localStorage.setItem(KEY,JSON.stringify({w:S.w,seen:S.seen,queue:S.queue,mine:S.mine,ts:S.ts}));}catch(e){}}
+var S={w:MOODS[0].w.slice(),seen:{liar:1,tanya:1,csm:1,jjk:1},queue:{},svc:{},status:"all",q:"",sort:"dials",mine:{},len:0,ts:"",seed:2};
+function seed(){ if(!(S.seed>=2)){S.seen.csm=1; S.seen.jjk=1; delete S.queue.csm; delete S.queue.jjk; S.seed=2; return true;} return false; }
+try{var sv=JSON.parse(localStorage.getItem(KEY)||"null"); if(sv){ if(sv.w&&sv.w.length===6)S.w=sv.w; if(sv.seen)S.seen=sv.seen; if(sv.queue)S.queue=sv.queue; if(sv.mine)S.mine=sv.mine; if(sv.ts)S.ts=sv.ts; S.seed=sv.seed||0; seed(); }}catch(e){}
+function writeLocal(){try{localStorage.setItem(KEY,JSON.stringify({w:S.w,seen:S.seen,queue:S.queue,mine:S.mine,ts:S.ts,seed:S.seed}));}catch(e){}}
 var syncT=null;
 function save(){S.ts=new Date().toISOString(); writeLocal(); clearTimeout(syncT); syncT=setTimeout(function(){ghSave();},1500);}
 
@@ -650,11 +730,18 @@ function dialLine(i){
 }
 /* chips */
 function chip(parent,text,fn,cls){var b=el("button","chip"+(cls?" "+cls:""),text); b.type="button"; if(!cls)b.setAttribute("aria-pressed","false"); b.addEventListener("click",fn); parent.appendChild(b); return b;}
-var moodBtns=MOODS.map(function(m){return chip($("moods"),m.name,function(){S.w=m.w.slice(); save(); update(); wave(); say(m.line+" Top of the pile: "+byDials()[0].d.t+".");});});
-chip($("moods"),"Learn my taste",learn,"learn");
-chip($("moods"),"Pick for me",pick,"go");
-chip($("moods"),"Pick a film",pickFilm,"go");
-var musicBtn=chip($("moods"),"\u266A Music",function(){toggleMusic();});
+var moodRow=el("label","moodrow"); moodRow.appendChild(el("span",null,"Mood"));
+var moodSel=el("select","moodsel"); moodSel.id="moodsel";
+MOODS.forEach(function(m,i){var o=el("option",null,m.name); o.value=String(i); moodSel.appendChild(o);});
+var moodCustom=el("option",null,"My own dials"); moodCustom.value="custom"; moodCustom.disabled=true; moodSel.appendChild(moodCustom);
+moodSel.addEventListener("change",function(){var m=MOODS[+moodSel.value]; if(!m)return; S.w=m.w.slice(); save(); update(); wave(); say(m.line+" Top of the pile: "+byDials()[0].d.t+".");});
+moodRow.appendChild(moodSel); $("moods").appendChild(moodRow);
+var acts2=el("div","acts2"); $("moods").appendChild(acts2);
+function btn2(id,lg,sm,fn,cls,toggle){var b=el("button","chip"+(cls?" "+cls:"")); b.type="button"; b.id=id; b.appendChild(el("span","lg",lg)); b.appendChild(el("span","sm",sm)); b.setAttribute("aria-label",lg); if(toggle)b.setAttribute("aria-pressed","false"); b.addEventListener("click",fn); acts2.appendChild(b); return b;}
+btn2("b-pick","Pick a show","Show",pick,"go");
+btn2("b-film","Pick a film","Film",pickFilm,"go");
+btn2("b-learn","Learn my taste","Learn",learn,"");
+var musicBtn=btn2("b-music","\u266A Music","\u266A Music",function(){toggleMusic();},"",true);
 $("bot").addEventListener("click",pick);
 var svcBtns={}; Object.keys(SVC).forEach(function(c){svcBtns[c]=chip($("svc"),SVC[c],function(){ if(S.svc[c])delete S.svc[c]; else S.svc[c]=1; update();});});
 var SORTS=[["dials","My dials"],["fans","Fan rating"]];
@@ -740,7 +827,7 @@ function fillDetail(r){
   function fact(a,b){dl.appendChild(el("dt",null,a)); dl.appendChild(el("dd",null,b));}
   var gap=d.fr-r.dr;
   fact("Fans", d.m.toFixed(2)+" / 10 from "+fmtV(d.v)+" ratings");
-  fact("Ranks", "Your dials #"+r.dr+", fans #"+d.fr+" of 25."+(gap>=7?" You would back it harder than the crowd does.":(gap<=-7?" The crowd likes it more than your dials do.":"")));
+  fact("Ranks", "Your dials #"+r.dr+", fans #"+d.fr+(d.bench?" of 10 on the bench.":" of 25.")+(gap>=7?" You would back it harder than the crowd does.":(gap<=-7?" The crowd likes it more than your dials do.":"")));
   var ch=CHAR[d.id]; fact("Fan favourite", ch[0]+", "+ch[1].toLocaleString("en-US")+" favourites. Then "+ch[2]+", "+ch[3].toLocaleString("en-US")+".");
   if(AWARD[d.id])fact("Awards", AWARD[d.id]);
   var nx=UP.filter(function(u){return u.id===d.id;}).map(function(u){return u.t+" ("+(u.d?fmtD(u.d):"no date yet")+")";});
@@ -752,14 +839,17 @@ function fillDetail(r){
   side.appendChild(dl);
   var links=el("div","links"), qs=encodeURIComponent(d.t);
   d.s.forEach(function(c){var a=el("a","chip","Open on "+SVC[c]+" ↗"); a.href=FIND[c]+qs; a.target="_blank"; a.rel="noopener"; links.appendChild(a);});
+  var tr=el("a","chip","Trailer ↗"); tr.href="https://www.youtube.com/results?search_query="+encodeURIComponent(d.t+" anime trailer"); tr.target="_blank"; tr.rel="noopener"; links.appendChild(tr);
   var am=el("a","chip","Fan page ↗"); am.href="https://myanimelist.net/anime/"+MALID[d.id]; am.target="_blank"; am.rel="noopener"; links.appendChild(am);
   side.appendChild(links);
   det.appendChild(copy); det.appendChild(side);
 }
 var rows=D.map(buildRow);
+var benchDiv=el("li","benchdiv"); benchDiv.id="benchdiv"; benchDiv.appendChild(el("h3",null,"The bench")); benchDiv.appendChild(el("p",null,"Ten more, added "+fmtD("2026-10-10")+" and ranked by the same dials. The big hits I left off the 25, plus some that only just missed."));
 var lastOrder="";
-function byDials(){rows.forEach(function(r){r.sc=score(r.d);}); return rows.slice().sort(function(a,b){return b.sc-a.sc || b.d.m-a.d.m || a.d.t.localeCompare(b.d.t);});}
-function sortedRows(){var dl=byDials(); dl.forEach(function(r,i){r.dr=i+1;}); return S.sort==="fans"?rows.slice().sort(function(a,b){return a.d.fr-b.d.fr;}):dl;}
+function grp(cmp){return rows.filter(function(r){return !r.d.bench;}).sort(cmp).concat(rows.filter(function(r){return r.d.bench;}).sort(cmp));}
+function byDials(){rows.forEach(function(r){r.sc=score(r.d);}); var dl=grp(function(a,b){return b.sc-a.sc || b.d.m-a.d.m || a.d.t.localeCompare(b.d.t);}); var n=0,m=0; dl.forEach(function(r){r.dr=r.d.bench?++m:++n;}); return dl;}
+function sortedRows(){var dl=byDials(); return S.sort==="fans"?grp(function(a,b){return a.d.fr-b.d.fr;}):dl;}
 function visible(r){
   var d=r.d, seen=!!S.seen[d.id], q=!!S.queue[d.id], active=Object.keys(S.svc);
   return (!active.length||d.s.some(function(c){return S.svc[c];}))
@@ -787,7 +877,7 @@ function openRow(r){rows.forEach(function(x){ if(x!==r&&x.open)setOpen(x,false);
 var lastPick=null;
 function pick(){
   wave();
-  var pool=byDials().filter(function(r){return visible(r)&&!S.seen[r.d.id];}).slice(0,6);
+  var pool=byDials().filter(function(r){return visible(r)&&!S.seen[r.d.id]&&!r.d.bench;}).slice(0,6);
   if(pool.length>1)pool=pool.filter(function(r){return r!==lastPick;});
   if(!pool.length){say("You have seen everything I am allowed to show you. Loosen a filter."); return;}
   var r=pool[Math.floor(Math.random()*pool.length)]; lastPick=r;
@@ -799,7 +889,7 @@ function pick(){
 
 function update(){
   ins.forEach(function(inp,i){inp.value=S.w[i]; outs[i].textContent=S.w[i];});
-  moodBtns.forEach(function(b,i){b.setAttribute("aria-pressed",MOODS[i].w.join()===S.w.join()?"true":"false");});
+  var mi="custom"; MOODS.forEach(function(m,i){ if(m.w.join()===S.w.join())mi=String(i); }); moodSel.value=mi;
   Object.keys(svcBtns).forEach(function(c){svcBtns[c].setAttribute("aria-pressed",S.svc[c]?"true":"false");});
   statBtns.forEach(function(b,i){b.setAttribute("aria-pressed",STAT[i][0]===S.status?"true":"false");});
   lenBtns.forEach(function(b,i){b.setAttribute("aria-pressed",LENS[i][0]===S.len?"true":"false");});
@@ -810,14 +900,14 @@ function update(){
   var first=null;
   if(order!==lastOrder){
     if(lastOrder&&!reduce){first=new Map(); rows.forEach(function(r){ if(!r.el.hidden)first.set(r,r.el.getBoundingClientRect().top);});}
-    sorted.forEach(function(r){list.appendChild(r.el);}); lastOrder=order;
+    sorted.forEach(function(r,i){ if(r.d.bench&&!sorted[i-1].d.bench)list.appendChild(benchDiv); list.appendChild(r.el);}); lastOrder=order;
   }
   var shown=0;
   sorted.forEach(function(r,i){
     var d=r.d, seen=!!S.seen[d.id], q=!!S.queue[d.id];
-    r.rank.textContent=i+1;
+    var pos=(S.sort==="fans"?d.fr:r.dr), lab=(d.bench?"B":"")+pos; r.rank.textContent=lab; r.el.classList.toggle("bench",!!d.bench); r.el.classList.toggle("top3",!d.bench&&pos<=3);
     r.pct.textContent=Math.round(r.sc); r.pct.appendChild(el("small",null,"%"));
-    r.head.setAttribute("aria-label","Rank "+(i+1)+", "+d.t+", "+Math.round(r.sc)+" percent match, fan score "+d.m.toFixed(2));
+    r.head.setAttribute("aria-label",(d.bench?"Bench rank ":"Rank ")+pos+", "+d.t+", "+Math.round(r.sc)+" percent match, fan score "+d.m.toFixed(2));
     r.tags.textContent="";
     if(q)r.tags.appendChild(el("span","tag queue","Queued"));
     if(seen)r.tags.appendChild(el("span","tag seen",S.mine[d.id]?"Seen · you gave it "+S.mine[d.id]:"Seen"));
@@ -830,7 +920,7 @@ function update(){
     var ok=visible(r); r.el.hidden=!ok; if(ok)shown++;
     if(r.open)fillDetail(r);
   });
-  $("empty").hidden=shown>0;
+  $("empty").hidden=shown>0; benchDiv.hidden=!rows.some(function(r){return r.d.bench&&!r.el.hidden;});
   var on=Object.keys(S.svc).map(function(c){return SVC[c];});
   if(S.status!=="all")on.push(STAT.filter(function(x){return x[0]===S.status;})[0][1]);
   if(S.len)on.push(LENS.filter(function(x){return x[0]===S.len;})[0][1]);
@@ -847,9 +937,9 @@ function update(){
   $("needle").style.transform="rotate("+(-90+top*1.8)+"deg)"; $("gauge").textContent=top;
   /* readout */
   var totH=0,seenN=0,qN=0,qH=0;
-  D.forEach(function(d){totH+=hours(d); if(S.seen[d.id])seenN++; if(S.queue[d.id]){qN++; qH+=hours(d);}});
+  MAIN.forEach(function(d){totH+=hours(d); if(S.seen[d.id])seenN++; if(S.queue[d.id]){qN++; qH+=hours(d);}});
   var ro=$("readout"); ro.textContent="";
-  [[D.length,"shows"],[Math.round(totH),"hours"],[seenN,"seen"],[qN+(qN?" ("+Math.round(qH)+" h)":""),"queued"],["Edition",fmtD(EDITION)]]
+  [[MAIN.length,"shows"],[BENCH.length,"on the bench"],[Math.round(totH),"hours"],[seenN,"seen"],[qN+(qN?" ("+Math.round(qH)+" h)":""),"queued"],["Edition",fmtD(EDITION)]]
     .forEach(function(x){var s=el("span","stat"); s.appendChild(el("b",null,String(x[0]))); s.appendChild(document.createTextNode(" "+x[1])); ro.appendChild(s);});
 }
 /* eyes follow the pointer */
@@ -867,7 +957,7 @@ var cpupils=[].slice.call(document.querySelectorAll(".cpupil"));
 var lastCat=null;
 $("cat").addEventListener("click",function(){
   var c=$("cat"); c.classList.remove("hop"); void c.offsetWidth; c.classList.add("hop"); sfx("meow");
-  var pool=rows.filter(function(r){return visible(r)&&!S.seen[r.d.id];}).sort(function(a,b){return (b.d.a[3]+b.d.a[4])-(a.d.a[3]+a.d.a[4]);}).slice(0,5);
+  var pool=rows.filter(function(r){return visible(r)&&!S.seen[r.d.id]&&!r.d.bench;}).sort(function(a,b){return (b.d.a[3]+b.d.a[4])-(a.d.a[3]+a.d.a[4]);}).slice(0,5);
   if(pool.length>1)pool=pool.filter(function(r){return r!==lastCat;});
   if(!pool.length){say("Mochi looked at your filters and went back to sleep."); return;}
   var r=pool[Math.floor(Math.random()*pool.length)]; lastCat=r; openRow(r);
@@ -953,7 +1043,7 @@ function drawUp(){
     var what=el("div","what"), ttl;
     if(u.id){ttl=el("button","ttl",u.t); ttl.type="button"; ttl.addEventListener("click",function(){var r=rows.filter(function(x){return x.d.id===u.id;})[0]; if(r){ if(r.el.hidden){S.svc={}; S.status="all"; S.len=0; S.q=""; $("q").value=""; update();} openRow(r);} });}
     else ttl=el("span","ttl",u.t);
-    var tg=el("span","tags"); tg.appendChild(el("span","tag",u.k)); tg.appendChild(el("span","tag "+(u.id?"robo":"now"),u.id?"On your list":"New to you")); if(u.on)tg.appendChild(el("span","tag",u.on));
+    var tg=el("span","tags"); tg.appendChild(el("span","tag",u.k)); tg.appendChild(el("span","tag "+(u.id?"robo":"now"),u.id?(BENCH.some(function(d){return d.id===u.id;})?"On the bench":"On your list"):"New to you")); if(u.on)tg.appendChild(el("span","tag",u.on));
     if(u.chk>EDITION||u.chk<EDITION)tg.appendChild(el("span","tag","checked "+fmtD(u.chk)));
     what.appendChild(ttl); what.appendChild(tg); what.appendChild(el("p",null,u.n));
     li.appendChild(when); li.appendChild(what); ol.appendChild(li);
@@ -973,7 +1063,8 @@ function drawFilms(){
     var acts=el("div","acts"), b=el("button","act sm",S.seen[f.id]?"\u2713 Seen":"Mark seen"); b.type="button"; b.setAttribute("aria-pressed",S.seen[f.id]?"true":"false");
     b.addEventListener("click",function(){ if(S.seen[f.id])delete S.seen[f.id]; else S.seen[f.id]=1; save(); drawFilms(); var nb=document.querySelector("#"+f.id+" .act"); if(nb)nb.focus(); });
     var a=el("a","chip","Where to watch \u2197"); a.href="https://www.justwatch.com/us/search?q="+encodeURIComponent(f.t); a.target="_blank"; a.rel="noopener";
-    acts.appendChild(b); acts.appendChild(a); c.appendChild(acts); g.appendChild(c);
+    var tr=el("a","chip","Trailer \u2197"); tr.href="https://www.youtube.com/results?search_query="+encodeURIComponent(f.t+" anime film trailer"); tr.target="_blank"; tr.rel="noopener";
+    acts.appendChild(b); acts.appendChild(a); acts.appendChild(tr); c.appendChild(acts); g.appendChild(c);
   });
 }
 var lastFilm=null;
@@ -990,16 +1081,16 @@ function pickFilm(){
 function drawBoard(){
   var ul=$("board"); ul.textContent="";
   function item(k,v,n){var li=el("li"); li.appendChild(el("span","k",k)); li.appendChild(el("span","v",v)); li.appendChild(el("span","n",n)); ul.appendChild(li);}
-  var byM=D.slice().sort(function(a,b){return b.m-a.m;}), byV=D.slice().sort(function(a,b){return b.v-a.v;});
+  var byM=MAIN.slice().sort(function(a,b){return b.m-a.m;}), byV=MAIN.slice().sort(function(a,b){return b.v-a.v;});
   item("Highest rated",byM[0].t,"\u2605 "+byM[0].m.toFixed(2)+" from "+fmtV(byM[0].v)+" ratings");
   item("Most rated",byV[0].t,fmtV(byV[0].v)+" ratings, more than any other show here");
-  var love=D.slice().sort(function(a,b){return CHAR[b.id][1]-CHAR[a.id][1];})[0];
+  var love=MAIN.slice().sort(function(a,b){return CHAR[b.id][1]-CHAR[a.id][1];})[0];
   item("Most loved character",CHAR[love.id][0],CHAR[love.id][1].toLocaleString("en-US")+" favourites ("+love.t+")");
-  var close=D.slice().sort(function(a,b){return (CHAR[a.id][1]-CHAR[a.id][3])/CHAR[a.id][1]-(CHAR[b.id][1]-CHAR[b.id][3])/CHAR[b.id][1];})[0], cc=CHAR[close.id];
+  var close=MAIN.slice().sort(function(a,b){return (CHAR[a.id][1]-CHAR[a.id][3])/CHAR[a.id][1]-(CHAR[b.id][1]-CHAR[b.id][3])/CHAR[b.id][1];})[0], cc=CHAR[close.id];
   item("Closest race",cc[0]+" vs "+cc[2],cc[1].toLocaleString("en-US")+" to "+cc[3].toLocaleString("en-US")+" favourites, "+(cc[1]-cc[3])+" apart ("+close.t+")");
-  var solo=D.slice().sort(function(a,b){return CHAR[b.id][1]/CHAR[b.id][3]-CHAR[a.id][1]/CHAR[a.id][3];})[0], sc=CHAR[solo.id];
+  var solo=MAIN.slice().sort(function(a,b){return CHAR[b.id][1]/CHAR[b.id][3]-CHAR[a.id][1]/CHAR[a.id][3];})[0], sc=CHAR[solo.id];
   item("One-character show",sc[0],Math.round(sc[1]/sc[3])+" times the favourites of the runner-up ("+solo.t+")");
-  var gem=D.filter(function(d){return d.v<150;}).sort(function(a,b){return b.m-a.m;})[0];
+  var gem=MAIN.filter(function(d){return d.v<150;}).sort(function(a,b){return b.m-a.m;})[0];
   item("Best kept secret",gem.t,"\u2605 "+gem.m.toFixed(2)+" from only "+fmtV(gem.v)+" ratings");
   var ids=Object.keys(S.mine).filter(function(id){return FAN[id];}), ml=$("mineline");
   if(ids.length){var byId={}; D.forEach(function(d){byId[d.id]=d;}); ids.sort(function(a,b){return Math.abs(S.mine[b]-byId[b].m)-Math.abs(S.mine[a]-byId[a].m);}); var w=byId[ids[0]];
@@ -1020,7 +1111,7 @@ function ghHeaders(){var h={"Accept":"application/vnd.github+json"}; if(ghToken)
 function b64enc(str){return btoa(unescape(encodeURIComponent(str)));}
 function b64dec(b){return decodeURIComponent(escape(atob(b.replace(/\n/g,""))));}
 function setSync(txt,cls){var b=$("syncbtn"); b.textContent="\u2601 "+txt; b.className="chip sync"+(cls?" "+cls:""); $("syncnote").textContent=SYNC_ON?"Status: "+txt+".":"This copy cannot reach GitHub, so picks here stay in this browser. Open alvinthechipmunk123.github.io/index/anime.html and they save to the repo from there.";}
-function picks(){return {updated:S.ts||new Date().toISOString(),w:S.w,seen:S.seen,queue:S.queue,mine:S.mine};}
+function picks(){return {updated:S.ts||new Date().toISOString(),w:S.w,seen:S.seen,queue:S.queue,mine:S.mine,seed:S.seed};}
 function ghLoad(){return fetch(GHAPI+"?t="+Date.now(),{headers:ghHeaders(),cache:"no-store"}).then(function(r){
   if(r.status===404){ghSha=null; return null;} if(!r.ok)throw new Error("GitHub "+r.status+(r.status===401?" (token?)":""));
   return r.json().then(function(j){ghSha=j.sha; return JSON.parse(b64dec(j.content));});});}
@@ -1039,7 +1130,7 @@ function ghRefresh(){
   setSync("checking\u2026");
   ghLoad().then(function(data){
     if(data&&(!S.ts||data.updated>S.ts)){
-      if(data.w&&data.w.length===6)S.w=data.w; S.seen=data.seen||{}; S.queue=data.queue||{}; S.mine=data.mine||{}; S.ts=data.updated;
+      if(data.w&&data.w.length===6)S.w=data.w; S.seen=data.seen||{}; S.queue=data.queue||{}; S.mine=data.mine||{}; S.ts=data.updated; S.seed=data.seed||0; if(seed()&&ghToken){S.ts=new Date().toISOString(); setTimeout(ghSave,50);}
       writeLocal(); update(); drawFilms(); setSync(ghToken?"synced with git":"loaded from git, add token to save",ghToken?"ok":"warn");
     } else if(ghToken&&(!data||S.ts>data.updated)){ if(!S.ts)S.ts=new Date().toISOString(); ghSave(); }
     else setSync(ghToken?"synced with git":"add token to save",ghToken?"ok":"warn");
