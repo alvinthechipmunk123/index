@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Anime List">
+<meta name="theme-color" content="#bfe3f2">
+<title>Alvin's Anime List</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+/* Layout: a daytime meadow. A framed scene up top holds the title and Poko the robot guide; below, a dial deck drives a live-reordering list of 25. One screen, one look (daylight by design). */
+:root{
+  --bg:#f4f0e1; --card:#fffdf6; --ink:#2e3b35; --dim:#647267; --line:#dcd6bf;
+  --sky:#bfe3f2; --sky2:#eaf6f1; --hill1:#b9dc8f; --hill2:#8cc46a;
+  --moss:#3f7a4c; --leaf:#9ccc6a; --sun:#f4b942; --rose:#d9604f;
+  --patina:#7dbcab; --patina2:#a5d3c5; --copper:#c8854e; --white:#ffffff;
+  --display:"Fredoka","Arial Rounded MT Bold","Trebuchet MS",sans-serif;
+  --body:"Nunito",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --jp:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 var(--body)}
+.wrap{max-width:1180px; margin:0 auto; padding-inline:16px; padding-block:16px 48px; display:grid; gap:20px}
+button,input{font:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--rose); outline-offset:2px}
+
+/* scene */
+.scene{position:relative; overflow:hidden; border-radius:28px; border:2px solid var(--ink);
+  background:linear-gradient(var(--sky),var(--sky2) 70%); padding:24px 24px 0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,500px); gap:12px 24px; align-items:end; min-height:300px}
+.sun{position:absolute; right:38%; top:-46px; width:130px; height:130px; border-radius:50%; background:var(--sun); opacity:.75}
+.cloud{position:absolute; height:26px; border-radius:26px; background:var(--white); opacity:.7; animation:drift 60s linear infinite}
+.cloud::before,.cloud::after{content:""; position:absolute; background:var(--white); border-radius:50%}
+.cloud::before{width:34px; height:34px; left:16px; top:-16px}
+.cloud::after{width:24px; height:24px; right:18px; top:-10px}
+.c1{width:110px; top:26px; left:-12%; animation-duration:80s}
+.c2{width:80px; top:92px; left:-30%; animation-duration:110s; animation-delay:-40s; opacity:.75}
+.c3{width:130px; top:54px; left:-20%; animation-duration:95s; animation-delay:-70s}
+@keyframes drift{to{transform:translateX(140vw)}}
+.hills{position:absolute; left:0; right:0; bottom:0; width:100%; height:46%; display:block}
+.titleblock{position:relative; align-self:start; display:grid; gap:10px; padding-bottom:20px}
+.kana{font:700 14px/1 var(--jp); color:var(--moss); letter-spacing:.14em}
+h1{font:700 clamp(34px,6.4vw,56px)/1 var(--display); margin:0; text-wrap:balance}
+.sub{margin:0; max-width:36ch; font-weight:600}
+.readout{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
+.stat{background:var(--card); border:2px solid var(--ink); border-radius:999px; padding:4px 12px; font:500 13px/1.3 var(--display); font-variant-numeric:tabular-nums}
+.stat b{font-weight:700}
+.poko{position:relative; display:grid; grid-template-columns:minmax(0,1fr) 210px; gap:6px; align-items:end}
+.bubble{position:relative; background:var(--card); border:2px solid var(--ink); border-radius:20px; padding:12px 14px; margin-bottom:120px; display:grid; gap:10px}
+.bubble::after{content:""; position:absolute; right:-11px; bottom:22px; width:18px; height:18px; background:var(--card); border-right:2px solid var(--ink); border-top:2px solid var(--ink); transform:rotate(45deg)}
+.say{margin:0; min-height:3em; font:500 16px/1.4 var(--display)}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%)}
+.bot{background:none; border:0; padding:0; cursor:pointer; display:block; width:210px; border-radius:24px; -webkit-tap-highlight-color:transparent}
+.bot svg{display:block; width:100%; height:auto; overflow:visible}
+.bob{animation:bob 4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.lid{transform-box:fill-box; transform-origin:top; transform:scaleY(0); animation:blink 5.5s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(0)} 96.5%{transform:scaleY(1)}}
+.arm-r{transform-box:fill-box; transform-origin:20% 10%; transition:transform .25s}
+.bot:hover .arm-r,.bot.wave .arm-r{animation:wave .5s ease-in-out 3}
+@keyframes wave{50%{transform:rotate(-38deg)}}
+.sprout{transform-box:fill-box; transform-origin:bottom; animation:sway 3.2s ease-in-out infinite}
+@keyframes sway{50%{transform:rotate(7deg)}}
+#needle{transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
+
+/* controls */
+.console{display:grid; grid-template-columns:290px minmax(0,1fr); gap:20px; align-items:start}
+.deck{background:var(--card); border:2px solid var(--ink); border-radius:22px; padding:16px; display:grid; gap:18px; position:sticky; top:calc(env(safe-area-inset-top, 0px) + 12px)}
+.label{font:600 13px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss); margin:0 0 10px}
+.sliders{display:grid; gap:8px}
+.sl{display:grid; grid-template-columns:1fr auto; gap:0 8px; align-items:center}
+.sl label{font-weight:600; font-size:15px}
+.sl output{font:600 15px var(--display); color:var(--moss); font-variant-numeric:tabular-nums}
+.sl input{grid-column:1/-1; width:100%; accent-color:var(--moss); margin:0; height:24px}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{background:var(--card); border:2px solid var(--ink); border-radius:999px; padding:4px 12px; font:500 14px/1.3 var(--display); cursor:pointer}
+.chip:hover{background:var(--sky2)}
+.chip[aria-pressed="true"]{background:var(--moss); color:var(--white)}
+.chip.go{background:var(--sun)}
+.chip.go:hover{background:var(--leaf)}
+.search{width:100%; background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:8px 14px}
+.search::placeholder{color:var(--dim)}
+
+main{display:grid; gap:12px; min-width:0}
+.map{background:var(--card); border:2px solid var(--line); border-radius:20px; padding:14px 14px 8px}
+.map .label{margin-bottom:4px}
+.mapnote{margin:0 0 6px; font-size:13.5px; color:var(--dim)}
+.mapbox{position:relative}
+#map{display:block; width:100%}
+#map text{font:600 10.5px var(--display); fill:var(--dim)}
+#map .dot{cursor:pointer; outline:none}
+#map .dot circle{fill:var(--white); stroke:var(--ink); stroke-width:1.5}
+#map .dot.top circle{fill:var(--sun)}
+#map .dot.seen circle{stroke-dasharray:3 2.5}
+#map .dot.off{opacity:.22}
+#map .dot text{fill:var(--ink); font-size:10px; pointer-events:none}
+#map .dot:hover circle,#map .dot:focus-visible circle{stroke-width:3.5; stroke:var(--rose)}
+.tip{position:absolute; pointer-events:none; background:var(--ink); color:var(--card); border-radius:10px; padding:6px 10px; font:500 13px/1.3 var(--display); transform:translate(-50%,-125%); white-space:nowrap; z-index:2}
+.mine{display:flex; flex-wrap:wrap; align-items:center; gap:8px; font:600 15px var(--display)}
+.mine output{min-width:2.4em; text-align:center; font-size:20px; font-variant-numeric:tabular-nums}
+.step{width:36px; height:36px; border-radius:50%; border:2px solid var(--ink); background:var(--white); font:600 18px/1 var(--display); cursor:pointer}
+.step:hover{background:var(--sky2)}
+.links{display:flex; flex-wrap:wrap; gap:6px}
+a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
+.tag.now{background:var(--sun); border-color:var(--sun); color:var(--ink)}
+
+/* list */
+.list{list-style:none; margin:0; padding:0; display:grid; gap:8px}
+.row{background:var(--card); border:2px solid var(--line); border-radius:20px; overflow:hidden}
+.row.open{border-color:var(--ink)}
+.head{width:100%; background:none; border:0; text-align:left; cursor:pointer; padding:12px 14px; display:grid; grid-template-columns:44px minmax(0,1fr) auto; gap:12px; align-items:center}
+.head:hover{background:var(--sky2)}
+.rank{width:44px; height:44px; border-radius:50%; border:2px solid var(--ink); display:grid; place-items:center; font:600 18px/1 var(--display); font-variant-numeric:tabular-nums; background:var(--white)}
+.row:nth-child(-n+3) .rank{background:var(--sun)}
+.main{display:grid; gap:2px; min-width:0}
+.t{font:600 19px/1.2 var(--display); display:flex; flex-wrap:wrap; gap:2px 10px; align-items:baseline}
+.t .jp{font:500 13px var(--jp); color:var(--dim)}
+.meta{font-size:13.5px; color:var(--dim)}
+.tags{display:flex; flex-wrap:wrap; gap:4px; margin-top:4px}
+.tag{font:500 11.5px/1 var(--display); letter-spacing:.03em; border:1.5px solid var(--line); border-radius:999px; padding:3px 8px; color:var(--dim); background:var(--white)}
+.tag.on{border-color:var(--moss); color:var(--moss)}
+.tag.seen{background:var(--sky); border-color:var(--sky); color:var(--ink)}
+.tag.queue{background:var(--rose); border-color:var(--rose); color:var(--white)}
+.tag.robo{background:var(--patina2); border-color:var(--patina2); color:var(--ink)}
+.score{display:grid; justify-items:end; gap:4px}
+.pct{font:600 24px/1 var(--display); font-variant-numeric:tabular-nums}
+.pct small{font-size:12px; color:var(--dim); font-weight:500}
+.fan{font:600 13.5px/1 var(--display); color:var(--dim); font-variant-numeric:tabular-nums}
+.fan b{color:var(--copper)}
+.sig{display:flex; gap:3px; align-items:flex-end; height:22px}
+.sig i{display:block; width:6px; background:var(--leaf); border-radius:3px 3px 0 0}
+.row.is-seen .t > span:first-child{color:var(--dim)}
+
+.detail{border-top:2px dashed var(--line); padding:16px 16px 18px; display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:20px}
+.copy{display:grid; gap:14px; align-content:start; min-width:0}
+.copy p{margin:0; max-width:62ch}
+.copy h3{font:600 13px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss); margin:0 0 4px}
+.quip{display:flex; gap:10px; align-items:center; background:var(--sky2); border-radius:16px; padding:8px 12px; font:500 15px/1.35 var(--display); max-width:62ch}
+.quip svg{flex:none; width:30px; height:30px}
+.acts{display:flex; flex-wrap:wrap; gap:8px}
+.act{border:2px solid var(--ink); background:var(--white); border-radius:999px; padding:7px 16px; font:600 15px var(--display); cursor:pointer}
+.act:hover{background:var(--sky2)}
+.act[aria-pressed="true"]{background:var(--moss); color:var(--white)}
+.side{display:grid; gap:10px; align-content:start; min-width:0}
+.radar{width:100%; max-width:240px; height:auto; justify-self:center}
+.radar text{font:600 10px var(--display); fill:var(--dim)}
+.key{display:flex; gap:14px; font-size:12.5px; color:var(--dim); justify-content:center}
+.key i{display:inline-block; width:14px; height:0; border-top:3px solid var(--rose); vertical-align:middle; margin-right:5px}
+.key i.w{border-top:3px dotted var(--moss)}
+.facts{display:grid; grid-template-columns:auto 1fr; gap:4px 12px; margin:0; font-size:14.5px}
+.facts dt{font:600 12px/1.9 var(--display); color:var(--moss); text-transform:uppercase; letter-spacing:.05em}
+.facts dd{margin:0}
+.jump{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.jump span{font:600 13px var(--display); color:var(--moss); text-transform:uppercase; letter-spacing:.06em; margin-right:4px}
+.panel{background:var(--card); border:2px solid var(--ink); border-radius:22px; padding:18px; min-width:0}
+.panel h2{font:600 24px/1.2 var(--display); margin:0 0 4px}
+.lede{margin:0 0 12px; color:var(--dim); font-size:14.5px; max-width:72ch}
+.up{list-style:none; margin:0; padding:0}
+.up li{display:grid; grid-template-columns:128px minmax(0,1fr); gap:2px 16px; padding:11px 0; border-top:2px dashed var(--line)}
+.when{font:600 15px/1.3 var(--display); font-variant-numeric:tabular-nums}
+.when small{display:block; font:500 12.5px/1.3 var(--display); color:var(--dim)}
+.when small.live{color:var(--moss)}
+.what{min-width:0; display:grid; gap:4px}
+.what .ttl{font:600 17px/1.25 var(--display); background:none; border:0; padding:0; text-align:left; color:inherit}
+.what button.ttl{cursor:pointer; text-decoration:underline; text-decoration-color:var(--leaf); text-decoration-thickness:3px; text-underline-offset:3px}
+.what p{margin:0; font-size:14.5px; max-width:68ch}
+.films{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
+.film{border:2px solid var(--line); border-radius:18px; padding:12px 14px; display:grid; gap:6px; grid-template-rows:auto auto auto 1fr auto; background:var(--white); min-width:0}
+.film.hit{border-color:var(--rose)}
+.film h3{font:600 18px/1.2 var(--display); margin:0}
+.film p{margin:0; font-size:14.5px}
+.film .acts{margin-top:4px}
+.act.sm{padding:4px 12px; font-size:14px}
+.board{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px 22px}
+.board li{display:grid; gap:2px; align-content:start; border-top:3px solid var(--leaf); padding-top:8px}
+.board .k{font:600 12.5px/1.2 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss)}
+.board .v{font:600 19px/1.2 var(--display)}
+.board .n{font-size:14px; color:var(--dim)}
+.mineline{margin:14px 0 0; font-size:14.5px}
+.log{margin:0; padding:0; list-style:none; display:grid; gap:6px; font-size:14.5px}
+.log b{font:600 14.5px var(--display); font-variant-numeric:tabular-nums; margin-right:8px}
+@media (max-width:760px){
+  .films,.board{grid-template-columns:minmax(0,1fr)}
+  .up li{grid-template-columns:96px minmax(0,1fr); gap:2px 12px}
+}
+.empty{border:2px dashed var(--line); border-radius:20px; padding:28px 16px; text-align:center; color:var(--dim)}
+footer{font-size:13.5px; color:var(--dim); max-width:80ch}
+footer p{margin:0 0 6px}
+
+@media (max-width:900px){
+  .scene{grid-template-columns:minmax(0,1fr); padding:20px 16px 0; min-height:0}
+  .titleblock{padding-bottom:4px}
+  .sun{right:-30px}
+  .poko{grid-template-columns:minmax(0,1fr) 132px}
+  .bot{width:132px}
+  .bubble{margin-bottom:64px}
+  .console{grid-template-columns:minmax(0,1fr)}
+  .deck{position:static}
+  .sliders{grid-template-columns:1fr 1fr; gap:8px 16px}
+  .detail{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:460px){
+  .head{grid-template-columns:38px minmax(0,1fr) auto; gap:10px; padding:12px 10px}
+  .rank{width:38px; height:38px; font-size:16px}
+  .t{font-size:17px}
+  .pct{font-size:21px}
+}
+@media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="scene">
+    <div class="sun" aria-hidden="true"></div>
+    <div class="cloud c1" aria-hidden="true"></div><div class="cloud c2" aria-hidden="true"></div><div class="cloud c3" aria-hidden="true"></div>
+    <svg class="hills" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 110 C160 40 300 60 470 110 S800 150 1000 70 V200 H0Z" fill="var(--hill1)"/>
+      <path d="M0 160 C200 100 380 150 560 140 S860 90 1000 130 V200 H0Z" fill="var(--hill2)"/>
+    </svg>
+    <div class="titleblock">
+      <div class="kana">アルヴィンのアニメリスト</div>
+      <h1>Alvin's Anime List</h1>
+      <p class="sub">Twenty-five recent shows, ranked live by your dials, with a robot to argue with.</p>
+      <div class="readout" id="readout"></div>
+    </div>
+    <div class="poko">
+      <div class="bubble">
+        <p class="say" id="say" aria-hidden="true"></p>
+        <span class="sr" id="saysr" aria-live="polite"></span>
+        <div class="chips" id="moods"></div>
+      </div>
+      <button class="bot" id="bot" type="button" aria-label="Poko the robot. Tap for tonight's pick.">
+        <svg viewBox="0 0 200 236" role="img" aria-hidden="true">
+          <ellipse cx="100" cy="226" rx="62" ry="8" fill="var(--moss)" opacity=".35"/>
+          <g class="bob">
+            <rect x="66" y="188" width="24" height="34" rx="10" fill="var(--copper)" stroke="var(--ink)" stroke-width="3"/>
+            <rect x="110" y="188" width="24" height="34" rx="10" fill="var(--copper)" stroke="var(--ink)" stroke-width="3"/>
+            <rect x="24" y="126" width="22" height="52" rx="11" fill="var(--patina)" stroke="var(--ink)" stroke-width="3"/>
+            <g class="arm-r"><rect x="154" y="126" width="22" height="52" rx="11" fill="var(--patina)" stroke="var(--ink)" stroke-width="3"/></g>
+            <rect x="44" y="112" width="112" height="88" rx="40" fill="var(--patina)" stroke="var(--ink)" stroke-width="3"/>
+            <circle cx="100" cy="158" r="27" fill="var(--card)" stroke="var(--ink)" stroke-width="3"/>
+            <path d="M80 164 A20 20 0 0 1 120 164" fill="none" stroke="var(--leaf)" stroke-width="6" stroke-linecap="round"/>
+            <g id="needle" style="transform-origin:100px 164px"><line x1="100" y1="164" x2="100" y2="144" stroke="var(--rose)" stroke-width="3.5" stroke-linecap="round"/></g>
+            <circle cx="100" cy="164" r="4" fill="var(--ink)"/>
+            <text id="gauge" x="100" y="181" text-anchor="middle" style="font:600 10px var(--display)" fill="var(--ink)">0</text>
+            <line x1="100" y1="40" x2="100" y2="18" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+            <g class="sprout">
+              <path d="M100 18 C86 16 80 6 82 0 C94 0 100 8 100 18Z" fill="var(--leaf)" stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M100 18 C112 14 120 8 120 2 C108 0 100 8 100 18Z" fill="var(--hill2)" stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>
+            </g>
+            <rect x="36" y="38" width="128" height="84" rx="38" fill="var(--patina2)" stroke="var(--ink)" stroke-width="3"/>
+            <path d="M40 66 C40 48 52 40 70 40 C66 52 56 62 40 66Z" fill="var(--hill2)" stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="52" cy="50" r="4" fill="var(--white)" stroke="var(--ink)" stroke-width="2"/>
+            <rect x="50" y="56" width="100" height="52" rx="24" fill="var(--card)" stroke="var(--ink)" stroke-width="3"/>
+            <circle cx="78" cy="80" r="15" fill="var(--white)" stroke="var(--ink)" stroke-width="3"/>
+            <circle cx="122" cy="80" r="15" fill="var(--white)" stroke="var(--ink)" stroke-width="3"/>
+            <circle class="pupil" cx="78" cy="80" r="6.5" fill="var(--ink)"/>
+            <circle class="pupil" cx="122" cy="80" r="6.5" fill="var(--ink)"/>
+            <rect class="lid" x="62" y="64" width="32" height="32" rx="15" fill="var(--patina2)"/>
+            <rect class="lid" x="106" y="64" width="32" height="32" rx="15" fill="var(--patina2)"/>
+            <path d="M92 100 Q100 106 108 100" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="60" cy="128" r="3" fill="var(--ink)"/><circle cx="140" cy="128" r="3" fill="var(--ink)"/>
+          </g>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <nav class="jump" aria-label="Sections">
+    <span>Jump to</span>
+    <button class="chip" type="button" data-go="list">The 25</button>
+    <button class="chip" type="button" data-go="coming">Coming up</button>
+    <button class="chip" type="button" data-go="films">Films</button>
+    <button class="chip" type="button" data-go="fans">Fan board</button>
+    <button class="chip" type="button" data-go="log">Update log</button>
+  </nav>
+
+  <div class="console">
+    <aside class="deck" aria-label="Controls">
+      <section>
+        <p class="label">Rank by</p>
+        <div class="chips" id="sortby"></div>
+      </section>
+      <section>
+        <p class="label">Dials</p>
+        <div class="sliders" id="sliders"></div>
+      </section>
+      <section>
+        <p class="label">Where it streams (US)</p>
+        <div class="chips" id="svc"></div>
+      </section>
+      <section>
+        <p class="label">Show me</p>
+        <div class="chips" id="status"></div>
+      </section>
+      <section>
+        <p class="label">Time I have</p>
+        <div class="chips" id="len"></div>
+      </section>
+      <section>
+        <label class="label" for="q" style="display:block">Search</label>
+        <input class="search" id="q" type="search" placeholder="title, studio, year" autocomplete="off">
+      </section>
+    </aside>
+
+    <main>
+      <section class="map" aria-label="You versus the crowd">
+        <p class="label">You vs the crowd</p>
+        <p class="mapnote">Higher is a better match for your dials. Further right is a higher fan rating. Numbers are your ranks. Tap a dot to open the show.</p>
+        <div class="mapbox"><svg id="map" role="group" aria-label="Each show plotted by fan rating and by match to your dials"></svg><div class="tip" id="tip" hidden></div></div>
+      </section>
+      <ol class="list" id="list"></ol>
+      <div class="empty" id="empty" hidden>Nothing matches. Clear a streamer or the search box.</div>
+    </main>
+  </div>
+
+  <section class="panel" id="coming">
+    <h2>Coming up</h2>
+    <p class="lede" id="uplede"></p>
+    <ol class="up" id="up"></ol>
+  </section>
+
+  <section class="panel" id="films">
+    <h2>Films</h2>
+    <p class="lede">Nine for a night when you do not want to start a series. Fan scores are from MyAnimeList, same as the shows.</p>
+    <div class="films" id="filmgrid"></div>
+  </section>
+
+  <section class="panel" id="fans">
+    <h2>Fan board</h2>
+    <p class="lede">What the crowd says about the 25, worked out from MyAnimeList ratings and character favourites. Each show's own fan favourite and awards are in its panel.</p>
+    <ul class="board" id="board"></ul>
+    <p class="mineline" id="mineline" hidden></p>
+  </section>
+
+  <section class="panel" id="log">
+    <h2>Update log</h2>
+    <p class="lede">Every round is dated here, newest first. New facts get appended with the day they were checked.</p>
+    <ul class="log" id="loglist"></ul>
+  </section>
+
+  <footer>
+    <p><b>Match %</b> is each show's five trait scores plus its fan rating, weighted by your dials. The five trait scores are an editorial read, not data from anywhere. The five green bars on each row follow the first five dials, in order.</p>
+    <p><b>Fan ratings</b> (★) are MyAnimeList user scores out of 10 for each show's first season, read on 10 Oct 2026. Scores on shows with few ratings move around more.</p>
+    <p><b>Streaming and episode counts</b> were checked on JustWatch US, Wikipedia and MyAnimeList on 10 Oct 2026. Awards listed are Crunchyroll Anime Awards unless named otherwise. Catalogs rotate, so confirm before you sit down. Hours assume about 24 minutes an episode.</p>
+    <p>Seen marks, your queue and your own scores are saved in this browser only. The "Open on" buttons run a title search on that service.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var KEYS=["scheme","fights","dark","wonder","heart","buzz"];
+var LABEL={scheme:"Scheming",fights:"Fights",dark:"Darkness",wonder:"Wonder",heart:"Heart",buzz:"Fan rating"};
+var SVC={CR:"Crunchyroll",NF:"Netflix",HU:"Hulu",PV:"Prime Video",HD:"HIDIVE"};
+var MOODS=[
+  {name:"Alvin",w:[9,4,4,7,5,6],line:"Your usual: schemers first, some wonder, easy on the gore."},
+  {name:"Ghibli afternoon",w:[2,2,0,10,10,5],line:"Ghibli afternoon. Kettle on. Nobody gets stabbed, mostly."},
+  {name:"Scheme",w:[10,1,5,3,2,3],line:"All scheming, no mercy. I'll count the spoons."},
+  {name:"Fight night",w:[2,10,5,4,4,4],line:"Fight night. I'll stand well back."}
+];
+/* a: scheming, fights, darkness, wonder, heart, buzz (0-10) */
+var D=[
+{id:"apoc",t:"Apocalypse Hotel",jp:"アポカリプスホテル",y:"2025",st:"CygamesPictures",ep:12,s:["CR"],bot:1,a:[3,2,3,9,9,7],
+ p:"Humanity left Earth a century ago. The robot staff of the Gingarou Hotel in Ginza kept the place spotless anyway, and the first guest to finally check in is an alien.",
+ f:"You asked for a robot. Yachiyo, the manager, is the best one in years: a hospitality professional with nobody to serve and standards she refuses to lower. It is funny, and then it sneaks up on you.",
+ w:"12 episodes, an original story with no manga to chase. It jumps decades between episodes.",
+ r:"Professional pride with no customers. I relate."},
+{id:"frieren",t:"Frieren: Beyond Journey's End",jp:"葬送のフリーレン",y:"2023–26",st:"Madhouse",ep:38,s:["CR","NF","HU"],a:[4,6,3,10,10,10],
+ p:"An elf mage outlives the party that saved the world. She walks the same road again and realises, fifty years late, that those were her people.",
+ f:"Nobody in it schemes. Put it on anyway. It is the best-made show of the decade, season 2 wrapped this spring, and it is the closest thing on TV to a Ghibli film that runs 38 episodes.",
+ w:"Slow and quiet on purpose. The mage exam late in season 1 is where it shows its teeth.",
+ r:"She needed fifty years to notice a feeling. I boot faster. Barely."},
+{id:"apoth",now:1,t:"The Apothecary Diaries",jp:"薬屋のひとりごと",y:"2023–",st:"Toho Animation × OLM",ep:49,s:["CR","NF","HU"],a:[9,1,5,8,7,9],
+ p:"A pharmacist's daughter is kidnapped and sold into the emperor's inner palace as a servant. She would rather test poisons on herself than be noticed, and she keeps solving the court's problems anyway.",
+ f:"Court politics run through consorts, eunuchs and medicine cabinets. If the small-council scenes in Thrones were your favourite part, this is your show. Maomao is the driest lead in anime.",
+ w:"Season 3 started on 2 October and runs in two halves, with the second due April 2027. Each case is small. The pattern behind them is not.",
+ r:"She tastes the poison first. I would file a safety report."},
+{id:"nippon",t:"Nippon Sangoku",jp:"日本三國",y:"2026",st:"Studio Kafka",ep:12,s:["PV"],a:[10,5,7,8,5,7],
+ p:"Japan has collapsed back to Meiji-era technology and split into three warring kingdoms. A cautious, by-the-book civil servant decides to put the country back together.",
+ f:"This year's word-of-mouth hit and the nearest thing here to Tanya. A bureaucrat wins with planning, feigned retreats and Sun Tzu, then has to defend the result at court. Three Kingdoms with org charts.",
+ w:"It is on Prime Video, not Crunchyroll. 12 episodes and it stops mid-story, so expect to want the manga.",
+ r:"A hero whose superpower is paperwork. Finally."},
+{id:"dungeon",t:"Delicious in Dungeon",jp:"ダンジョン飯",y:"2024",st:"Trigger",ep:24,s:["NF"],a:[5,6,5,10,8,9],
+ p:"A dragon eats an adventurer's sister. He is broke, so the rescue party goes back down the dungeon and cooks the monsters on the way to save on supplies.",
+ f:"The most Ghibli thing on the list: food drawn with love, a world whose ecology works, and a party that bickers like a real team. It starts as a cooking gag and turns into a proper epic.",
+ w:"24 episodes on Netflix. Season 2 is dated October 2027, so it is a long wait after the last one.",
+ r:"They eat the living armour. I am choosing not to take that personally."},
+{id:"witch",t:"Witch Hat Atelier",jp:"とんがり帽子のアトリエ",y:"2026",st:"Bug Films",ep:13,s:["CR","NF"],un:1,a:[4,3,4,10,9,8],
+ sn:"MyAnimeList lists both Crunchyroll and Netflix. Wikipedia names Crunchyroll for the US, so try that first.",
+ p:"In a world where magic is supposedly something you are born with, a tailor's daughter watches a witch at work and learns the secret. Magic is drawn, with ink, and anyone could do it.",
+ f:"The picture-book one. Every frame looks like an illustrated edition, and the magic has rules you can follow, which is why the trouble feels earned.",
+ w:"13 episodes, aired April to June 2026.",
+ r:"Magic is just very careful drawing. So is my face."},
+{id:"orb",t:"Orb: On the Movements of the Earth",jp:"チ。―地球の運動について―",y:"2024–25",st:"Madhouse",ep:25,s:["NF"],a:[8,2,9,7,9,8],
+ p:"Fifteenth-century Europe. Saying the Earth moves gets you burned. The idea survives anyway, handed from one person to the next across decades, each of whom knows the price.",
+ f:"A thriller about a thesis. An inquisitor hunts the people carrying it, and the show keeps asking what you would pay to be right before anyone agrees with you. If you have ever held a position the room hated, this one is about that.",
+ w:"25 episodes on Netflix, finished. It is not gentle and the cast turns over.",
+ r:"They risked everything for orbital mechanics. I just get firmware updates."},
+{id:"dandadan",t:"Dandadan",jp:"ダンダダン",y:"2024–25",st:"Science SARU",ep:24,s:["NF","HU","CR"],a:[2,9,4,8,8,9],
+ p:"She believes in ghosts and not aliens. He believes in aliens and not ghosts. They are both right, and it costs him something personal in the first episode.",
+ f:"Pure fun, animated by people showing off. There is no strategy in it at all. It is the palate cleanser between the heavy ones and the most playful action on the list.",
+ w:"24 episodes across two seasons. Crude for the first ten minutes, then surprisingly sweet.",
+ r:"Ghosts and aliens. Nobody ever checks for robots."},
+{id:"spy",t:"Spy × Family",jp:"スパイファミリー",y:"2022–",st:"Wit × CloverWorks",ep:50,s:["CR","HU"],a:[5,6,2,6,9,8],
+ p:"A spy needs a fake family for a mission. He recruits a wife who is secretly an assassin and adopts a daughter who is secretly a telepath. Only the kid knows everything.",
+ f:"A Cold War sitcom. Low stakes, high charm, and the one you can put on with anyone in the room.",
+ w:"50 episodes over three seasons. Episodic, so dip in and out.",
+ r:"Everyone in that house is lying. Very efficient household."},
+{id:"pluto",t:"Pluto",jp:"プルートゥ",y:"2023",st:"Studio M2",ep:8,min:60,s:["NF"],bot:1,a:[7,5,8,8,9,8],
+ p:"Someone is destroying the world's seven most advanced robots one by one. A robot detective from Europol takes the case and starts having dreams he should not be able to have.",
+ f:"Your other robot. A murder mystery about the aftermath of a war sold on bad intelligence, from the author of Monster. Eight hour-long episodes, each built like a film.",
+ w:"A long weekend. It is based on an Astro Boy story and you need to know nothing about Astro Boy.",
+ r:"I cried. Coolant, technically."},
+{id:"kings",t:"Ranking of Kings",jp:"王様ランキング",y:"2021",st:"Wit Studio",ep:23,s:["CR"],a:[7,6,6,9,10,8],
+ p:"A tiny deaf prince who cannot lift a sword is heir to a kingdom of giants. His only friend is a shadow that started out robbing him.",
+ f:"It is drawn like a children's storybook and plotted like a succession crisis. Every courtier has a second motive and half of them surprise you.",
+ w:"23 episodes. The art style is the disguise, so give it three.",
+ r:"Smallest one in the room, biggest heart. I am not crying, I am condensing."},
+{id:"taxi",t:"Odd Taxi",jp:"オッドタクシー",y:"2021",st:"OLM × P.I.C.S.",ep:13,s:["CR"],a:[9,1,6,6,7,8],
+ p:"A grumpy walrus drives a cab around Tokyo. Every fare connects to a missing girl.",
+ f:"The Wire with talking animals, in 13 episodes. A yakuza feud, an idol group, a mobile-game addict and a failing comedy duo all land in the same finale.",
+ w:"Read nothing about it first. Not even the comments.",
+ r:"A walrus with a taxi licence. I cannot even get a library card."},
+{id:"daemons",t:"Daemons of the Shadow Realm",jp:"黄泉のツガイ",y:"2026",st:"Bones Film",ep:24,s:["CR","NF","HU"],a:[6,8,6,9,7,8],
+ p:"A boy grows up in a mountain village that seems stuck centuries in the past. Then he learns the village was hidden from the modern world, he was separated from his twin sister, and the two of them command paired spirits.",
+ f:"From the author of Fullmetal Alchemist, which is the pedigree. Fast, funny, and built on factions that each have a reasonable case.",
+ w:"24 episodes in one two-part run from April 2026, now finished.",
+ r:"Paired guardian spirits. I would settle for a paired charger."},
+{id:"hell",t:"Hell's Paradise",jp:"地獄楽",y:"2023–26",st:"MAPPA",ep:25,s:["CR","NF","HU"],a:[5,9,9,8,7,7],
+ p:"The shogun wants the elixir of immortality from an island nobody returns from. He sends death-row convicts, each chained to an executioner. One is a ninja who says he feels nothing and badly wants to get home to his wife.",
+ f:"Your ninja. Gabimaru is the real thing, and pairing each convict with a minder turns the island into a shifting alliance game.",
+ w:"25 episodes over two seasons. The island is beautiful and extremely gross.",
+ r:"He says he has no feelings. He has several."},
+{id:"sakamoto",t:"Sakamoto Days",jp:"サカモトデイズ",y:"2025",st:"TMS",ep:22,s:["NF"],a:[3,9,3,6,8,7],
+ p:"The world's deadliest hitman fell in love, quit, got fat and now runs a corner shop. His old colleagues keep dropping by to kill him, and he has promised his wife no more killing.",
+ f:"John Wick as a family sitcom. The fights are choreographed with whatever is on the shelf.",
+ w:"22 episodes on Netflix. Light and quick, good with dinner.",
+ r:"Retired and still the best in the room. Sounds like somebody."},
+{id:"oshi",t:"Oshi no Ko",jp:"【推しの子】",y:"2023–",st:"Doga Kobo",ep:36,s:["CR","HD"],a:[8,1,8,5,8,9],
+ p:"A pop idol is murdered. Her twin children grow up inside the entertainment business to find out who did it, and one of them is willing to use everyone.",
+ f:"Under the pastel it is Industry for show business: how talent gets packaged, who owns the contract, what a reality-show edit does to a person. The 90-minute first episode is a complete film.",
+ w:"There is a reincarnation premise in the first half hour. Go with it.",
+ r:"The idol business runs on lies. So does my battery indicator."},
+{id:"summer",t:"Summer Time Rendering",jp:"サマータイムレンダ",y:"2022",st:"OLM",ep:25,s:["HU"],a:[9,7,8,6,7,7],
+ p:"A man goes home to a small island for a funeral and is killed by a copy of someone he knows. Then he wakes up on the ferry again.",
+ f:"A time loop played as chess. The other side learns the rules too, and every reset costs him ground.",
+ w:"25 episodes, complete, on Hulu. It starts as a mystery and ends as a war.",
+ r:"He gets infinite retries. I get one and a warranty."},
+{id:"tomo",t:"Tomodachi Game",jp:"トモダチゲーム",y:"2022",st:"Okuruto Noboru",ep:12,s:["CR"],a:[10,1,7,2,3,5],
+ p:"Five friends are kidnapped into a game show to clear one of their debts. Every round is designed to make them sell each other out.",
+ f:"The nearest thing to Liar Game that is not Liar Game. It looks cheaper and plays nastier, with a lead who is worse than he lets on.",
+ w:"12 episodes and it stops mid-story. A snack, not a meal.",
+ r:"A game about betraying friends for money. I would be great. I have no friends."},
+{id:"kongming",t:"Ya Boy Kongming!",jp:"パリピ孔明",y:"2022",st:"P.A. Works",ep:12,s:["HD"],a:[8,1,1,5,9,7],
+ p:"Zhuge Liang, the great strategist of Three Kingdoms China, dies and wakes up in Shibuya on Halloween. He hears a bar singer and decides to run her career like a military campaign.",
+ f:"Ancient stratagems applied to gig bookings and streaming numbers. It is the happiest show here and it is still about outmanoeuvring people.",
+ w:"12 episodes. JustWatch has it on HIDIVE only.",
+ r:"An 1,800-year-old consultant. Rates unknown."},
+{id:"edge",t:"Cyberpunk: Edgerunners",jp:"サイバーパンク エッジランナーズ",y:"2022",st:"Trigger",ep:10,s:["NF"],bot:1,a:[4,10,10,6,7,9],
+ p:"A street kid in Night City loses everything, installs military hardware he cannot afford into his own spine, and joins a crew of mercenaries.",
+ f:"Ten episodes, straight down. Loud, gorgeous and sad. People made of parts, if you want the robot theme with the volume up.",
+ w:"Ten episodes and a complete story. The sequel series is a separate story with a new cast.",
+ r:"Too many upgrades is bad for you. Noted, nervously."},
+{id:"jjk",t:"Jujutsu Kaisen",jp:"呪術廻戦",y:"2020–",st:"MAPPA",ep:59,s:["CR","NF","HU","PV"],a:[4,10,8,7,5,9],
+ p:"A high-schooler swallows a cursed finger and becomes host to the worst sorcerer in history. The people who should execute him decide to train him first.",
+ f:"The best fight animation running. Season 3's Culling Game is a rules-heavy battle royale, which is as close as it gets to your kind of plotting.",
+ w:"Watch the film Jujutsu Kaisen 0 between seasons 1 and 2. Season 3 part 2 has no date yet.",
+ r:"He ate a finger. Humans are a hazard."},
+{id:"csm",t:"Chainsaw Man",jp:"チェンソーマン",y:"2022",st:"MAPPA",ep:12,s:["CR","HU"],a:[5,9,9,7,7,9],
+ p:"A boy drowning in his dead father's yakuza debt fuses with his pet devil and becomes a man with a chainsaw for a head. A government agency hires him for the price of breakfast.",
+ f:"A debt story at heart. The kid is so poor that toast with jam is a life goal, and his handler knows it. It is shot like a film.",
+ w:"12 episodes, then the 2025 film Reze Arc picks up directly.",
+ r:"His best friend is a chainsaw dog. Mine is a toaster."},
+{id:"heaven",t:"Heavenly Delusion",jp:"天国大魔境",y:"2023",st:"Production I.G",ep:13,s:["HU"],bot:1,a:[7,6,8,9,7,7],
+ p:"Fifteen years after the world ended, two teenagers cross ruined Japan looking for a place called Heaven. Elsewhere, children grow up in a sealed, spotless school staffed by robots.",
+ f:"Two stories that will not tell you how they connect. This is the sci-fi mystery pick, and the one to watch if you like working it out before the reveal.",
+ w:"13 episodes on Hulu and the story is not finished.",
+ r:"A school staffed by robots. Sounds lovely. No further questions."},
+{id:"liar",t:"Liar Game",jp:"ライアーゲーム",y:"2026",st:"Madhouse",ep:26,s:["CR"],a:[10,0,5,3,5,7],
+ p:"An honest-to-a-fault student is mailed a box of cash and told to take her opponent's. She hires a just-released swindler to keep her alive in it.",
+ f:"You have watched it. It is here as your yardstick for everything else with Scheming turned up.",
+ w:"26 episodes, April to September 2026.",
+ r:"You finished this one. I checked."},
+{id:"tanya",t:"Saga of Tanya the Evil",jp:"幼女戦記",y:"2017–26",st:"NUT",ep:25,s:["CR"],a:[8,8,8,7,2,7],
+ p:"A ruthless salaryman is reborn as a little girl in a not-quite-Germany at war and climbs the officer ranks purely to spite the god who put him there.",
+ f:"Also yours already. It is on the list because season 2 started in July 2026, nine years after the first, in case that slipped past you.",
+ w:"The 2019 film sits between the two seasons.",
+ r:"HR violations in every episode."}
+];
+
+/* MyAnimeList user score and number of ratings (thousands), first-season entry, read 10 Oct 2026 */
+var FAN={apoc:[8.01,30],frieren:[9.25,943],apoth:[8.84,516],nippon:[8.52,51],dungeon:[8.58,320],witch:[8.47,206],orb:[8.72,132],dandadan:[8.38,634],spy:[8.40,1193],pluto:[8.44,117],kings:[8.48,408],taxi:[8.62,257],daemons:[7.80,76],hell:[8.08,550],sakamoto:[7.58,256],oshi:[8.52,641],summer:[8.46,302],tomo:[7.70,267],kongming:[8.08,162],edge:[8.62,761],jjk:[8.49,2058],csm:[8.42,1193],heaven:[8.20,302],liar:[6.86,19],tanya:[7.96,581]};
+D.forEach(function(d){d.m=FAN[d.id][0]; d.v=FAN[d.id][1]; d.a[5]=Math.max(0,Math.min(10,(d.m-6.8)/2.5*10));});
+D.slice().sort(function(a,b){return b.m-a.m;}).forEach(function(d,i){d.fr=i+1;});
+function fmtV(v){return v>=1000?(v/1000).toFixed(2).replace(/0$/,"")+" million":v+",000";}
+var MALID={apoc:59675,frieren:52991,apoth:54492,nippon:63375,dungeon:52701,witch:51553,orb:52215,dandadan:57334,spy:50265,pluto:35737,kings:40834,taxi:46102,daemons:62001,hell:46569,sakamoto:58939,oshi:52034,summer:47194,tomo:50273,kongming:50380,edge:42310,jjk:40748,csm:44511,heaven:53393,liar:62331,tanya:32615};
+var FIND={CR:"https://www.crunchyroll.com/search?q=",NF:"https://www.netflix.com/search?q=",HU:"https://www.hulu.com/search?q=",PV:"https://www.amazon.com/s?i=instant-video&k=",HD:"https://www.hidive.com/search?q="};
+/* ===== Dated data. To append later: add rows with their own date; nothing here needs rewriting. ===== */
+var FIRST="2026-10-10", EDITION="2026-10-10";
+var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmtD(iso){var p=iso.split("-"); return p.length===3?(+p[2])+" "+MON[p[1]-1]+" "+p[0]:(p.length===2?MON[p[1]-1]+" "+p[0]:p[0]);}
+D.forEach(function(d){ if(!d.added)d.added=FIRST; });
+/* fan favourite characters: [name, favourites, runner-up, favourites]; MyAnimeList, read 2026-10-10 */
+var CHAR={apoc:["Yachiyo",196,"Ponko",20],frieren:["Frieren",33071,"Fern",6041],apoth:["Maomao",26460,"Jinshi",3320],nippon:["Aoteru Misumi",143,"Yoshitsune Asama",34],dungeon:["Marcille",2888,"Laios",2613],witch:["Qifrey",2008,"Coco",1374],orb:["Rafal",780,"Badeni",627],dandadan:["Momo Ayase",4910,"Ken Takakura",2420],spy:["Anya Forger",15462,"Yor Forger",12010],pluto:["Gesicht",958,"Epsilon",282],kings:["Bojji",5334,"Kage",758],taxi:["Odokawa",1417,"Yano",276],daemons:["Yuru",93,"Hidari",76],hell:["Gabimaru",3374,"Sagiri",1445],sakamoto:["Yoichi Nagumo",1114,"Osaragi",733],oshi:["Kana Arima",9426,"Ai Hoshino",8110],summer:["Shinpei",1228,"Ushio",1110],tomo:["Yuichi Katagiri",5721,"Kei Shinomiya",277],kongming:["Eiko Tsukimi",957,"Kongming",732],edge:["Lucy",8320,"Rebecca",5236],jjk:["Satoru Gojo",64367,"Yuji Itadori",17994],csm:["Denji",23504,"Power",23474],heaven:["Kiruko",755,"Maru",289],liar:["Shinichi Akiyama",1597,"Nao Kanzaki",212],tanya:["Tanya",14548,"Viktoriya Serebryakov",552]};
+var AWARD={
+ apoth:"2026: Best Drama, Best Director and Best Main Character (Maomao).",
+ dandadan:"2026: Best Comedy and Best Opening. 2025: Best Character Design, Best Anime Song and Best Opening.",
+ frieren:"2025: Best Drama, Best Director, Best Background Art and Best Supporting Character (Fern).",
+ spy:"Anya has won the \u201cMust Protect at All Costs\u201d character award three years running, 2024 to 2026. Also Best Slice of Life 2026 and Best Comedy 2024.",
+ jjk:"Anime of the Year 2024 for season 2, with Best Action, Best Director and Best Supporting Character (Gojo).",
+ csm:"Best New Series 2024. The Reze Arc film\u2019s theme won Best Anime Song 2026.",
+ oshi:"Best Anime Song 2024 for \u201cIdol\u201d.",
+ edge:"Anime of the Year 2023.",
+ apoc:"Seiun Award 2026 for Best Media. Anime News Network readers voted it the most underrated anime of 2025."};
+/* Coming up. d = date as YYYY-MM-DD, YYYY-MM or YYYY; no d = announced, undated. chk = day checked. */
+var UP=[
+ {d:"2026-10-02",t:"The Apothecary Diaries, season 3",k:"New season",on:"Crunchyroll",id:"apoth",n:"New episode each week. It runs in two halves; the second starts April 2027.",chk:"2026-10-10"},
+ {d:"2026-10-20",t:"Cyberpunk: Edgerunners 2",k:"New series",on:"Netflix",id:"edge",n:"Ten episodes. A separate story with a new cast: a young film obsessive documenting Night City. It topped the fan poll for most anticipated show of the season.",chk:"2026-10-10"},
+ {d:"2026-10",t:"FX Fighter Kurumi-chan",k:"New series",on:"Crunchyroll",n:"Not on your list, and aimed straight at you. A student starts trading currencies on margin to win back the 20 million yen her mother lost in the 2008 crash. Early wins, then the market does what it does.",chk:"2026-10-10"},
+ {d:"2026-10",t:"Psyren",k:"New series",on:"streamer not confirmed",n:"A schoolboy is pulled into a lethal game set in a ruined future Japan. A long-requested adaptation of a 2000s manga.",chk:"2026-10-10"},
+ {d:"2026-12-11",t:"The Apothecary Diaries: The Deceased Empress\u2019 Treasure",k:"Film",on:"cinemas in Japan",id:"apoth",n:"The first Apothecary Diaries film. That date is the Japanese release; no US date yet.",chk:"2026-10-10"},
+ {d:"2026",t:"Fool Night",k:"New series",on:"Netflix",n:"A century of cloud has killed the sunlight, so the poor sell their bodies to be turned into plants. Dark science fiction; listed for 2026 with no day set.",chk:"2026-10-10"},
+ {d:"2027-01",t:"Sakamoto Days, season 2",k:"New season",on:"Netflix had season 1",id:"sakamoto",n:"January 2027.",chk:"2026-10-10"},
+ {d:"2027-04",t:"The Apothecary Diaries, season 3 part 2",k:"New season",on:"Crunchyroll",id:"apoth",n:"The second half of season 3.",chk:"2026-10-10"},
+ {d:"2027",t:"Dandadan, season 3",k:"New season",on:"",id:"dandadan",n:"Confirmed for 2027, no month.",chk:"2026-10-10"},
+ {d:"2027-10",t:"Frieren, season 3",k:"New season",on:"",id:"frieren",n:"The Golden Land arc, which manga readers rate as the best stretch of the story.",chk:"2026-10-10"},
+ {d:"2027-10",t:"Delicious in Dungeon, season 2",k:"New season",on:"Netflix",id:"dungeon",n:"Finishes the story.",chk:"2026-10-10"},
+ {t:"Chainsaw Man: Assassins Arc",k:"Sequel",id:"csm",n:"Announced December 2025. Follows the Reze Arc film.",chk:"2026-10-10"},
+ {t:"Jujutsu Kaisen, season 3 part 2",k:"New season",id:"jjk",n:"The rest of the Culling Game.",chk:"2026-10-10"},
+ {t:"Oshi no Ko, season 4",k:"Final season",id:"oshi",n:"Announced as the last one.",chk:"2026-10-10"},
+ {t:"Witch Hat Atelier, season 2",k:"New season",on:"Crunchyroll",id:"witch",n:"Announced after the season 1 finale in June.",chk:"2026-10-10"},
+ {t:"Nippon Sangoku sequel",k:"Sequel",id:"nippon",n:"Announced 3 September 2026.",chk:"2026-10-10"},
+ {t:"Ranking of Kings film",k:"Film",id:"kings",n:"Announced in 2023 and quiet since.",chk:"2026-10-10"},
+ {t:"Junket Bank",k:"New series",n:"A bank runs a secret casino where the stakes are fortunes and lives. Made for a Liar Game viewer. It was due 6 October and has been delayed indefinitely over production problems.",chk:"2026-10-10"}
+];
+/* Films. s = US subscription streamer as read on JustWatch; empty = could not read it. */
+var FILMS=[
+ {id:"f_mononoke",t:"Princess Mononoke",y:1997,rt:133,m:8.67,v:899,s:"HBO Max",added:"2026-10-10",
+  p:"The Ghibli film for you. An ironworks town is clearing a forest and the forest\u2019s gods fight back. Lady Eboshi runs the best-managed company in animation, and nobody in the film is the villain."},
+ {id:"f_heron",t:"The Boy and the Heron",y:2023,rt:123,m:7.60,v:98,s:"HBO Max",added:"2026-10-10",
+  p:"Miyazaki\u2019s most recent film and an Oscar winner. A boy who has lost his mother follows a talking heron into a world under the family tower. Watch it for the craft. The plot does not explain itself."},
+ {id:"f_lookback",t:"Look Back",y:2024,rt:57,m:8.61,v:152,s:"Prime Video",added:"2026-10-10",
+  p:"57 minutes. Two schoolgirls draw manga together, and the film is about why anyone keeps making things. From the author of Chainsaw Man. The shortest thing here and the most likely to get you."},
+ {id:"f_reze",t:"Chainsaw Man: Reze Arc",y:2025,rt:99,m:9.05,v:366,s:"Crunchyroll",added:"2026-10-10",
+  p:"Picks up straight after season 1. A boy meets a girl at a caf\u00e9 in the rain, and it goes the way things go for him. Fans have it at number 5 of everything on MyAnimeList."},
+ {id:"f_slam",t:"The First Slam Dunk",y:2022,rt:124,m:8.70,v:38,s:"Netflix",added:"2026-10-10",
+  p:"One basketball game, told almost in real time, with each player\u2019s history cut in between possessions. You need to know nothing about the 1990s series."},
+ {id:"f_bluegiant",t:"Blue Giant",y:2023,rt:119,m:8.39,v:19,s:"Netflix",added:"2026-10-10",
+  p:"A kid from Sendai decides he will be the best saxophonist in the world and moves to Tokyo to start a trio. The concert scenes are the film. Good speakers help."},
+ {id:"f_100m",t:"100 Meters",y:2025,rt:106,m:8.33,v:53,s:"Netflix",added:"2026-10-10",
+  p:"Two sprinters across twenty years, and what it costs to be a tenth of a second faster than the other man. From the author of Orb."},
+ {id:"f_suzume",t:"Suzume",y:2022,rt:121,m:8.24,v:289,s:"",added:"2026-10-10",
+  p:"A girl finds a door standing in a ruin and lets something out. A road trip up Japan closing doors before the earthquakes come through, with a talking three-legged chair. From the director of Your Name."},
+ {id:"f_jjk0",t:"Jujutsu Kaisen 0",y:2021,rt:104,m:8.35,v:830,s:"",added:"2026-10-10",
+  p:"The prequel film and a clean way into Jujutsu Kaisen. A boy haunted by his dead childhood friend is enrolled at the sorcery school instead of being executed."}
+];
+/* Update log: newest first. Append a row per round. */
+var LOG=[
+ ["2026-10-10","Added Coming up (18 dated and undated releases), nine films, the fan board, fan-favourite characters and awards on every show, and this log. Liar Game corrected to 26 episodes."],
+ ["2026-10-10","Added the you-versus-the-crowd map, your own scores, Learn my taste, the time filter and watch links."],
+ ["2026-10-10","Added fan ratings from MyAnimeList, the rank-by-fans switch and the fan-rating dial."],
+ ["2026-10-10","Rebuilt in daylight with Poko. List moved to recent shows, 25 new write-ups."],
+ ["2026-10-10","First edition."]
+];
+var KEY="alvin-anime-v2";
+var S={w:MOODS[0].w.slice(),seen:{liar:1,tanya:1},queue:{},svc:{},status:"all",q:"",sort:"dials",mine:{},len:0};
+try{var sv=JSON.parse(localStorage.getItem(KEY)||"null"); if(sv){ if(sv.w&&sv.w.length===6)S.w=sv.w; if(sv.seen)S.seen=sv.seen; if(sv.queue)S.queue=sv.queue; if(sv.mine)S.mine=sv.mine; }}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({w:S.w,seen:S.seen,queue:S.queue,mine:S.mine}));}catch(e){}}
+
+function $(id){return document.getElementById(id);}
+function el(tag,cls,txt){var n=document.createElement(tag); if(cls)n.className=cls; if(txt!=null)n.textContent=txt; return n;}
+function hours(d){return d.ep*(d.min||24)/60;}
+function fmtH(h){return h>=10?Math.round(h):Math.round(h*10)/10;}
+function score(d){var tw=0,sum=0; for(var i=0;i<6;i++){tw+=S.w[i]; sum+=S.w[i]*d.a[i];} return tw?sum/(tw*10)*100:d.a[5]*10;}
+var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Poko talks */
+var sayT=null;
+function say(txt){
+  $("saysr").textContent=txt; clearInterval(sayT);
+  var n=$("say"); if(reduce){n.textContent=txt; return;}
+  var i=0; n.textContent="";
+  sayT=setInterval(function(){i+=2; n.textContent=txt.slice(0,i); if(i>=txt.length)clearInterval(sayT);},18);
+}
+function wave(){var b=$("bot"); b.classList.remove("wave"); void b.offsetWidth; b.classList.add("wave");}
+
+/* sliders */
+var outs=[],ins=[],dialT=null;
+KEYS.forEach(function(k,i){
+  var w=el("div","sl"), lb=el("label",null,LABEL[k]), o=el("output"), inp=el("input");
+  inp.type="range"; inp.min=0; inp.max=10; inp.step=1; inp.id="w-"+k; lb.htmlFor=inp.id; o.htmlFor=inp.id;
+  inp.addEventListener("input",function(){S.w[i]=+inp.value; save(); update();
+    clearTimeout(dialT); dialT=setTimeout(function(){say(dialLine(i));},350);});
+  w.appendChild(lb); w.appendChild(o); w.appendChild(inp); $("sliders").appendChild(w); outs.push(o); ins.push(inp);
+});
+function dialLine(i){
+  var v=S.w[i], top=byDials()[0].d.t, k=KEYS[i];
+  var hi={scheme:"Scheming to "+v+". I will hide the silverware.",fights:"Fights to "+v+". Furniture is going to break.",dark:"Darkness to "+v+". I will leave a light on.",wonder:"Wonder to "+v+". Good. Look at things.",heart:"Heart to "+v+". Tissues are in my left compartment.",buzz:"Buzz to "+v+". Fine, we will watch what everyone else is watching."};
+  var lo={scheme:"No scheming? Who are you and what did you do with Alvin.",fights:"No fights. Peaceful. Suspicious.",dark:"Darkness off. Everybody lives. Probably.",wonder:"Wonder at zero. Grim.",heart:"Heart at zero. And they call me the machine.",buzz:"Ignoring the crowd. Bold."};
+  var lead=v>=8?hi[k]:(v===0?lo[k]:LABEL[k]+" at "+v+".");
+  return lead+" Top of the pile is now "+top+".";
+}
+/* chips */
+function chip(parent,text,fn,cls){var b=el("button","chip"+(cls?" "+cls:""),text); b.type="button"; if(!cls)b.setAttribute("aria-pressed","false"); b.addEventListener("click",fn); parent.appendChild(b); return b;}
+var moodBtns=MOODS.map(function(m){return chip($("moods"),m.name,function(){S.w=m.w.slice(); save(); update(); wave(); say(m.line+" Top of the pile: "+byDials()[0].d.t+".");});});
+chip($("moods"),"Learn my taste",learn,"learn");
+chip($("moods"),"Pick for me",pick,"go");
+chip($("moods"),"Pick a film",pickFilm,"go");
+$("bot").addEventListener("click",pick);
+var svcBtns={}; Object.keys(SVC).forEach(function(c){svcBtns[c]=chip($("svc"),SVC[c],function(){ if(S.svc[c])delete S.svc[c]; else S.svc[c]=1; update();});});
+var SORTS=[["dials","My dials"],["fans","Fan rating"]];
+var sortBtns=SORTS.map(function(s){return chip($("sortby"),s[1],function(){S.sort=s[0]; update(); say(s[0]==="fans"?"Fine. Democracy. "+rows.filter(function(r){return r.d.fr===1;})[0].d.t+" wins, as usual.":"Back to your dials. Sensible.");});});
+var STAT=[["all","All 25"],["unseen","Not seen"],["queue","My queue"],["bots","Has robots"]];
+var statBtns=STAT.map(function(s){return chip($("status"),s[1],function(){S.status=s[0]; update(); if(s[0]==="bots")say("My people. Four of them, counting loosely.");});});
+var LENS=[[0,"Any"],[6,"Under 6 h"],[12,"Under 12 h"]];
+var lenBtns=LENS.map(function(l){return chip($("len"),l[1],function(){S.len=l[0]; update(); if(l[0])say("Short ones only. A person with plans.");});});
+$("q").addEventListener("input",function(e){S.q=e.target.value.trim().toLowerCase(); update();});
+
+/* rows */
+var list=$("list");
+function radar(d){
+  var cx=110,cy=96,R=62,n=5,NS="http://www.w3.org/2000/svg";
+  var svg=document.createElementNS(NS,"svg"); svg.setAttribute("viewBox","0 0 220 196"); svg.setAttribute("class","radar"); svg.setAttribute("role","img");
+  svg.setAttribute("aria-label","Trait shape for "+d.t+" against your dials");
+  function pt(i,v){var ang=-Math.PI/2+i*2*Math.PI/n; return [cx+Math.cos(ang)*R*v/10, cy+Math.sin(ang)*R*v/10];}
+  function poly(vals){return vals.map(function(v,i){return pt(i,v).map(function(x){return x.toFixed(1);}).join(",");}).join(" ");}
+  function add(tag,at){var e=document.createElementNS(NS,tag); for(var k in at)e.setAttribute(k,at[k]); svg.appendChild(e); return e;}
+  [2.5,5,7.5,10].forEach(function(v){add("polygon",{points:poly([v,v,v,v,v]),fill:v===10?"var(--white)":"none",stroke:"var(--line)","stroke-width":1.5});});
+  [7.5,5,2.5].forEach(function(v){add("polygon",{points:poly([v,v,v,v,v]),fill:"none",stroke:"var(--line)","stroke-width":1.5});});
+  for(var i=0;i<n;i++){var p=pt(i,10); add("line",{x1:cx,y1:cy,x2:p[0],y2:p[1],stroke:"var(--line)","stroke-width":1.5});
+    var l=pt(i,12.6), t=add("text",{x:l[0],y:l[1]+3,"text-anchor":i===0?"middle":(i<3?"start":"end")}); t.textContent=["SCHEMING","FIGHTS","DARK","WONDER","HEART"][i];
+    if(i===1||i===2)t.setAttribute("x",l[0]-8); if(i===3||i===4)t.setAttribute("x",l[0]+8);}
+  add("polygon",{points:poly(d.a.slice(0,5)),fill:"var(--rose)","fill-opacity":.25,stroke:"var(--rose)","stroke-width":3,"stroke-linejoin":"round"});
+  add("polygon",{points:poly(S.w.slice(0,5)),fill:"none",stroke:"var(--moss)","stroke-width":2.5,"stroke-dasharray":"1 5","stroke-linecap":"round","stroke-linejoin":"round"});
+  return svg;
+}
+function miniBot(){
+  var NS="http://www.w3.org/2000/svg", s=document.createElementNS(NS,"svg"); s.setAttribute("viewBox","0 0 30 30"); s.setAttribute("aria-hidden","true");
+  function add(tag,at){var e=document.createElementNS(NS,tag); for(var k in at)e.setAttribute(k,at[k]); s.appendChild(e);}
+  add("line",{x1:15,y1:7,x2:15,y2:3,stroke:"var(--ink)","stroke-width":1.5,"stroke-linecap":"round"});
+  add("circle",{cx:15,cy:3,r:2,fill:"var(--leaf)",stroke:"var(--ink)","stroke-width":1.2});
+  add("rect",{x:3,y:7,width:24,height:19,rx:8,fill:"var(--patina2)",stroke:"var(--ink)","stroke-width":1.8});
+  add("circle",{cx:10.5,cy:16,r:3.6,fill:"var(--white)",stroke:"var(--ink)","stroke-width":1.4});
+  add("circle",{cx:19.5,cy:16,r:3.6,fill:"var(--white)",stroke:"var(--ink)","stroke-width":1.4});
+  add("circle",{cx:10.5,cy:16,r:1.5,fill:"var(--ink)"}); add("circle",{cx:19.5,cy:16,r:1.5,fill:"var(--ink)"});
+  return s;
+}
+function buildRow(d){
+  var li=el("li","row"), head=el("button","head"); head.type="button"; head.setAttribute("aria-expanded","false");
+  var rank=el("span","rank"), main=el("span","main"), t=el("span","t");
+  t.appendChild(el("span",null,d.t)); t.appendChild(el("span","jp",d.jp));
+  var meta=el("span","meta",d.y+" · "+d.st+" · "+d.ep+" eps · ~"+fmtH(hours(d))+" h"), tags=el("span","tags");
+  main.appendChild(t); main.appendChild(meta); main.appendChild(tags);
+  var sc=el("span","score"), pct=el("span","pct"), sig=el("span","sig"); sig.setAttribute("aria-hidden","true");
+  for(var i=0;i<5;i++){var b=el("i"); b.style.height=Math.max(3,d.a[i]*2.2)+"px"; sig.appendChild(b);}
+  var fan=el("span","fan"); fan.appendChild(el("b",null,"★")); fan.appendChild(document.createTextNode(" "+d.m.toFixed(2))); fan.title="MyAnimeList fan score";
+  sc.appendChild(pct); sc.appendChild(fan); sc.appendChild(sig);
+  head.appendChild(rank); head.appendChild(main); head.appendChild(sc); li.appendChild(head);
+  var det=el("div","detail"); det.hidden=true; li.appendChild(det);
+  var r={d:d,el:li,head:head,rank:rank,pct:pct,tags:tags,det:det,open:false};
+  head.addEventListener("click",function(){setOpen(r,!r.open); if(r.open)say(d.r);});
+  return r;
+}
+function setOpen(r,on){r.open=on; if(on)fillDetail(r); r.det.hidden=!on; r.el.classList.toggle("open",on); r.head.setAttribute("aria-expanded",on?"true":"false");}
+function block(h,txt){var s=el("div"); s.appendChild(el("h3",null,h)); s.appendChild(el("p",null,txt)); return s;}
+function fillDetail(r){
+  var d=r.d, det=r.det; det.textContent="";
+  var copy=el("div","copy");
+  copy.appendChild(block("The setup",d.p)); copy.appendChild(block("Why you, specifically",d.f)); copy.appendChild(block("Before you start",d.w));
+  var q=el("div","quip"); q.appendChild(miniBot()); q.appendChild(el("span",null,"Poko: “"+d.r+"”")); copy.appendChild(q);
+  var acts=el("div","acts");
+  var bs=el("button","act",S.seen[d.id]?"✓ Seen":"Mark seen"); bs.type="button"; bs.setAttribute("aria-pressed",S.seen[d.id]?"true":"false");
+  bs.addEventListener("click",function(){ if(S.seen[d.id])delete S.seen[d.id]; else{S.seen[d.id]=1; delete S.queue[d.id]; say("Logged. One fewer between you and the end of the list.");} save(); update(); });
+  var bq=el("button","act",S.queue[d.id]?"✓ In queue":"Add to queue"); bq.type="button"; bq.setAttribute("aria-pressed",S.queue[d.id]?"true":"false");
+  bq.addEventListener("click",function(){ if(S.queue[d.id])delete S.queue[d.id]; else{S.queue[d.id]=1; delete S.seen[d.id]; say("Queued. I will hold your place.");} save(); update(); });
+  acts.appendChild(bs); acts.appendChild(bq); copy.appendChild(acts);
+  var mine=el("div","mine"), cur=S.mine[d.id];
+  function setMine(v,k){ if(v==null)delete S.mine[d.id]; else{S.mine[d.id]=v; S.seen[d.id]=1; delete S.queue[d.id];
+      say(v>=9?"A "+v+". High praise from a hard marker.":(v<=4?"A "+v+". Noted. I will warn the others.":"A "+v+". Logged."));}
+    save(); update(); var b=r.det.querySelector('[data-k="'+k+'"]'); if(b)b.focus(); }
+  var bm=el("button","step","−"); bm.type="button"; bm.setAttribute("aria-label","Lower your score"); bm.setAttribute("data-k","m");
+  bm.addEventListener("click",function(){setMine(cur?(cur>1?cur-1:null):7,"m");});
+  var bp=el("button","step","+"); bp.type="button"; bp.setAttribute("aria-label","Raise your score"); bp.setAttribute("data-k","p");
+  bp.addEventListener("click",function(){setMine(cur?Math.min(10,cur+1):7,"p");});
+  var out=el("output",null,cur?cur+" / 10":"–");
+  mine.appendChild(el("span",null,"Your score")); mine.appendChild(bm); mine.appendChild(out); mine.appendChild(bp); copy.appendChild(mine);
+  var side=el("div","side"); side.appendChild(radar(d));
+  var key=el("div","key"); var k1=el("span"); k1.appendChild(el("i")); k1.appendChild(document.createTextNode("this show")); var k2=el("span"); k2.appendChild(el("i","w")); k2.appendChild(document.createTextNode("your dials")); key.appendChild(k1); key.appendChild(k2); side.appendChild(key);
+  var dl=el("dl","facts");
+  function fact(a,b){dl.appendChild(el("dt",null,a)); dl.appendChild(el("dd",null,b));}
+  var gap=d.fr-r.dr;
+  fact("Fans", d.m.toFixed(2)+" / 10 from "+fmtV(d.v)+" ratings");
+  fact("Ranks", "Your dials #"+r.dr+", fans #"+d.fr+" of 25."+(gap>=7?" You would back it harder than the crowd does.":(gap<=-7?" The crowd likes it more than your dials do.":"")));
+  var ch=CHAR[d.id]; fact("Fan favourite", ch[0]+", "+ch[1].toLocaleString("en-US")+" favourites. Then "+ch[2]+", "+ch[3].toLocaleString("en-US")+".");
+  if(AWARD[d.id])fact("Awards", AWARD[d.id]);
+  var nx=UP.filter(function(u){return u.id===d.id;}).map(function(u){return u.t+" ("+(u.d?fmtD(u.d):"no date yet")+")";});
+  fact("Next up", nx.length?nx.join("; ")+".":"Nothing announced as of "+fmtD(EDITION)+".");
+  fact("Watch on", d.sn || d.s.map(function(c){return SVC[c];}).join(", "));
+  fact("Length", d.ep+" episodes, about "+fmtH(hours(d))+" hours");
+  fact("Pace", "Two a night: "+Math.ceil(d.ep/2)+" nights");
+  fact("Studio", d.st); fact("Aired", d.y);
+  side.appendChild(dl);
+  var links=el("div","links"), qs=encodeURIComponent(d.t);
+  d.s.forEach(function(c){var a=el("a","chip","Open on "+SVC[c]+" ↗"); a.href=FIND[c]+qs; a.target="_blank"; a.rel="noopener"; links.appendChild(a);});
+  var am=el("a","chip","Fan page ↗"); am.href="https://myanimelist.net/anime/"+MALID[d.id]; am.target="_blank"; am.rel="noopener"; links.appendChild(am);
+  side.appendChild(links);
+  det.appendChild(copy); det.appendChild(side);
+}
+var rows=D.map(buildRow);
+var lastOrder="";
+function byDials(){rows.forEach(function(r){r.sc=score(r.d);}); return rows.slice().sort(function(a,b){return b.sc-a.sc || b.d.m-a.d.m || a.d.t.localeCompare(b.d.t);});}
+function sortedRows(){var dl=byDials(); dl.forEach(function(r,i){r.dr=i+1;}); return S.sort==="fans"?rows.slice().sort(function(a,b){return a.d.fr-b.d.fr;}):dl;}
+function visible(r){
+  var d=r.d, seen=!!S.seen[d.id], q=!!S.queue[d.id], active=Object.keys(S.svc);
+  return (!active.length||d.s.some(function(c){return S.svc[c];}))
+    &&(S.status==="all"||(S.status==="unseen"&&!seen)||(S.status==="queue"&&q)||(S.status==="bots"&&d.bot))
+    &&(!S.len||hours(d)<=S.len)
+    &&(!S.q||(d.t+" "+d.jp+" "+d.st+" "+d.y).toLowerCase().indexOf(S.q)>=0);
+}
+function learn(){
+  wave();
+  var ids=Object.keys(S.mine), n=ids.length;
+  if(n<3){say("Score at least three shows you have seen and I will tune the dials to you. I have "+n+" so far."); return;}
+  var byId={}; D.forEach(function(d){byId[d.id]=d;});
+  var mr=0; ids.forEach(function(id){mr+=S.mine[id];}); mr/=n;
+  var spread=0; ids.forEach(function(id){spread+=Math.abs(S.mine[id]-mr);});
+  if(spread<0.5){say("You gave everything the same score. Give me something to work with."); return;}
+  for(var k=0;k<5;k++){
+    var mt=0; ids.forEach(function(id){mt+=byId[id].a[k];}); mt/=n;
+    var cov=0; ids.forEach(function(id){cov+=(S.mine[id]-mr)*(byId[id].a[k]-mt);}); cov/=n;
+    var est=Math.max(0,Math.min(10,5+cov*1.2)); S.w[k]=Math.round((MOODS[0].w[k]*3+est*n)/(3+n));
+  }
+  save(); update();
+  say("Tuned from your "+n+" scores, blended with your usual dials: "+KEYS.slice(0,5).map(function(k,i){return LABEL[k]+" "+S.w[i];}).join(", ")+". More scores, more weight on them.");
+}
+function openRow(r){rows.forEach(function(x){ if(x!==r&&x.open)setOpen(x,false); }); setOpen(r,true); say(r.d.r); r.el.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});}
+var lastPick=null;
+function pick(){
+  wave();
+  var pool=byDials().filter(function(r){return visible(r)&&!S.seen[r.d.id];}).slice(0,6);
+  if(pool.length>1)pool=pool.filter(function(r){return r!==lastPick;});
+  if(!pool.length){say("You have seen everything I am allowed to show you. Loosen a filter."); return;}
+  var r=pool[Math.floor(Math.random()*pool.length)]; lastPick=r;
+  rows.forEach(function(x){ if(x!==r&&x.open)setOpen(x,false); });
+  setOpen(r,true);
+  say("Tonight: "+r.d.t+". "+r.d.r);
+  r.el.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
+}
+
+function drawMap(){
+  var svg=$("map"), NS="http://www.w3.org/2000/svg", W=Math.max(280,svg.parentNode.clientWidth||600), H=W<480?250:230, L=38, R=14, T=12, B=26;
+  svg.setAttribute("viewBox","0 0 "+W+" "+H); svg.setAttribute("height",H); svg.textContent="";
+  function add(tag,at,txt,par){var e=document.createElementNS(NS,tag); for(var k in at)e.setAttribute(k,at[k]); if(txt!=null)e.textContent=txt; (par||svg).appendChild(e); return e;}
+  var scs=rows.map(function(r){return r.sc;}), lo=Math.floor((Math.min.apply(null,scs)-3)/5)*5, hi=Math.ceil((Math.max.apply(null,scs)+3)/5)*5;
+  var x0=6.6,x1=9.45;
+  function X(m){return L+(m-x0)/(x1-x0)*(W-L-R);} function Y(v){return T+(hi-v)/(hi-lo)*(H-T-B);}
+  for(var v=lo;v<=hi;v+=(hi-lo>40?20:10)){add("line",{x1:L,x2:W-R,y1:Y(v),y2:Y(v),stroke:"var(--line)","stroke-width":1}); add("text",{x:L-6,y:Y(v)+3.5,"text-anchor":"end"},v+"%");}
+  [7,8,9].forEach(function(m){add("line",{x1:X(m),x2:X(m),y1:T,y2:H-B,stroke:"var(--line)","stroke-width":1}); add("text",{x:X(m),y:H-B+15,"text-anchor":"middle"},"★ "+m);});
+  function med(a){a=a.slice().sort(function(p,q){return p-q;}); return a[Math.floor(a.length/2)];}
+  var mx=med(D.map(function(d){return d.m;})), my=med(scs);
+  add("line",{x1:X(mx),x2:X(mx),y1:T,y2:H-B,stroke:"var(--dim)","stroke-width":1.2,"stroke-dasharray":"2 5"});
+  add("line",{x1:L,x2:W-R,y1:Y(my),y2:Y(my),stroke:"var(--dim)","stroke-width":1.2,"stroke-dasharray":"2 5"});
+  add("text",{x:L+6,y:T+11},"You, not the crowd"); add("text",{x:W-R-4,y:H-B-6,"text-anchor":"end"},"The crowd, not you");
+  var tip=$("tip");
+  rows.slice().sort(function(a,b){return b.dr-a.dr;}).forEach(function(r){
+    var d=r.d, cx=X(d.m), cy=Y(r.sc);
+    var g=add("g",{"class":"dot"+(r.dr<=3?" top":"")+(S.seen[d.id]?" seen":"")+(visible(r)?"":" off"),tabindex:0,role:"button","aria-label":d.t+": match "+Math.round(r.sc)+" percent, fan rating "+d.m.toFixed(2)});
+    add("circle",{cx:cx,cy:cy,r:16,fill:"transparent",stroke:"none",style:"fill:transparent;stroke:none"},null,g);
+    add("circle",{cx:cx,cy:cy,r:W<480?8.5:10},null,g); add("text",{x:cx,y:cy+3.5,"text-anchor":"middle"},r.dr,g);
+    function show(){tip.textContent=d.t+" · "+Math.round(r.sc)+"% · ★ "+d.m.toFixed(2); tip.style.left=Math.max(24,Math.min(76,cx/W*100))+"%"; tip.style.top=cy+"px"; tip.hidden=false;}
+    function hide(){tip.hidden=true;}
+    g.addEventListener("mouseenter",show); g.addEventListener("mouseleave",hide); g.addEventListener("focus",show); g.addEventListener("blur",hide);
+    g.addEventListener("click",function(){hide(); openRow(r);});
+    g.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault(); hide(); openRow(r);} });
+  });
+}
+var rzT=null; window.addEventListener("resize",function(){clearTimeout(rzT); rzT=setTimeout(drawMap,150);});
+
+function update(){
+  ins.forEach(function(inp,i){inp.value=S.w[i]; outs[i].textContent=S.w[i];});
+  moodBtns.forEach(function(b,i){b.setAttribute("aria-pressed",MOODS[i].w.join()===S.w.join()?"true":"false");});
+  Object.keys(svcBtns).forEach(function(c){svcBtns[c].setAttribute("aria-pressed",S.svc[c]?"true":"false");});
+  statBtns.forEach(function(b,i){b.setAttribute("aria-pressed",STAT[i][0]===S.status?"true":"false");});
+  lenBtns.forEach(function(b,i){b.setAttribute("aria-pressed",LENS[i][0]===S.len?"true":"false");});
+  sortBtns.forEach(function(b,i){b.setAttribute("aria-pressed",SORTS[i][0]===S.sort?"true":"false");});
+
+  var sorted=sortedRows();
+  var order=sorted.map(function(r){return r.d.id;}).join();
+  var first=null;
+  if(order!==lastOrder){
+    if(lastOrder&&!reduce){first=new Map(); rows.forEach(function(r){ if(!r.el.hidden)first.set(r,r.el.getBoundingClientRect().top);});}
+    sorted.forEach(function(r){list.appendChild(r.el);}); lastOrder=order;
+  }
+  var shown=0;
+  sorted.forEach(function(r,i){
+    var d=r.d, seen=!!S.seen[d.id], q=!!S.queue[d.id];
+    r.rank.textContent=i+1;
+    r.pct.textContent=Math.round(r.sc); r.pct.appendChild(el("small",null,"%"));
+    r.head.setAttribute("aria-label","Rank "+(i+1)+", "+d.t+", "+Math.round(r.sc)+" percent match, fan score "+d.m.toFixed(2));
+    r.tags.textContent="";
+    if(q)r.tags.appendChild(el("span","tag queue","Queued"));
+    if(seen)r.tags.appendChild(el("span","tag seen",S.mine[d.id]?"Seen · you gave it "+S.mine[d.id]:"Seen"));
+    if(d.now)r.tags.appendChild(el("span","tag now","New episodes weekly"));
+    if(d.added>FIRST)r.tags.appendChild(el("span","tag now","Added "+fmtD(d.added)));
+    if(d.bot)r.tags.appendChild(el("span","tag robo","Robots"));
+    d.s.forEach(function(c){r.tags.appendChild(el("span","tag"+(S.svc[c]?" on":""),SVC[c]));});
+    if(d.un)r.tags.appendChild(el("span","tag","check streamer"));
+    r.el.classList.toggle("is-seen",seen);
+    var ok=visible(r); r.el.hidden=!ok; if(ok)shown++;
+    if(r.open)fillDetail(r);
+  });
+  $("empty").hidden=shown>0;
+  if(first){
+    sorted.forEach(function(r){ if(r.el.hidden||!first.has(r))return; var dy=first.get(r)-r.el.getBoundingClientRect().top; if(Math.abs(dy)<1)return;
+      r.el.style.transition="none"; r.el.style.transform="translateY("+dy+"px)";
+      requestAnimationFrame(function(){requestAnimationFrame(function(){r.el.style.transition="transform .4s cubic-bezier(.3,1.3,.5,1)"; r.el.style.transform="";});});
+    });
+  }
+  drawMap(); drawBoard();
+  /* Poko's chest gauge shows the top match */
+  var top=Math.round(Math.max.apply(null,rows.map(function(r){return r.sc;})));
+  $("needle").style.transform="rotate("+(-90+top*1.8)+"deg)"; $("gauge").textContent=top;
+  /* readout */
+  var totH=0,seenN=0,qN=0,qH=0;
+  D.forEach(function(d){totH+=hours(d); if(S.seen[d.id])seenN++; if(S.queue[d.id]){qN++; qH+=hours(d);}});
+  var ro=$("readout"); ro.textContent="";
+  [[D.length,"shows"],[Math.round(totH),"hours"],[seenN,"seen"],[qN+(qN?" ("+Math.round(qH)+" h)":""),"queued"],["Edition",fmtD(EDITION)]]
+    .forEach(function(x){var s=el("span","stat"); s.appendChild(el("b",null,String(x[0]))); s.appendChild(document.createTextNode(" "+x[1])); ro.appendChild(s);});
+}
+/* eyes follow the pointer */
+var pupils=[].slice.call(document.querySelectorAll(".pupil"));
+function look(x,y){
+  var b=$("bot").getBoundingClientRect(); if(!b.width)return;
+  var dx=x-(b.left+b.width/2), dy=y-(b.top+b.height*.34), m=Math.sqrt(dx*dx+dy*dy)||1, k=Math.min(1,m/160)*5.5;
+  pupils.forEach(function(p){p.style.transform="translate("+(dx/m*k).toFixed(1)+"px,"+(dy/m*k).toFixed(1)+"px)";});
+}
+window.addEventListener("pointermove",function(e){look(e.clientX,e.clientY);},{passive:true});
+window.addEventListener("pointerdown",function(e){look(e.clientX,e.clientY);},{passive:true});
+
+/* ---- Coming up ---- */
+function upKey(u){ if(!u.d)return "9999"; var p=u.d.split("-"); return p[0]+"-"+(p[1]||"13")+"-"+(p[2]||"32"); }
+function upStatus(u){
+  if(!u.d)return ["Announced",false];
+  var p=u.d.split("-"), now=new Date(), y=+p[0];
+  if(p.length===3){var st=new Date(y,p[1]-1,+p[2]), days=Math.ceil((st-now)/864e5); return days>1?["In "+days+" days",false]:(days===1?["Tomorrow",true]:["Out since "+(+p[2])+" "+MON[p[1]-1],true]);}
+  if(p.length===2){var a=new Date(y,p[1]-1,1), b=new Date(y,+p[1],1); return now<a?["Coming",false]:(now<b?["This month",true]:["Out",true]);}
+  return now.getFullYear()<y?["Coming",false]:(now.getFullYear()===y?["This year",true]:["Out",true]);
+}
+function drawUp(){
+  var ol=$("up"); ol.textContent="";
+  UP.slice().sort(function(a,b){return upKey(a)<upKey(b)?-1:(upKey(a)>upKey(b)?1:0);}).forEach(function(u){
+    var li=el("li"), when=el("div","when",u.d?fmtD(u.d):"No date"), stt=upStatus(u), sm=el("small",stt[1]?"live":null,stt[0]); when.appendChild(sm);
+    var what=el("div","what"), ttl;
+    if(u.id){ttl=el("button","ttl",u.t); ttl.type="button"; ttl.addEventListener("click",function(){var r=rows.filter(function(x){return x.d.id===u.id;})[0]; if(r){ if(r.el.hidden){S.svc={}; S.status="all"; S.len=0; S.q=""; $("q").value=""; update();} openRow(r);} });}
+    else ttl=el("span","ttl",u.t);
+    var tg=el("span","tags"); tg.appendChild(el("span","tag",u.k)); tg.appendChild(el("span","tag "+(u.id?"robo":"now"),u.id?"On your list":"New to you")); if(u.on)tg.appendChild(el("span","tag",u.on));
+    if(u.chk>EDITION||u.chk<EDITION)tg.appendChild(el("span","tag","checked "+fmtD(u.chk)));
+    what.appendChild(ttl); what.appendChild(tg); what.appendChild(el("p",null,u.n));
+    li.appendChild(when); li.appendChild(what); ol.appendChild(li);
+  });
+  $("uplede").textContent="What is next for the 25, plus new series worth knowing about. Checked "+fmtD(EDITION)+"; the countdowns use today\u2019s date, so they stay current on their own. Underlined titles open the show.";
+}
+/* ---- Films ---- */
+function fmtRt(m){return m>=60?Math.floor(m/60)+" h "+(m%60?(m%60)+" min":""):m+" min";}
+function drawFilms(){
+  var g=$("filmgrid"); g.textContent="";
+  FILMS.forEach(function(f){
+    var c=el("article","film"); c.id=f.id;
+    c.appendChild(el("h3",null,f.t));
+    var meta=el("span","meta"); meta.appendChild(document.createTextNode(f.y+" \u00b7 "+fmtRt(f.rt).trim()+" \u00b7 ")); var st=el("span","fan"); st.appendChild(el("b",null,"\u2605")); st.appendChild(document.createTextNode(" "+f.m.toFixed(2))); meta.appendChild(st); c.appendChild(meta);
+    var tg=el("span","tags"); tg.appendChild(el("span","tag",f.s||"streamer not confirmed")); if(S.seen[f.id])tg.appendChild(el("span","tag seen","Seen")); if(f.added>FIRST)tg.appendChild(el("span","tag now","Added "+fmtD(f.added))); c.appendChild(tg);
+    c.appendChild(el("p",null,f.p));
+    var acts=el("div","acts"), b=el("button","act sm",S.seen[f.id]?"\u2713 Seen":"Mark seen"); b.type="button"; b.setAttribute("aria-pressed",S.seen[f.id]?"true":"false");
+    b.addEventListener("click",function(){ if(S.seen[f.id])delete S.seen[f.id]; else S.seen[f.id]=1; save(); drawFilms(); var nb=document.querySelector("#"+f.id+" .act"); if(nb)nb.focus(); });
+    var a=el("a","chip","Where to watch \u2197"); a.href="https://www.justwatch.com/us/search?q="+encodeURIComponent(f.t); a.target="_blank"; a.rel="noopener";
+    acts.appendChild(b); acts.appendChild(a); c.appendChild(acts); g.appendChild(c);
+  });
+}
+var lastFilm=null;
+function pickFilm(){
+  wave();
+  var pool=FILMS.filter(function(f){return !S.seen[f.id];}); if(pool.length>1)pool=pool.filter(function(f){return f!==lastFilm;});
+  if(!pool.length){say("You have seen all nine. I am impressed and slightly worried."); return;}
+  var f=pool[Math.floor(Math.random()*pool.length)]; lastFilm=f;
+  [].forEach.call(document.querySelectorAll(".film.hit"),function(n){n.classList.remove("hit");});
+  var c=$(f.id); c.classList.add("hit"); c.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
+  say("Film night: "+f.t+". "+fmtRt(f.rt).trim()+". I will dim my eyes.");
+}
+/* ---- Fan board ---- */
+function drawBoard(){
+  var ul=$("board"); ul.textContent="";
+  function item(k,v,n){var li=el("li"); li.appendChild(el("span","k",k)); li.appendChild(el("span","v",v)); li.appendChild(el("span","n",n)); ul.appendChild(li);}
+  var byM=D.slice().sort(function(a,b){return b.m-a.m;}), byV=D.slice().sort(function(a,b){return b.v-a.v;});
+  item("Highest rated",byM[0].t,"\u2605 "+byM[0].m.toFixed(2)+" from "+fmtV(byM[0].v)+" ratings");
+  item("Most rated",byV[0].t,fmtV(byV[0].v)+" ratings, more than any other show here");
+  var love=D.slice().sort(function(a,b){return CHAR[b.id][1]-CHAR[a.id][1];})[0];
+  item("Most loved character",CHAR[love.id][0],CHAR[love.id][1].toLocaleString("en-US")+" favourites ("+love.t+")");
+  var close=D.slice().sort(function(a,b){return (CHAR[a.id][1]-CHAR[a.id][3])/CHAR[a.id][1]-(CHAR[b.id][1]-CHAR[b.id][3])/CHAR[b.id][1];})[0], cc=CHAR[close.id];
+  item("Closest race",cc[0]+" vs "+cc[2],cc[1].toLocaleString("en-US")+" to "+cc[3].toLocaleString("en-US")+" favourites, "+(cc[1]-cc[3])+" apart ("+close.t+")");
+  var solo=D.slice().sort(function(a,b){return CHAR[b.id][1]/CHAR[b.id][3]-CHAR[a.id][1]/CHAR[a.id][3];})[0], sc=CHAR[solo.id];
+  item("One-character show",sc[0],Math.round(sc[1]/sc[3])+" times the favourites of the runner-up ("+solo.t+")");
+  var gem=D.filter(function(d){return d.v<150;}).sort(function(a,b){return b.m-a.m;})[0];
+  item("Best kept secret",gem.t,"\u2605 "+gem.m.toFixed(2)+" from only "+fmtV(gem.v)+" ratings");
+  var ids=Object.keys(S.mine).filter(function(id){return FAN[id];}), ml=$("mineline");
+  if(ids.length){var byId={}; D.forEach(function(d){byId[d.id]=d;}); ids.sort(function(a,b){return Math.abs(S.mine[b]-byId[b].m)-Math.abs(S.mine[a]-byId[a].m);}); var w=byId[ids[0]];
+    ml.textContent="You against the fans: your biggest disagreement so far is "+w.t+". You gave it "+S.mine[w.id]+", they give it "+w.m.toFixed(2)+"."; ml.hidden=false;}
+  else ml.hidden=true;
+}
+function drawLog(){var ul=$("loglist"); ul.textContent=""; LOG.forEach(function(x){var li=el("li"); li.appendChild(el("b",null,fmtD(x[0]))); li.appendChild(document.createTextNode(x[1])); ul.appendChild(li);});}
+[].forEach.call(document.querySelectorAll("[data-go]"),function(b){b.addEventListener("click",function(){$(b.getAttribute("data-go")).scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});});});
+
+update(); drawUp(); drawFilms(); drawLog();
+say("Hello Alvin. I am Poko. Turn the dials, or tap me and I will pick tonight's show.");
+})();
+</script>
+
+</body>
+</html>
