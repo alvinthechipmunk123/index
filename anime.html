@@ -5,19 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Anime List">
-<meta name="theme-color" content="#bfe3f2">
+<meta name="theme-color" content="#10173a">
 <title>Alvin's Anime List</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&family=Zen+Maru+Gothic:wght@500;700&display=swap">
 <style>
-/* Layout: a daytime meadow. A framed scene up top holds the title and Poko the robot guide; below, a dial deck drives a live-reordering list of 25. One screen, one look (daylight by design). */
+/* Layout: a framed scene up top holds the title, Poko the robot and Mochi the cat; below, one filter bar drives a live-reordering list.
+   Skin: night by default, after the meteor-shower night in Frieren (deep blue sky, violet horizon, pale moon, blue flowers). A day skin is kept as an option. */
 :root{
-  --bg:#f4f0e1; --card:#fffdf6; --ink:#2e3b35; --dim:#647267; --line:#dcd6bf;
-  --sky:#bfe3f2; --sky2:#eaf6f1; --hill1:#b9dc8f; --hill2:#8cc46a;
-  --moss:#3f7a4c; --leaf:#9ccc6a; --sun:#f4b942; --rose:#d9604f;
-  --patina:#7dbcab; --patina2:#a5d3c5; --copper:#c8854e; --orange:#e9a04e; --cocoa:#5b4636; --white:#ffffff;
+  --bg:#141a30; --card:#1c2543; --surface:#253158; --ink:#e9ecf8; --dim:#a4aed2; --line:#35426e; --edge:#55659c;
+  --scene:linear-gradient(#10173a 0%,#252a66 55%,#51407f 100%); --sky:#2a376b; --sky2:#2b3462; --hill1:#23496b; --hill2:#183a52;
+  --moss:#8fdcc4; --leaf:#5fc7b0; --sun:#f1c45e; --rose:#f08d7c; --onacc:#101a33; --onsun:#27301f; --warnink:#f0c9a2;
+  --orb:#f6efd4; --glow:0 0 50px 12px rgba(246,239,212,.28); --cloud:rgba(210,220,255,.13); --bloom:#9fd4ff; --seenbg:#3b4d8c; --art:#22302c;
+  --patina:#7dbcab; --patina2:#a5d3c5; --copper:#c8854e; --orange:#e9a04e; --cocoa:#5b4636; --white:#ffffff; --cream:#fffdf6;
   --display:"Fredoka","Arial Rounded MT Bold","Trebuchet MS",sans-serif;
   --body:"Nunito",-apple-system,"Segoe UI",Roboto,sans-serif;
   --jp:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+  color-scheme:dark;
+}
+:root[data-skin="day"]{
+  --bg:#f4f0e1; --card:#fffdf6; --surface:#ffffff; --ink:#2e3b35; --dim:#647267; --line:#dcd6bf; --edge:#2e3b35;
+  --scene:linear-gradient(#bfe3f2,#eaf6f1 70%); --sky:#bfe3f2; --sky2:#eaf6f1; --hill1:#b9dc8f; --hill2:#8cc46a;
+  --moss:#3f7a4c; --leaf:#9ccc6a; --sun:#f4b942; --rose:#d9604f; --onacc:#ffffff; --onsun:#2e3b35; --warnink:#5b4636;
+  --orb:#f4b942; --glow:none; --cloud:rgba(255,255,255,.7); --bloom:#fffdf0; --seenbg:#bfe3f2; --art:#2e3b35;
   color-scheme:light;
 }
 *{box-sizing:border-box}
@@ -28,11 +37,16 @@ button,input{font:inherit; color:inherit}
 :focus-visible{outline:3px solid var(--rose); outline-offset:2px}
 
 /* scene */
-.scene{position:relative; overflow:hidden; border-radius:28px; border:2px solid var(--ink);
-  background:linear-gradient(var(--sky),var(--sky2) 70%); padding:18px 22px 0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,470px); gap:8px 24px; align-items:end; min-height:0}
-.sun{position:absolute; right:38%; top:-46px; width:130px; height:130px; border-radius:50%; background:var(--sun); opacity:.75}
-.cloud{position:absolute; height:26px; border-radius:26px; background:var(--white); opacity:.7; animation:drift 60s linear infinite}
-.cloud::before,.cloud::after{content:""; position:absolute; background:var(--white); border-radius:50%}
+.scene{position:relative; overflow:hidden; border-radius:28px; border:2px solid var(--edge);
+  background:var(--scene); padding:18px 22px 0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,470px); gap:8px 24px; align-items:end; min-height:0}
+.sun{position:absolute; right:38%; top:-46px; width:130px; height:130px; border-radius:50%; background:var(--orb); box-shadow:var(--glow); opacity:.9}
+.stars{position:absolute; inset:0 0 40% 0; opacity:.9; background-image:radial-gradient(1.4px 1.4px at 8% 22%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 17% 61%,#fff 50%,transparent 51%),radial-gradient(1.6px 1.6px at 26% 12%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 33% 44%,#fff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 44% 9%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 52% 52%,#fff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 63% 18%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 71% 68%,#fff 50%,transparent 51%),radial-gradient(1.3px 1.3px at 79% 30%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 88% 8%,#fff 50%,transparent 51%),radial-gradient(1.4px 1.4px at 94% 47%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 3% 78%,#fff 50%,transparent 51%)}
+.meteor{position:absolute; width:90px; height:2px; border-radius:2px; background:linear-gradient(90deg,rgba(255,255,255,0),#fff); opacity:0; transform:rotate(-28deg); animation:meteor 9s linear infinite}
+.me1{top:14%; left:30%} .me2{top:6%; left:62%; animation-delay:3.4s; animation-duration:11s} .me3{top:26%; left:8%; animation-delay:6.1s; animation-duration:13s}
+@keyframes meteor{0%{opacity:0; transform:translate(60px,-34px) rotate(-28deg)} 4%{opacity:.95} 12%{opacity:0; transform:translate(-120px,62px) rotate(-28deg)} 100%{opacity:0; transform:translate(-120px,62px) rotate(-28deg)}}
+:root[data-skin="day"] .stars,:root[data-skin="day"] .meteor{display:none}
+.cloud{position:absolute; height:26px; border-radius:26px; background:var(--cloud); animation:drift 60s linear infinite}
+.cloud::before,.cloud::after{content:""; position:absolute; background:inherit; border-radius:50%}
 .cloud::before{width:34px; height:34px; left:16px; top:-16px}
 .cloud::after{width:24px; height:24px; right:18px; top:-10px}
 .c1{width:110px; top:26px; left:-12%; animation-duration:80s}
@@ -45,16 +59,16 @@ button,input{font:inherit; color:inherit}
 h1{font:700 clamp(28px,5vw,44px)/1 var(--display); margin:0; text-wrap:balance}
 .tagline{margin:0; max-width:36ch; font-weight:600}
 .readout{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
-.stat{background:var(--card); border:1.5px solid var(--ink); border-radius:999px; padding:2px 10px; font:500 12.5px/1.3 var(--display); font-variant-numeric:tabular-nums}
+.stat{background:var(--card); border:1.5px solid var(--edge); border-radius:999px; padding:2px 10px; font:500 12.5px/1.3 var(--display); font-variant-numeric:tabular-nums}
 .stat b{font-weight:700}
 .poko{position:relative; display:grid; grid-template-columns:minmax(0,1fr) 160px; gap:6px; align-items:end}
-.bubble{position:relative; background:var(--card); border:2px solid var(--ink); border-radius:20px; padding:10px 12px; margin-bottom:84px; display:grid; grid-template-columns:minmax(0,1fr); gap:10px; min-width:0}
-.bubble::after{content:""; position:absolute; right:-11px; bottom:22px; width:18px; height:18px; background:var(--card); border-right:2px solid var(--ink); border-top:2px solid var(--ink); transform:rotate(45deg)}
+.bubble{position:relative; background:var(--card); border:2px solid var(--edge); border-radius:20px; padding:10px 12px; margin-bottom:84px; display:grid; grid-template-columns:minmax(0,1fr); gap:10px; min-width:0}
+.bubble::after{content:""; position:absolute; right:-11px; bottom:22px; width:18px; height:18px; background:var(--card); border-right:2px solid var(--edge); border-top:2px solid var(--edge); transform:rotate(45deg)}
 .say{margin:0; min-height:2.7em; font:500 15px/1.35 var(--display)}
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%)}
 .ctl{display:grid; grid-template-columns:minmax(0,1fr); gap:8px}
 .moodrow{display:flex; align-items:center; gap:8px; font:600 13px var(--display); color:var(--moss); text-transform:uppercase; letter-spacing:.06em}
-.moodsel{flex:1; min-width:0; font:500 15px var(--display); color:var(--ink); background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:5px 10px}
+.moodsel{flex:1; min-width:0; font:500 15px var(--display); color:var(--ink); background:var(--surface); border:2px solid var(--edge); border-radius:999px; padding:5px 10px}
 .acts2{display:flex; flex-wrap:wrap; gap:6px}
 .acts2 .sm{display:none}
 .bot{background:none; border:0; padding:0; cursor:pointer; display:block; width:160px; border-radius:24px; -webkit-tap-highlight-color:transparent}
@@ -82,12 +96,12 @@ h1{font:700 clamp(28px,5vw,44px)/1 var(--display); margin:0; text-wrap:balance}
 
 /* controls */
 .console{display:grid; grid-template-columns:minmax(0,1fr); gap:14px; align-items:start}
-.deck{background:var(--card); border:2px solid var(--ink); border-radius:22px; padding:12px 14px; display:grid; grid-template-columns:minmax(0,1.5fr) repeat(4,minmax(0,1fr)) auto; gap:10px 12px; align-items:end}
+.deck{background:var(--card); border:2px solid var(--edge); border-radius:22px; padding:12px 14px; display:grid; grid-template-columns:minmax(0,1.5fr) repeat(4,minmax(0,1fr)) auto; gap:10px 12px; align-items:end}
 .fld{display:grid; gap:4px; min-width:0}
 .fld label{font:600 12px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss)}
 .fld.end{align-self:end}
-.dd{width:100%; min-width:0; font:500 15px var(--display); color:var(--ink); background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:7px 10px}
-.dd.on{background:var(--moss); color:var(--white)}
+.dd{width:100%; min-width:0; font:500 15px var(--display); color:var(--ink); background:var(--surface); border:2px solid var(--edge); border-radius:999px; padding:7px 10px}
+.dd.on{background:var(--moss); color:var(--onacc)}
 .deck .filters{grid-column:1/-1}
 .label{font:600 13px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss); margin:0 0 10px}
 .sliders{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 22px}
@@ -96,10 +110,10 @@ h1{font:700 clamp(28px,5vw,44px)/1 var(--display); margin:0; text-wrap:balance}
 .sl output{font:600 15px var(--display); color:var(--moss); font-variant-numeric:tabular-nums}
 .sl input{grid-column:1/-1; width:100%; accent-color:var(--moss); margin:0; height:24px}
 .chips{display:flex; flex-wrap:wrap; gap:6px}
-.chip{background:var(--card); border:2px solid var(--ink); border-radius:999px; padding:4px 12px; font:500 14px/1.3 var(--display); cursor:pointer}
-.chip:hover{background:var(--sky2)}
-.chip[aria-pressed="true"]{background:var(--moss); color:var(--white)}
-.chip.go{background:var(--sun)}
+.chip{background:var(--card); border:2px solid var(--edge); border-radius:999px; padding:4px 12px; font:500 14px/1.3 var(--display); cursor:pointer}
+.chip:hover{background:var(--sky)}
+.chip[aria-pressed="true"]{background:var(--moss); color:var(--onacc)}
+.chip.go{background:var(--sun); color:var(--onsun)}
 .chip.go:hover{background:var(--leaf)}
 .filters{border-top:2px dashed var(--line); padding-top:12px}
 .filters summary{cursor:pointer; list-style:none; display:flex; gap:8px; align-items:baseline; justify-content:space-between; border-radius:8px}
@@ -110,17 +124,17 @@ h1{font:700 clamp(28px,5vw,44px)/1 var(--display); margin:0; text-wrap:balance}
 #fsum,.fs{font-size:13.5px; color:var(--dim); text-align:right; min-width:0}
 .fbody{display:grid; gap:12px; padding-top:12px}
 .sub{font:600 12px/1 var(--display); letter-spacing:.05em; text-transform:uppercase; color:var(--dim); margin:0 0 6px}
-.search{width:100%; min-width:0; background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:7px 14px}
+.search{width:100%; min-width:0; background:var(--surface); border:2px solid var(--edge); border-radius:999px; padding:7px 14px}
 .search::placeholder{color:var(--dim)}
 
 main{display:grid; gap:12px; min-width:0}
 .mine{display:flex; flex-wrap:wrap; align-items:center; gap:8px; font:600 15px var(--display)}
 .mine output{min-width:2.4em; text-align:center; font-size:20px; font-variant-numeric:tabular-nums}
-.step{width:36px; height:36px; border-radius:50%; border:2px solid var(--ink); background:var(--white); font:600 18px/1 var(--display); cursor:pointer}
+.step{width:36px; height:36px; border-radius:50%; border:2px solid var(--edge); background:var(--surface); font:600 18px/1 var(--display); cursor:pointer}
 .step:hover{background:var(--sky2)}
 .links{display:flex; flex-wrap:wrap; gap:6px}
 a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
-.tag.now{background:var(--sun); border-color:var(--sun); color:var(--ink)}
+.tag.now{background:var(--sun); border-color:var(--sun); color:var(--onsun)}
 
 /* list */
 .list{list-style:none; margin:0; padding:0; display:grid; gap:8px}
@@ -128,8 +142,8 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .row.open{border-color:var(--ink)}
 .head{width:100%; background:none; border:0; text-align:left; cursor:pointer; padding:12px 14px; display:grid; grid-template-columns:44px minmax(0,1fr) auto; gap:12px; align-items:center}
 .head:hover{background:var(--sky2)}
-.rank{width:44px; height:44px; border-radius:50%; border:2px solid var(--ink); display:grid; place-items:center; font:600 18px/1 var(--display); font-variant-numeric:tabular-nums; background:var(--white)}
-.row.top3 .rank{background:var(--sun)}
+.rank{width:44px; height:44px; border-radius:50%; border:2px solid var(--edge); display:grid; place-items:center; font:600 18px/1 var(--display); font-variant-numeric:tabular-nums; background:var(--surface)}
+.row.top3 .rank{background:var(--sun); color:var(--onsun)}
 .row.bench .rank{font-size:15px; background:var(--sky2)}
 .benchdiv{padding:18px 4px 4px}
 .benchdiv h3{font:600 22px/1.2 var(--display); margin:0 0 2px}
@@ -140,11 +154,11 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .blurb{font-size:14.5px; line-height:1.35; max-width:90ch}
 .meta{font-size:13.5px; color:var(--dim)}
 .tags{display:flex; flex-wrap:wrap; gap:4px; margin-top:4px}
-.tag{font:500 11.5px/1 var(--display); letter-spacing:.03em; border:1.5px solid var(--line); border-radius:999px; padding:3px 8px; color:var(--dim); background:var(--white)}
+.tag{font:500 11.5px/1 var(--display); letter-spacing:.03em; border:1.5px solid var(--line); border-radius:999px; padding:3px 8px; color:var(--dim); background:var(--surface)}
 .tag.on{border-color:var(--moss); color:var(--moss)}
-.tag.seen{background:var(--sky); border-color:var(--sky); color:var(--ink)}
-.tag.queue{background:var(--rose); border-color:var(--rose); color:var(--white)}
-.tag.robo{background:var(--patina2); border-color:var(--patina2); color:var(--ink)}
+.tag.seen{background:var(--seenbg); border-color:var(--seenbg); color:var(--ink)}
+.tag.queue{background:var(--rose); border-color:var(--rose); color:var(--onacc)}
+.tag.robo{background:var(--patina2); border-color:var(--patina2); color:var(--onsun)}
 .score{display:grid; justify-items:end; gap:4px}
 .pct{font:600 24px/1 var(--display); font-variant-numeric:tabular-nums}
 .pct small{font-size:12px; color:var(--dim); font-weight:500}
@@ -161,9 +175,9 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .quip{display:flex; gap:10px; align-items:center; background:var(--sky2); border-radius:16px; padding:8px 12px; font:500 15px/1.35 var(--display); max-width:62ch}
 .quip svg{flex:none; width:30px; height:30px}
 .acts{display:flex; flex-wrap:wrap; gap:8px}
-.act{border:2px solid var(--ink); background:var(--white); border-radius:999px; padding:7px 16px; font:600 15px var(--display); cursor:pointer}
+.act{border:2px solid var(--edge); background:var(--surface); border-radius:999px; padding:7px 16px; font:600 15px var(--display); cursor:pointer}
 .act:hover{background:var(--sky2)}
-.act[aria-pressed="true"]{background:var(--moss); color:var(--white)}
+.act[aria-pressed="true"]{background:var(--moss); color:var(--onacc)}
 .side{display:grid; gap:10px; align-content:start; min-width:0}
 .radar{width:100%; max-width:240px; height:auto; justify-self:center}
 .radar text{font:600 10px var(--display); fill:var(--dim)}
@@ -186,14 +200,14 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .wi p{margin:0; font-size:14.5px; max-width:78ch}
 .wi .why b{font-family:var(--display); font-weight:600; color:var(--moss)}
 .wi a{color:var(--ink); font-size:13.5px}
-.st{font:600 11.5px/1 var(--display); letter-spacing:.04em; border-radius:999px; padding:3px 8px; border:1.5px solid var(--moss); color:var(--moss); background:var(--white)}
-.st.r{border-color:var(--copper); color:var(--cocoa)}
-.st.u{border-color:var(--rose); background:var(--rose); color:var(--white)}
+.st{font:600 11.5px/1 var(--display); letter-spacing:.04em; border-radius:999px; padding:3px 8px; border:1.5px solid var(--moss); color:var(--moss); background:var(--surface)}
+.st.r{border-color:var(--copper); color:var(--warnink)}
+.st.u{border-color:var(--rose); background:var(--rose); color:var(--onacc)}
 .showlink{background:none; border:0; padding:0; cursor:pointer; font:600 13px var(--display); color:var(--ink); text-decoration:underline; text-decoration-color:var(--leaf); text-decoration-thickness:3px; text-underline-offset:3px}
 .rgroup{font:600 13px/1 var(--display); letter-spacing:.06em; text-transform:uppercase; color:var(--moss); margin:18px 0 0}
 .rgroup:first-child{margin-top:4px}
 .tag.news{border-color:var(--rose); color:var(--rose)}
-.intel{display:grid; gap:8px; background:var(--white); border:2px solid var(--line); border-radius:16px; padding:10px 12px; max-width:66ch}
+.intel{display:grid; gap:8px; background:var(--surface); border:2px solid var(--line); border-radius:16px; padding:10px 12px; max-width:66ch}
 .intel .wi{border-top:0; padding:0}
 .intel .wi + .wi{border-top:2px dashed var(--line); padding-top:8px}
 .intel .wi h4{font-size:15.5px}
@@ -201,11 +215,11 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .jump{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
 .jump span{font:600 13px var(--display); color:var(--moss); text-transform:uppercase; letter-spacing:.06em; margin-right:4px}
 .chip.sync{margin-left:auto}
-.chip.sync.ok{background:var(--leaf)}
-.chip.sync.warn{background:var(--sun)}
+.chip.sync.ok{background:var(--leaf); color:var(--onsun)}
+.chip.sync.warn{background:var(--sun); color:var(--onsun)}
 .syncrow{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px}
-.syncrow input{flex:1 1 240px; min-width:0; background:var(--white); border:2px solid var(--ink); border-radius:999px; padding:8px 14px}
-.panel{background:var(--card); border:2px solid var(--ink); border-radius:22px; padding:18px; min-width:0}
+.syncrow input{flex:1 1 240px; min-width:0; background:var(--surface); border:2px solid var(--edge); border-radius:999px; padding:8px 14px}
+.panel{background:var(--card); border:2px solid var(--edge); border-radius:22px; padding:18px; min-width:0}
 .panel h2{font:600 24px/1.2 var(--display); margin:0 0 4px}
 .lede{margin:0 0 12px; color:var(--dim); font-size:14.5px; max-width:72ch}
 .up{list-style:none; margin:0; padding:0}
@@ -218,7 +232,7 @@ a.chip{text-decoration:none; display:inline-block; color:var(--ink)}
 .what button.ttl{cursor:pointer; text-decoration:underline; text-decoration-color:var(--leaf); text-decoration-thickness:3px; text-underline-offset:3px}
 .what p{margin:0; font-size:14.5px; max-width:68ch}
 .films{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
-.film{border:2px solid var(--line); border-radius:18px; padding:12px 14px; display:grid; gap:6px; grid-template-rows:auto auto auto 1fr auto; background:var(--white); min-width:0}
+.film{border:2px solid var(--line); border-radius:18px; padding:12px 14px; display:grid; gap:6px; grid-template-rows:auto auto auto 1fr auto; background:var(--surface); min-width:0}
 .film.hit{border-color:var(--rose)}
 .film h3{font:600 18px/1.2 var(--display); margin:0}
 .film p{margin:0; font-size:14.5px}
@@ -277,11 +291,14 @@ footer p{margin:0 0 6px}
 
 <div class="wrap">
   <header class="scene">
+    <div class="stars" aria-hidden="true"></div>
+    <div class="meteor me1" aria-hidden="true"></div><div class="meteor me2" aria-hidden="true"></div><div class="meteor me3" aria-hidden="true"></div>
     <div class="sun" aria-hidden="true"></div>
     <div class="cloud c1" aria-hidden="true"></div><div class="cloud c2" aria-hidden="true"></div><div class="cloud c3" aria-hidden="true"></div>
     <svg class="hills" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0 110 C160 40 300 60 470 110 S800 150 1000 70 V200 H0Z" fill="var(--hill1)"/>
       <path d="M0 160 C200 100 380 150 560 140 S860 90 1000 130 V200 H0Z" fill="var(--hill2)"/>
+      <circle cx="40" cy="150" r="3" fill="var(--bloom)" opacity=".85"/><circle cx="95" cy="128" r="2.5" fill="var(--bloom)" opacity=".85"/><circle cx="150" cy="170" r="3" fill="var(--bloom)" opacity=".85"/><circle cx="210" cy="120" r="2.5" fill="var(--bloom)" opacity=".85"/><circle cx="270" cy="160" r="3" fill="var(--bloom)" opacity=".85"/><circle cx="330" cy="138" r="2.5" fill="var(--bloom)" opacity=".85"/><circle cx="400" cy="172" r="3" fill="var(--bloom)" opacity=".85"/><circle cx="455" cy="150" r="2.5" fill="var(--bloom)" opacity=".85"/><circle cx="520" cy="168" r="3" fill="var(--bloom)" opacity=".85"/><circle cx="600" cy="150" r="2.5" fill="var(--bloom)" opacity=".85"/><circle cx="690" cy="160" r="3" fill="var(--bloom)" opacity=".85"/><circle cx="760" cy="128" r="2.5" fill="var(--bloom)" opacity=".85"/><circle cx="840" cy="150" r="3" fill="var(--bloom)" opacity=".85"/><circle cx="930" cy="120" r="2.5" fill="var(--bloom)" opacity=".85"/><circle cx="975" cy="165" r="3" fill="var(--bloom)" opacity=".85"/>
     </svg>
     <div class="titleblock">
       <div class="kana">アルヴィンのアニメリスト</div>
@@ -298,56 +315,56 @@ footer p{margin:0 0 6px}
       <button class="cat" id="cat" type="button" aria-label="Mochi the cat. Tap for a cosy pick.">
         <svg viewBox="0 0 124 112" aria-hidden="true">
           <defs><clipPath id="cbody"><ellipse cx="62" cy="80" rx="31" ry="27"/></clipPath><clipPath id="chead"><ellipse cx="54" cy="42" rx="27" ry="23"/></clipPath></defs>
-          <g class="pom"><circle cx="98" cy="88" r="10" fill="var(--orange)" stroke="var(--ink)" stroke-width="3"/></g>
-          <ellipse cx="62" cy="80" rx="31" ry="27" fill="var(--white)" stroke="var(--ink)" stroke-width="3"/>
+          <g class="pom"><circle cx="98" cy="88" r="10" fill="var(--orange)" stroke="var(--art)" stroke-width="3"/></g>
+          <ellipse cx="62" cy="80" rx="31" ry="27" fill="var(--white)" stroke="var(--art)" stroke-width="3"/>
           <g clip-path="url(#cbody)"><circle cx="86" cy="66" r="17" fill="var(--orange)"/><circle cx="38" cy="100" r="13" fill="var(--cocoa)"/></g>
-          <ellipse cx="62" cy="80" rx="31" ry="27" fill="none" stroke="var(--ink)" stroke-width="3"/>
-          <ellipse cx="48" cy="104" rx="9" ry="6" fill="var(--white)" stroke="var(--ink)" stroke-width="3"/>
-          <ellipse cx="70" cy="104" rx="9" ry="6" fill="var(--white)" stroke="var(--ink)" stroke-width="3"/>
-          <g class="ear"><path d="M33 30 L28 6 L50 20Z" fill="var(--orange)" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/></g>
-          <g class="ear"><path d="M60 20 L80 6 L76 32Z" fill="var(--cocoa)" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/></g>
-          <ellipse cx="54" cy="42" rx="27" ry="23" fill="var(--white)" stroke="var(--ink)" stroke-width="3"/>
+          <ellipse cx="62" cy="80" rx="31" ry="27" fill="none" stroke="var(--art)" stroke-width="3"/>
+          <ellipse cx="48" cy="104" rx="9" ry="6" fill="var(--white)" stroke="var(--art)" stroke-width="3"/>
+          <ellipse cx="70" cy="104" rx="9" ry="6" fill="var(--white)" stroke="var(--art)" stroke-width="3"/>
+          <g class="ear"><path d="M33 30 L28 6 L50 20Z" fill="var(--orange)" stroke="var(--art)" stroke-width="3" stroke-linejoin="round"/></g>
+          <g class="ear"><path d="M60 20 L80 6 L76 32Z" fill="var(--cocoa)" stroke="var(--art)" stroke-width="3" stroke-linejoin="round"/></g>
+          <ellipse cx="54" cy="42" rx="27" ry="23" fill="var(--white)" stroke="var(--art)" stroke-width="3"/>
           <g clip-path="url(#chead)"><circle cx="32" cy="24" r="17" fill="var(--orange)"/><circle cx="78" cy="24" r="16" fill="var(--cocoa)"/></g>
-          <ellipse cx="54" cy="42" rx="27" ry="23" fill="none" stroke="var(--ink)" stroke-width="3"/>
+          <ellipse cx="54" cy="42" rx="27" ry="23" fill="none" stroke="var(--art)" stroke-width="3"/>
           <path d="M36 62 Q54 72 72 62" fill="none" stroke="var(--rose)" stroke-width="5" stroke-linecap="round"/>
-          <circle cx="54" cy="69" r="4.5" fill="var(--sun)" stroke="var(--ink)" stroke-width="2"/>
-          <g class="ceye"><ellipse class="cpupil" cx="43" cy="42" rx="3.6" ry="4.8" fill="var(--ink)"/><ellipse class="cpupil" cx="65" cy="42" rx="3.6" ry="4.8" fill="var(--ink)"/></g>
-          <path d="M51.5 49 L56.5 49 L54 52Z" fill="var(--rose)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>
-          <path d="M48 55 Q51 58 54 54 Q57 58 60 55" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>
-          <path d="M34 48 L22 46 M34 52 L23 54 M74 48 L86 46 M74 52 L85 54" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="54" cy="69" r="4.5" fill="var(--sun)" stroke="var(--art)" stroke-width="2"/>
+          <g class="ceye"><ellipse class="cpupil" cx="43" cy="42" rx="3.6" ry="4.8" fill="var(--art)"/><ellipse class="cpupil" cx="65" cy="42" rx="3.6" ry="4.8" fill="var(--art)"/></g>
+          <path d="M51.5 49 L56.5 49 L54 52Z" fill="var(--rose)" stroke="var(--art)" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M48 55 Q51 58 54 54 Q57 58 60 55" fill="none" stroke="var(--art)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M34 48 L22 46 M34 52 L23 54 M74 48 L86 46 M74 52 L85 54" stroke="var(--art)" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </button>
       <button class="bot" id="bot" type="button" aria-label="Poko the robot. Tap for tonight's pick.">
         <svg viewBox="0 0 200 236" role="img" aria-hidden="true">
-          <ellipse cx="100" cy="226" rx="62" ry="8" fill="var(--moss)" opacity=".35"/>
+          <ellipse cx="100" cy="226" rx="62" ry="8" fill="var(--art)" opacity=".3"/>
           <g class="bob">
-            <rect x="66" y="188" width="24" height="34" rx="10" fill="var(--copper)" stroke="var(--ink)" stroke-width="3"/>
-            <rect x="110" y="188" width="24" height="34" rx="10" fill="var(--copper)" stroke="var(--ink)" stroke-width="3"/>
-            <rect x="24" y="126" width="22" height="52" rx="11" fill="var(--patina)" stroke="var(--ink)" stroke-width="3"/>
-            <g class="arm-r"><rect x="154" y="126" width="22" height="52" rx="11" fill="var(--patina)" stroke="var(--ink)" stroke-width="3"/></g>
-            <rect x="44" y="112" width="112" height="88" rx="40" fill="var(--patina)" stroke="var(--ink)" stroke-width="3"/>
-            <circle cx="100" cy="158" r="27" fill="var(--card)" stroke="var(--ink)" stroke-width="3"/>
+            <rect x="66" y="188" width="24" height="34" rx="10" fill="var(--copper)" stroke="var(--art)" stroke-width="3"/>
+            <rect x="110" y="188" width="24" height="34" rx="10" fill="var(--copper)" stroke="var(--art)" stroke-width="3"/>
+            <rect x="24" y="126" width="22" height="52" rx="11" fill="var(--patina)" stroke="var(--art)" stroke-width="3"/>
+            <g class="arm-r"><rect x="154" y="126" width="22" height="52" rx="11" fill="var(--patina)" stroke="var(--art)" stroke-width="3"/></g>
+            <rect x="44" y="112" width="112" height="88" rx="40" fill="var(--patina)" stroke="var(--art)" stroke-width="3"/>
+            <circle cx="100" cy="158" r="27" fill="var(--cream)" stroke="var(--art)" stroke-width="3"/>
             <path d="M80 164 A20 20 0 0 1 120 164" fill="none" stroke="var(--leaf)" stroke-width="6" stroke-linecap="round"/>
             <g id="needle" style="transform-origin:100px 164px"><line x1="100" y1="164" x2="100" y2="144" stroke="var(--rose)" stroke-width="3.5" stroke-linecap="round"/></g>
-            <circle cx="100" cy="164" r="4" fill="var(--ink)"/>
-            <text id="gauge" x="100" y="181" text-anchor="middle" style="font:600 10px var(--display)" fill="var(--ink)">0</text>
-            <line x1="100" y1="40" x2="100" y2="18" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="100" cy="164" r="4" fill="var(--art)"/>
+            <text id="gauge" x="100" y="181" text-anchor="middle" style="font:600 10px var(--display)" fill="var(--art)">0</text>
+            <line x1="100" y1="40" x2="100" y2="18" stroke="var(--art)" stroke-width="3" stroke-linecap="round"/>
             <g class="sprout">
-              <path d="M100 18 C86 16 80 6 82 0 C94 0 100 8 100 18Z" fill="var(--leaf)" stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>
-              <path d="M100 18 C112 14 120 8 120 2 C108 0 100 8 100 18Z" fill="var(--hill2)" stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M100 18 C86 16 80 6 82 0 C94 0 100 8 100 18Z" fill="var(--leaf)" stroke="var(--art)" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M100 18 C112 14 120 8 120 2 C108 0 100 8 100 18Z" fill="var(--hill2)" stroke="var(--art)" stroke-width="2.5" stroke-linejoin="round"/>
             </g>
-            <rect x="36" y="38" width="128" height="84" rx="38" fill="var(--patina2)" stroke="var(--ink)" stroke-width="3"/>
-            <path d="M40 66 C40 48 52 40 70 40 C66 52 56 62 40 66Z" fill="var(--hill2)" stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>
-            <circle cx="52" cy="50" r="4" fill="var(--white)" stroke="var(--ink)" stroke-width="2"/>
-            <rect x="50" y="56" width="100" height="52" rx="24" fill="var(--card)" stroke="var(--ink)" stroke-width="3"/>
-            <circle cx="78" cy="80" r="15" fill="var(--white)" stroke="var(--ink)" stroke-width="3"/>
-            <circle cx="122" cy="80" r="15" fill="var(--white)" stroke="var(--ink)" stroke-width="3"/>
-            <circle class="pupil" cx="78" cy="80" r="6.5" fill="var(--ink)"/>
-            <circle class="pupil" cx="122" cy="80" r="6.5" fill="var(--ink)"/>
+            <rect x="36" y="38" width="128" height="84" rx="38" fill="var(--patina2)" stroke="var(--art)" stroke-width="3"/>
+            <path d="M40 66 C40 48 52 40 70 40 C66 52 56 62 40 66Z" fill="var(--hill2)" stroke="var(--art)" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="52" cy="50" r="4" fill="var(--white)" stroke="var(--art)" stroke-width="2"/>
+            <rect x="50" y="56" width="100" height="52" rx="24" fill="var(--cream)" stroke="var(--art)" stroke-width="3"/>
+            <circle cx="78" cy="80" r="15" fill="var(--white)" stroke="var(--art)" stroke-width="3"/>
+            <circle cx="122" cy="80" r="15" fill="var(--white)" stroke="var(--art)" stroke-width="3"/>
+            <circle class="pupil" cx="78" cy="80" r="6.5" fill="var(--art)"/>
+            <circle class="pupil" cx="122" cy="80" r="6.5" fill="var(--art)"/>
             <rect class="lid" x="62" y="64" width="32" height="32" rx="15" fill="var(--patina2)"/>
             <rect class="lid" x="106" y="64" width="32" height="32" rx="15" fill="var(--patina2)"/>
-            <path d="M92 100 Q100 106 108 100" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="60" cy="128" r="3" fill="var(--ink)"/><circle cx="140" cy="128" r="3" fill="var(--ink)"/>
+            <path d="M92 100 Q100 106 108 100" fill="none" stroke="var(--art)" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="60" cy="128" r="3" fill="var(--art)"/><circle cx="140" cy="128" r="3" fill="var(--art)"/>
           </g>
         </svg>
       </button>
@@ -364,6 +381,7 @@ footer p{margin:0 0 6px}
     <button class="chip" type="button" data-go="films">Films</button>
     <button class="chip" type="button" data-go="fans">Fan board</button>
     <button class="chip" type="button" data-go="log">Update log</button>
+    <button class="chip" type="button" id="skinbtn"></button>
     <button class="chip sync" type="button" id="syncbtn" aria-expanded="false" aria-controls="syncsheet">☁ Sync</button>
   </nav>
 
@@ -735,6 +753,7 @@ var READ_DATE="2026-10-10", READ=[["More demand than hands", "Netflix’s anime 
 var STN={c:"Confirmed",r:"Reported",u:"Rumour"};
 /* Update log: newest first. Append a row per round. */
 var LOG=[
+ ["2026-10-10","New night theme after the meteor-shower night in Frieren: deep blue sky, moon, shooting stars and blue flowers. The day theme is still there behind a switch."],
  ["2026-10-10","Added the Insider wire (34 sourced items with a four-point read), Ahead of the curve (15 items), insider notes on the shows they concern, and a News button on Poko. Filters became dropdowns in one bar. Coming up corrected: Solo Leveling continues as a film, Jujutsu Kaisen has a new director, Fool Night is dated 26 November."],
  ["2026-10-10","Each show box now carries a one-line description. The list opens in fan-rating order, the dials fold away, and the header and control boxes are smaller. Frieren marked seen."],
  ["2026-10-10","Added the bench (ten more shows), trailer links, and a compact mood picker in Poko\u2019s bubble. Chainsaw Man and Jujutsu Kaisen marked seen. A monthly refresh is scheduled for the first of each month."],
@@ -824,7 +843,7 @@ function radar(d){
   function pt(i,v){var ang=-Math.PI/2+i*2*Math.PI/n; return [cx+Math.cos(ang)*R*v/10, cy+Math.sin(ang)*R*v/10];}
   function poly(vals){return vals.map(function(v,i){return pt(i,v).map(function(x){return x.toFixed(1);}).join(",");}).join(" ");}
   function add(tag,at){var e=document.createElementNS(NS,tag); for(var k in at)e.setAttribute(k,at[k]); svg.appendChild(e); return e;}
-  [2.5,5,7.5,10].forEach(function(v){add("polygon",{points:poly([v,v,v,v,v]),fill:v===10?"var(--white)":"none",stroke:"var(--line)","stroke-width":1.5});});
+  [2.5,5,7.5,10].forEach(function(v){add("polygon",{points:poly([v,v,v,v,v]),fill:v===10?"var(--surface)":"none",stroke:"var(--line)","stroke-width":1.5});});
   [7.5,5,2.5].forEach(function(v){add("polygon",{points:poly([v,v,v,v,v]),fill:"none",stroke:"var(--line)","stroke-width":1.5});});
   for(var i=0;i<n;i++){var p=pt(i,10); add("line",{x1:cx,y1:cy,x2:p[0],y2:p[1],stroke:"var(--line)","stroke-width":1.5});
     var l=pt(i,12.6), t=add("text",{x:l[0],y:l[1]+3,"text-anchor":i===0?"middle":(i<3?"start":"end")}); t.textContent=["SCHEMING","FIGHTS","DARK","WONDER","HEART"][i];
@@ -836,12 +855,12 @@ function radar(d){
 function miniBot(){
   var NS="http://www.w3.org/2000/svg", s=document.createElementNS(NS,"svg"); s.setAttribute("viewBox","0 0 30 30"); s.setAttribute("aria-hidden","true");
   function add(tag,at){var e=document.createElementNS(NS,tag); for(var k in at)e.setAttribute(k,at[k]); s.appendChild(e);}
-  add("line",{x1:15,y1:7,x2:15,y2:3,stroke:"var(--ink)","stroke-width":1.5,"stroke-linecap":"round"});
-  add("circle",{cx:15,cy:3,r:2,fill:"var(--leaf)",stroke:"var(--ink)","stroke-width":1.2});
-  add("rect",{x:3,y:7,width:24,height:19,rx:8,fill:"var(--patina2)",stroke:"var(--ink)","stroke-width":1.8});
-  add("circle",{cx:10.5,cy:16,r:3.6,fill:"var(--white)",stroke:"var(--ink)","stroke-width":1.4});
-  add("circle",{cx:19.5,cy:16,r:3.6,fill:"var(--white)",stroke:"var(--ink)","stroke-width":1.4});
-  add("circle",{cx:10.5,cy:16,r:1.5,fill:"var(--ink)"}); add("circle",{cx:19.5,cy:16,r:1.5,fill:"var(--ink)"});
+  add("line",{x1:15,y1:7,x2:15,y2:3,stroke:"var(--art)","stroke-width":1.5,"stroke-linecap":"round"});
+  add("circle",{cx:15,cy:3,r:2,fill:"var(--leaf)",stroke:"var(--art)","stroke-width":1.2});
+  add("rect",{x:3,y:7,width:24,height:19,rx:8,fill:"var(--patina2)",stroke:"var(--art)","stroke-width":1.8});
+  add("circle",{cx:10.5,cy:16,r:3.6,fill:"var(--white)",stroke:"var(--art)","stroke-width":1.4});
+  add("circle",{cx:19.5,cy:16,r:3.6,fill:"var(--white)",stroke:"var(--art)","stroke-width":1.4});
+  add("circle",{cx:10.5,cy:16,r:1.5,fill:"var(--art)"}); add("circle",{cx:19.5,cy:16,r:1.5,fill:"var(--art)"});
   return s;
 }
 function buildRow(d){
@@ -1242,6 +1261,15 @@ $("syncbtn").addEventListener("click",function(){var sh=$("syncsheet"); sh.hidde
 $("gh-save").addEventListener("click",function(){ghToken=$("gh-token").value.trim(); try{localStorage.setItem("anime-gh-token",ghToken);}catch(e){} $("syncsheet").hidden=true; $("syncbtn").setAttribute("aria-expanded","false"); ghRefresh();});
 $("gh-forget").addEventListener("click",function(){ghToken=""; try{localStorage.removeItem("anime-gh-token");}catch(e){} $("gh-token").value=""; setSync("add token to save","warn");});
 ghToken=SYNC_ON?findToken():"";
+
+/* ---- skin: night (default) or day; remembered per device ---- */
+var skin="night"; try{skin=localStorage.getItem("anime-skin")||"night";}catch(e){}
+function applySkin(talk){ if(skin==="day")document.documentElement.setAttribute("data-skin","day"); else document.documentElement.removeAttribute("data-skin");
+  $("skinbtn").textContent=skin==="day"?"\u263E Night":"\u2600 Day"; $("skinbtn").setAttribute("aria-label",skin==="day"?"Switch to the night theme":"Switch to the day theme");
+  var m=document.querySelector('meta[name="theme-color"]'); if(m)m.setAttribute("content",skin==="day"?"#bfe3f2":"#10173a");
+  if(talk)say(skin==="day"?"Daylight. I can see my moss again.":"Night. Watch for the meteor shower. It only comes round every fifty years."); }
+$("skinbtn").addEventListener("click",function(){skin=skin==="day"?"night":"day"; try{localStorage.setItem("anime-skin",skin);}catch(e){} applySkin(true);});
+applySkin(false);
 
 update(); drawUp(); drawFilms(); drawLog(); drawRead(); drawWire(); drawRadar(); ghRefresh();
 say("Hello Alvin. I am Poko. The list starts in fan order. Tap me and I will pick tonight's show.");
