@@ -155,6 +155,44 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .fact b{display:block;font-family:Fredoka;font-size:16px;color:var(--navy)}
 .fact small{font-size:11px;color:#9C6B63}
 .fact.bad{background:#FFE1E1}.fact.bad b{color:var(--red)}
+/* morning check-in */
+.mood-q{font-size:13.5px;color:#4A3A3A;margin-top:6px;line-height:1.35;font-weight:600}
+.moods{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.md{border-radius:16px;border:1.5px solid var(--line);background:#fff;padding:8px 2px 6px;font-size:28px;line-height:1;display:flex;flex-direction:column;align-items:center;gap:3px;touch-action:manipulation}
+.md small{font-size:10.5px;font-family:Nunito;color:#9C6B63;font-weight:800}
+.md.on{background:linear-gradient(180deg,#FFF6D9,#FFE9B8);border-color:#F4B73E;transform:translateY(-2px);box-shadow:0 4px 10px rgba(244,183,62,.35)}
+/* bar tab */
+.tab-top{display:flex;align-items:center;gap:10px;margin-top:6px}
+.tab-big b{font-family:Fredoka;font-size:34px;color:var(--red);line-height:1;display:block}
+.tab-big span{font-size:11.5px;color:#9C6B63}
+.tab-credit{margin-left:auto;text-align:right;font-size:12.5px;color:#4A3A3A;font-weight:700;line-height:1.3}
+.tab-credit b{font-family:Fredoka;font-size:18px;display:block}
+.tab-credit.ok b{color:var(--mint)} .tab-credit.over b{color:var(--red)}
+.credit-in{display:flex;align-items:center;gap:6px;font-size:13px;color:#7A6060;margin-top:10px}
+.credit-in input,.price-grid input{font-family:Nunito;font-weight:800;font-size:15px;color:var(--navy);border:1.5px solid var(--line);border-radius:10px;padding:5px 8px;width:86px;background:#fff}
+.prices{margin-top:8px}
+.prices summary{font-size:13px;color:var(--red);font-weight:800;cursor:pointer}
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:8px}
+.price-grid label{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#4A3A3A}
+.price-grid input{width:64px;margin-left:auto}
+/* badges */
+.badges{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.bd{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;font-size:10.5px;line-height:1.15;color:#4A3A3A;font-weight:800;touch-action:manipulation}
+.bd i{font-style:normal;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:26px;
+  background:radial-gradient(circle at 35% 30%,#FFF6D9,#FFD27A);border:2.5px solid #F4B73E;box-shadow:0 3px 0 #D9962B}
+.bd.lock{color:#B5A6A2}.bd.lock i{background:#F4EEEC;border:2px dashed #E3D3CE;box-shadow:none;filter:grayscale(1);opacity:.45}
+.bd.new i{animation:pop .6s cubic-bezier(.3,1.6,.5,1) 3}
+/* report card */
+.report{background:linear-gradient(180deg,#FFFDF8,#FFF6EC)}
+.grade{display:flex;align-items:center;gap:12px;margin-top:8px}
+.grade b{font-family:Fredoka;font-size:52px;line-height:1;color:var(--red);width:70px;height:70px;border-radius:50%;display:grid;place-items:center;background:#FFF1EC;border:3px solid var(--red)}
+.grade span{font-size:13.5px;font-weight:700;color:#4A3A3A;line-height:1.35}
+.rep-rows{list-style:none;margin-top:10px;display:grid;gap:5px}
+.rep-rows li{display:flex;justify-content:space-between;gap:10px;font-size:13px;border-bottom:1.5px dashed #F4E0D9;padding-bottom:4px;color:#4A3A3A}
+.rep-rows li b{font-family:Fredoka;font-weight:600;color:var(--navy);text-align:right}
+.wa.small{display:flex;justify-content:center;margin-top:10px;border-radius:14px;padding:9px;font-family:Fredoka;font-weight:600;font-size:14px;text-decoration:none;color:#fff;background:linear-gradient(180deg,#2FD06B,#1FAF55)}
+.aboard{margin-top:6px;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:#1F5F8E;background:#E3F5FC;border-radius:12px;padding:4px 10px}
+.aboard.soon{color:#fff;background:var(--red);animation:pop .6s ease-in-out infinite alternate}
 /* weather */
 .wx{display:flex;gap:10px;align-items:center;margin-top:10px;padding:9px 11px;border-radius:16px;
   background:linear-gradient(135deg,#DFF3FB 0%,#FFF1D6 100%);border:1.5px solid #CDE9F5}
@@ -302,6 +340,9 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .octo .clouds{animation:cloud 18s ease-in-out infinite alternate}
 .octo .flagcloth{transform-origin:1px -19px;animation:flag 1s ease-in-out infinite}
 .octo .ship{animation:shipbob 3s ease-in-out infinite}
+.octo .ofit{display:none}
+.octo.o-pj .cap,.octo.o-sweater .sweater,.octo.o-scarlet .bow,.octo.o-lei .lei{display:inline}
+.octo.o-pj .hat{display:none}
 .octo .eyes-happy,.octo .mouth-o,.octo .mouth-open,.octo .sweat,.octo .it,.octo .stars{display:none}
 .octo .s1{stop-color:#FFE9CF}.octo .s2{stop-color:#FFD0B5}.octo .s3{stop-color:#FFB9A0}
 .octo.dusk .s1{stop-color:#FFB48A}.octo.dusk .s2{stop-color:#FF8C7A}.octo.dusk .s3{stop-color:#C7577A}
@@ -351,6 +392,7 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
       <svg class="porthole octo m-wait" id="octo" viewBox="0 0 200 200" role="img" aria-label="Octo the octopus in a porthole">
         <defs>
           <clipPath id="ph"><circle cx="100" cy="100" r="84"/></clipPath>
+          <clipPath id="bodyClip"><path d="M56 104 C56 70 76 56 100 56 C124 56 144 70 144 104 C144 120 138 132 132 142 L68 142 C62 132 56 120 56 104Z"/></clipPath>
           <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" class="s1"/><stop offset=".6" class="s2"/><stop offset="1" class="s3"/>
           </linearGradient>
@@ -415,7 +457,13 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
             </g>
             <path d="M56 104 C56 70 76 56 100 56 C124 56 144 70 144 104 C144 120 138 132 132 142 L68 142 C62 132 56 120 56 104Z" fill="url(#body)"/>
             <ellipse cx="86" cy="70" rx="12" ry="6" fill="#fff" opacity=".22" transform="rotate(-20 86 70)"/>
-            <g transform="rotate(-10 100 60)">
+            <g class="ofit sweater" clip-path="url(#bodyClip)">
+              <rect x="50" y="120" width="100" height="30" fill="#1E7A46"/>
+              <rect x="50" y="119" width="100" height="3" fill="#E0102F"/>
+              <path d="M50 125 l4.5 -3.5 l4.5 3.5 l4.5 -3.5 l4.5 3.5 l4.5 -3.5 l4.5 3.5 l4.5 -3.5 l4.5 3.5 l4.5 -3.5 l4.5 3.5 l4.5 -3.5 l4.5 3.5 l4.5 -3.5 l4.5 3.5 l4.5 -3.5 l4.5 3.5 l4.5 -3.5 l4.5 3.5 l4.5 -3.5 l4.5 3.5 l4.5 -3.5 l4.5 3.5" stroke="#fff" stroke-width="1.8" fill="none"/>
+              <circle cx="58" cy="129" r="1.7" fill="#fff"/><circle cx="67" cy="129" r="1.7" fill="#E0102F"/><circle cx="76" cy="129" r="1.7" fill="#fff"/><circle cx="85" cy="129" r="1.7" fill="#E0102F"/><circle cx="94" cy="129" r="1.7" fill="#fff"/><circle cx="103" cy="129" r="1.7" fill="#E0102F"/><circle cx="112" cy="129" r="1.7" fill="#fff"/><circle cx="121" cy="129" r="1.7" fill="#E0102F"/><circle cx="130" cy="129" r="1.7" fill="#fff"/><circle cx="139" cy="129" r="1.7" fill="#fff"/>
+            </g>
+            <g class="hat" transform="rotate(-10 100 60)">
               <ellipse cx="100" cy="61" rx="27" ry="6" fill="#1D2B4C"/>
               <path d="M79 60 C79 44 121 44 121 60Z" fill="#FFFDF8"/>
               <rect x="79" y="55" width="42" height="5" fill="#1D2B4C"/>
@@ -432,6 +480,20 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
             <g class="eyes-happy" fill="none" stroke="#1D2B4C" stroke-width="3.6" stroke-linecap="round">
               <path d="M76 99 Q84 88 92 99"/><path d="M108 99 Q116 88 124 99"/>
             </g>
+            <g class="ofit cap" transform="rotate(-12 100 60)">
+              <path d="M75 62 C76 44 92 32 112 33 C128 34 140 44 139 56 C133 50 126 48 120 51 C124 55 126 59 126 62 Z" fill="#4A6FD8"/>
+              <path d="M88 44 l1.6 3.2 3.5.5-2.5 2.4.6 3.5-3.2-1.7-3.1 1.7.6-3.5-2.6-2.4 3.6-.5z" fill="#FFE07A"/>
+              <circle cx="108" cy="40" r="1.6" fill="#FFE07A"/><circle cx="122" cy="44" r="1.3" fill="#FFE07A"/>
+              <rect x="73" y="58" width="55" height="7.5" rx="3.7" fill="#FFFDF8"/>
+              <circle cx="140" cy="57" r="5.8" fill="#FFFDF8"/>
+            </g>
+            <g class="ofit bow">
+              <path d="M100 126 L86 118 Q83.5 126 86 134 Z" fill="#8E0A1E" stroke="#5A0613" stroke-width="1"/>
+              <path d="M100 126 L114 118 Q116.5 126 114 134 Z" fill="#8E0A1E" stroke="#5A0613" stroke-width="1"/>
+              <circle cx="90" cy="123" r="1.3" fill="#fff"/><circle cx="90" cy="129" r="1.3" fill="#fff"/><circle cx="110" cy="123" r="1.3" fill="#fff"/><circle cx="110" cy="129" r="1.3" fill="#fff"/>
+              <rect x="96.5" y="122.5" width="7" height="7" rx="2.5" fill="#B30C24" stroke="#5A0613" stroke-width="1"/>
+            </g>
+            <g class="ofit lei"><g transform="translate(68,119)"><circle r="4.4" fill="#FF6FA8"/><circle r="1.6" fill="#FFF6D0"/></g><g transform="translate(77,123)"><circle r="4.4" fill="#FFD23F"/><circle r="1.6" fill="#FFF6D0"/></g><g transform="translate(88,126)"><circle r="4.4" fill="#FF8C42"/><circle r="1.6" fill="#FFF6D0"/></g><g transform="translate(100,127)"><circle r="4.4" fill="#FF6FA8"/><circle r="1.6" fill="#FFF6D0"/></g><g transform="translate(112,126)"><circle r="4.4" fill="#FFD23F"/><circle r="1.6" fill="#FFF6D0"/></g><g transform="translate(123,123)"><circle r="4.4" fill="#FF8C42"/><circle r="1.6" fill="#FFF6D0"/></g><g transform="translate(132,119)"><circle r="4.4" fill="#FF6FA8"/><circle r="1.6" fill="#FFF6D0"/></g></g>
             <g class="specs">
               <path d="M58 92 L70 94 M142 92 L130 94" stroke="#C9CED6" stroke-width="2.4" stroke-linecap="round" fill="none"/>
               <rect x="69.5" y="83" width="29" height="25" rx="7" fill="rgba(255,255,255,.16)" stroke="#E6E9EE" stroke-width="3"/>
@@ -481,6 +543,12 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
     <label class="toggle" id="dbRow"><input type="checkbox" id="dbBox"><span class="sw"></span><span>🌊 Make this my Deep Blue Day (free pass, one per voyage)</span></label>
   </section>
 
+  <section class="card" id="moodCard">
+    <h3>☀️ Morning Check-in <span class="r" id="moodDay"></span></h3>
+    <div class="mood-q" id="moodQ"></div>
+    <div class="moods" id="moods"></div>
+  </section>
+
   <section class="card">
     <h3>🍸 Tonight's Tally
       <span class="capctl">cap <button id="capMinus" aria-label="Lower cap">−</button><b id="capV">5</b><button id="capPlus" aria-label="Raise cap">+</button></span>
@@ -505,6 +573,18 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   </section>
 
   <section class="card">
+    <h3>💳 Bar Tab <span class="r" id="tabTonight"></span></h3>
+    <div class="tab-top"><div class="tab-big"><b id="tabTotal">$0</b><span>this voyage</span></div><div class="tab-credit" id="tabCredit"></div></div>
+    <label class="credit-in">Bar tab credit $ <input id="creditIn" type="number" inputmode="decimal" min="0" step="10" placeholder="0"></label>
+    <details class="prices"><summary>Edit drink prices</summary><div class="price-grid" id="priceGrid"></div><div class="rfoot">Set these to the menu prices on board. Gratuity is included on Virgin, so there's no 18% to add.</div></details>
+  </section>
+
+  <section class="card">
+    <h3>🏅 Badges <span class="r" id="badgeCount"></span></h3>
+    <div class="badges" id="badges"></div>
+  </section>
+
+  <section class="card">
     <h3>🐙 Octo's Checklist <span class="r" id="ckDay"></span></h3>
     <ul class="checks" id="checks"></ul>
     <form class="add" id="addForm"><input id="addIn" maxlength="60" placeholder="Add your own item…"><button aria-label="Add item">+</button></form>
@@ -514,6 +594,12 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
     <h3>⚓ Voyage Log</h3>
     <div class="stats" id="stats"></div>
     <div class="bars" id="bars"></div>
+  </section>
+
+  <section class="card report" id="reportCard">
+    <h3>📜 Voyage Report Card <span class="r" id="repTag"></span></h3>
+    <div id="report"></div>
+    <a class="wa small" id="repShare" target="_blank" rel="noopener" href="#">📲 Share my report</a>
   </section>
 
   <div class="share">
@@ -597,6 +683,10 @@ var DINNER=[{"r": "gunbae", "w": "Book about 6:45, after the Let's Set Sail part
 var SHOWS=[[["4:30–6:30pm", "Let's Set Sail party", "Aquatic Club, Deck 15"], ["5:00pm", "Ship sails from Miami", ""], ["8:00–8:45pm", "Love Love Love", ""], ["9:30–10:15pm", "The Diva Goes West", ""], ["11pm–late", "PJ Party", ""]], [["6:00–8:00pm", "Up With A Twist (dinner show)", "The Manor"], ["7:30–8:30pm", "Duel Reality", "The Red Room"], ["10:45pm–late", "Bingo Blitz After Dark", ""]], [["5:00–6:00pm", "Murder in the Manor (book on board)", "The Manor"], ["7:30–8:30pm", "Red Hot", "The Red Room"]], [["6:00pm", "Ship sails from Philipsburg", ""], ["6:30–7:30pm", "The Tricksters", "The Manor"], ["7:30–8:30pm", "Out of Time", "The Red Room"]], [["9:00am", "Arrive Tortola", ""], ["5:30–6:30pm", "Duets", "The Manor"], ["11pm–late", "Disco Circus", ""]], [["8:00am", "Arrive St. Croix", ""], ["5:00–6:00pm", "Murder in the Manor", "The Manor"], ["6:00pm", "Ship sails", ""], ["7:30–8:30pm", "Red Hot", "The Red Room"]], [["8:00am", "Arrive San Juan", ""], ["4:30–6:30pm", "Up With A Twist (dinner show)", "The Manor"], ["5:00pm", "Ship sails", ""], ["7:30–8:30pm", "Duel Reality", "The Red Room"]], [["10:00am", "Arrive Puerto Plata", ""], ["7:00pm", "Ship sails", ""], ["7:30–8:30pm", "The Tricksters", "The Red Room"], ["8:30–9:30pm", "Duets", ""], ["9:00pm", "SCARLET NIGHT 🔴", ""]], [["4:30–6:30pm", "Up With A Twist (dinner show)", "The Manor"], ["7:30–8:30pm", "The Tricksters", "The Red Room"], ["10:00–11:00pm", "Out of Time", "The Red Room"], ["11pm–late", "Ugly Sweater PJ Party", "The Manor"]], [], []];
 var WX={"MIA": {"k": "3593071", "n": "Miami", "lat": 25.77, "lon": -80.17, "tz": -5, "hi": 78, "lo": 65, "sea": 77}, "SXM": {"k": "249080", "n": "St. Maarten", "lat": 18.02, "lon": -63.05, "tz": -4, "hi": 84, "lo": 75, "sea": 81}, "BVI": {"k": "352453", "n": "Tortola", "lat": 18.42, "lon": -64.62, "tz": -4, "hi": 84, "lo": 75, "sea": 81}, "STX": {"k": "356332", "n": "St. Croix", "lat": 17.71, "lon": -64.88, "tz": -4, "hi": 84, "lo": 74, "sea": 81}, "SJU": {"k": "275478", "n": "San Juan", "lat": 18.47, "lon": -66.11, "tz": -4, "hi": 84, "lo": 73, "sea": 81}, "POP": {"k": "125595", "n": "Puerto Plata", "lat": 19.8, "lon": -70.69, "tz": -4, "hi": 84, "lo": 70, "sea": 80}, "BIM": {"k": "1077732", "n": "Bimini", "lat": 25.73, "lon": -79.3, "tz": -5, "hi": 79, "lo": 70, "sea": 77}};
 var DAYWX=[["MIA", null], ["SXM", [23.5, -72.5, -4]], ["SXM", [20.5, -66.5, -4]], ["SXM", null], ["BVI", null], ["STX", null], ["SJU", null], ["POP", null], ["BIM", [22.8, -75.5, -5]], ["BIM", null], ["MIA", null]];
+var OUTFIT=["o-pj", "", "", "", "", "", "", "o-scarlet", "o-sweater o-pj", "o-lei", ""];
+var OUTLINE=["😴 Octo's in pajamas for tonight's PJ Party", "", "", "", "", "", "", "🎀 Bow tie on. Scarlet Night at 9!", "🧶 Ugly sweater and nightcap, ready for the PJ Party", "🌺 Lei on. Last beach day!", ""];
+var PRICES={"martini": 14, "negroni": 14, "whisky": 13, "mezcal": 14, "rum": 13, "wine": 12, "bubbles": 13, "other": 12};
+var SAIL=[1020,null,null,1080,1080,1080,1020,1140,null,1080,null];
 var TIPS=["Open the Sailor App tonight and lock in your dinner times for the week. The good slots go fast.", "Pace rule for the whole trip: one drink, one water, one lap of the deck. Repeat.", "Sea days run long. Make sunset your first pour so the evening doesn't start at noon.", "Take a refillable water bottle ashore. Island heat is thirsty work, and six o'clock tastes better hydrated.", "Check the all-aboard time in the app before you wander. Missing the ship is the one hangover nobody fixes.", "Buying rum ashore? Check the app's rules on bringing bottles back on board before you buy big.", "Halfway check: look at your Voyage Log. Count your six o'clock wins and keep the streak alive.", "Scarlet Night is tonight at 9: wear red. Toast six o'clock ashore, then be back aboard before the 7pm sail.", "Ugly Sweater PJ Party at 11pm. Pack something ridiculous. Free-pass day, so pace it: water between rounds.", "Sun plus drinks hits twice as hard. Shade and coconut water until six, then a slow sunset sip.", "Disembark morning: check your tab in the app the night before and save the last espresso for the skyline."];
 var DRINKS=[
  {k:"martini",e:"🍸",n:"Martini"},{k:"negroni",e:"🍊",n:"Negroni"},{k:"whisky",e:"🥃",n:"Whisky"},{k:"mezcal",e:"🌵",n:"Mezcal"},
@@ -607,7 +697,7 @@ function $(id){return document.getElementById(id)}
 function pad(n){return String(n).padStart(2,"0")}
 function ymd(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-function fresh(){return {v:3,deepBlue:"2026-12-08",cap:5,muted:false,
+function fresh(){return {v:3,deepBlue:"2026-12-08",cap:5,muted:false,prices:{},credit:0,badges:{},
   checklist:[{id:"move",t:"Move: gym, deck run or a port wander"},{id:"meet",t:"Meet a new sailor"},{id:"sunset",t:"Catch the sunset on deck"}],
   days:{}}}
 function merge(s){var f=fresh(); if(!s||typeof s!=="object") return f;
@@ -615,6 +705,9 @@ function merge(s){var f=fresh(); if(!s||typeof s!=="object") return f;
   if(!Array.isArray(o.checklist)) o.checklist=fresh().checklist;
   if(!o.days||typeof o.days!=="object") o.days={};
   if(typeof o.cap!=="number"||o.cap<1||o.cap>12) o.cap=5;
+  if(!o.prices||typeof o.prices!=="object") o.prices={};
+  if(typeof o.credit!=="number"||o.credit<0) o.credit=0;
+  if(!o.badges||typeof o.badges!=="object") o.badges={};
   if(!s.v||s.v<2){ if(o.deepBlue==="2026-12-01") o.deepBlue="2026-12-08"; migrated=true; }
   if(!s.v||s.v<3){ if(o.cap===3) o.cap=5; o.v=3; migrated=true; }
   return o;}
@@ -717,13 +810,15 @@ function horn(){ var a=ac(), t=a.currentTime, f=a.createBiquadFilter(), g=a.crea
   [98,146.8,196].forEach(function(fr){var o=a.createOscillator(); o.type="sawtooth"; o.frequency.value=fr; o.connect(f); o.start(t); o.stop(t+1.7);});
   f.connect(g); g.connect(a.destination); }
 /* named sound effects (all respect the bell button) */
-function sfx(kind){ if(state.muted) return; try{ var a=ac(), t=a.currentTime;
+var touched=false; ["pointerdown","touchstart","keydown"].forEach(function(ev){ document.addEventListener(ev,function(){touched=true},{once:true,passive:true}); });
+function sfx(kind){ if(state.muted||!touched) return; try{ var a=ac(), t=a.currentTime;
   if(kind==="pour"){ for(var i=0;i<5;i++) bloop(260+Math.random()*420,t+i*.06+Math.random()*.03,.12); pan(784,t+.32,.13); pan(1175,t+.44,.1); }
   else if(kind==="drop"){ bloop(900,t,.18); bloop(1300,t+.09,.08); }
   else if(kind==="check"){ pan(1047,t,.12); pan(1319,t+.1,.1); }
   else if(kind==="wave"){ whoosh(1.8,.32); }
   else if(kind==="soon"){ pan(659,t,.12); pan(880,t+.15,.12); pan(659,t+.3,.08); }
   else if(kind==="six"){ horn(); [523,659,784,1047,784,1047].forEach(function(f,i){pan(f,t+1.4+i*.14,.13)}); whoosh(2.4,.25); }
+  else if(kind==="aboard"){ horn(); pan(784,t+1.3,.12); pan(784,t+1.6,.12); }
   else if(kind==="tap"){ for(var j=0;j<3;j++) bloop(400+Math.random()*500,t+j*.07,.1); }
 }catch(e){} }
 /* ambient ocean music: rolling surf + slow steel-pan melody in a major pentatonic */
@@ -830,6 +925,7 @@ function moodAndLine(){
   /* outside warnings, Octo mixes in the selected day's own tip, food and fact */
   if(mood!=="m-over"){
     var day=VOY[idx(sel)], di=idx(sel), daily=["💡 Octo's tip: "+TIPS[di],"🍴 Dinner tonight: "+restoOf(DINNER[di].r).n+". "+restoOf(DINNER[di].r).octo,"🍽 Ashore, try: "+FOODS[di],"📜 "+FACTS[di],day.octo];
+    if(OUTLINE[di]) daily.unshift(OUTLINE[di]);
     var ww=wxFor(di); daily.splice(1,0,ww.emo+" Weather"+(ww.via?" near "+ww.via:"")+": "+ww.hi+"°"+(ww.live?", "+ww.rain+"% chance of showers":" (typical)")+". Sunset ≈"+ww.sunset+".");
     var hs=SHOWS[di].filter(function(x){return /pm/.test(x[0])&&!/sails|Arrive/.test(x[1])}); if(hs.length) daily.splice(2,0,"🎭 Tonight: "+hs[hs.length-1][1]+" at "+hs[hs.length-1][0].replace(/–.*$/,"")+". "+(hs.length>1?"Plus "+hs.slice(0,-1).map(function(x){return x[1]}).join(", ")+".":""));
     var mix=[]; for(var q=0;q<Math.max(lines.length,daily.length);q++){ if(lines[q]) mix.push(lines[q]); if(daily[q]) mix.push(daily[q]); }
@@ -857,7 +953,7 @@ function render(){
   $("sub").textContent=sub;
   $("mute").textContent=state.muted?"🔕":"🔔";
   var ml=moodAndLine(), sky=skyFor(C,isToday), oc=$("octo");
-  oc.setAttribute("class","porthole octo "+ml.mood+(sky.cls?" "+sky.cls:""));
+  oc.setAttribute("class","porthole octo "+ml.mood+(sky.cls?" "+sky.cls:"")+(OUTFIT[i]?" "+OUTFIT[i]:""));
   $("sunG").setAttribute("transform","translate("+sky.x+","+sky.y+")");
   if(ml.line!==lastSpeech){var sp=$("speech"); sp.textContent=ml.line; sp.classList.toggle("long",ml.line.length>70); sp.classList.toggle("xlong",ml.line.length>130); sp.classList.remove("pop"); void sp.offsetWidth; sp.classList.add("pop"); lastSpeech=ml.line;}
 
@@ -875,7 +971,8 @@ function render(){
 
   /* port card */
   $("port").innerHTML='<div class="port-head"><div class="port-emo">'+v.emo+'</div><div><div class="port-name">'+esc(v.port)+'</div>'
-    +'<div class="port-meta">'+dateLabel(v.d)+" · "+esc(v.meta)+'</div></div></div>'
+    +'<div class="port-meta">'+dateLabel(v.d)+" · "+esc(v.meta)+'</div>'+(SAIL[i]?(function(){var left=SAIL[i]-C.mins, td=sel===C.date&&left>0;
+      return '<div class="aboard'+(td&&left<=60?" soon":"")+'">⚓ Ship sails '+mfmt(SAIL[i])+(td?' · in '+hm(left):'')+'</div>';})():'')+'</div></div>'
     +wxHTML(i)
     +'<div class="tips"><div class="tip fact"><b>📜 Fun fact</b><span>'+esc(FACTS[i])+'</span></div>'
     +'<div class="tip"><b>🚶 Wander</b><span>'+esc(v.wander)+'</span></div>'
@@ -973,6 +1070,7 @@ function render(){
     bh+='<div class="bar'+(isFree(x.d)?" free":"")+(nn>cap?" over":"")+(nn?"":" zero")+(x.d===sel?" sel":"")+'" data-day="'+x.d+'">'
       +(e?'<span class="fl">🚩</span>':"")+'<i style="height:'+h+'px"></i><em>D'+(j+1)+'</em></div>'});
   $("bars").innerHTML=bh;
+  renderExtras(vstats());
 }
 
 
@@ -986,6 +1084,7 @@ function sunsetMin(dateStr,lat,lon,tz){
   var ha=Math.acos(Math.cos(90.833*r)/(Math.cos(lat*r)*Math.cos(de))-Math.tan(lat*r)*Math.tan(de))/r;
   return Math.round(720-4*(lon-ha)-eq+tz*60);
 }
+function sunsetMinFor(i){ var dw=DAYWX[i], loc=WX[dw[0]], at=dw[1]; return sunsetMin(VOY[i].d, at?at[0]:loc.lat, at?at[1]:loc.lon, at?at[2]:loc.tz); }
 function mfmt(m){var h=Math.floor(m/60), mm=m%60; return fmt(pad(h)+":"+pad(mm));}
 function wxEmo(icon){icon=+icon; if(icon<=2) return "☀️"; if(icon<=5) return "🌤️"; if(icon<=8) return "☁️"; if(icon===11) return "🌫️";
   if(icon===18) return "🌧️"; if((icon>=15&&icon<=17)||icon===41||icon===42) return "⛈️"; if((icon>=12&&icon<=14)||icon===39||icon===40) return "🌦️";
@@ -1071,6 +1170,100 @@ function wxTurnOn(btn){ if(!MCP) return; btn.disabled=true; btn.textContent="ask
    .catch(function(e){ wxError(e); render(); toast(e&&e.code==="approval_required"?"Live forecast needs your OK in claude.ai":"Couldn't reach AccuWeather just now"); });
 }
 
+
+/* ---------- voyage stats, bar tab, badges, report ---------- */
+function priceOf(k){ var v=state.prices[k]; return (typeof v==="number"&&v>=0)?v:(PRICES[k]||12); }
+function money(v){ return "$"+(Math.round(v*100)/100).toFixed(v%1?2:0); }
+var MOODS=[[4,"😎","great"],[3,"🙂","good"],[2,"😐","meh"],[1,"🥴","rough"]];
+function vstats(){
+  var C=clock(), o={days:[],total:0,byType:{},spent:0,water:0,broke:0,over:0,kept:0,restr:0,best:0,streak:0,earliest:null,firsts:[],logged:0,portsToasted:0,hydro:0,dryPast:0,allChecks:0,moods:[]};
+  VOY.forEach(function(x,j){ var d=peek(x.d), n=d.drinks.length, er=d.drinks.some(function(y){return early(x.d,y.t)});
+    o.total+=n; o.water+=(d.water||0); if(n) o.logged++;
+    d.drinks.forEach(function(y){ o.byType[y.k]=(o.byType[y.k]||0)+1; o.spent+=priceOf(y.k); if(early(x.d,y.t)&&(!o.earliest||toMins(y.t)<toMins(o.earliest.t))) o.earliest={t:y.t,d:x.d}; });
+    if(n) o.firsts.push(toMins(d.drinks[0].t));
+    if(er) o.broke++; if(n>state.cap) o.over++;
+    if(n>=2&&(d.water||0)>=n) o.hydro++;
+    if(n&&/^(Philipsburg|Road|Fred|San Juan|Puerto|The Beach)/.test(x.port)) o.portsToasted++;
+    if(x.d<C.date&&n===0) o.dryPast++;
+    if(state.checklist.length&&state.checklist.every(function(it){return d.checks&&d.checks[it.id]})) o.allChecks++;
+    if(x.d<=C.date&&!isFree(x.d)){ o.restr++; if(er) o.streak=0; else { o.kept++; o.streak++; if(o.streak>o.best) o.best=o.streak; } }
+    if(d.mood&&j>0) o.moods.push({m:d.mood, prev:peek(VOY[j-1].d).drinks.length});
+  });
+  var fav=null; for(var k in o.byType) if(!fav||o.byType[k]>o.byType[fav]) fav=k; o.fav=fav;
+  o.avgFirst=o.firsts.length?Math.round(o.firsts.reduce(function(a,b){return a+b},0)/o.firsts.length):null;
+  o.done=C.date>=VOY[VOY.length-1].d;
+  return o;
+}
+var BADGES=[
+ {id:"pour",e:"🍸",n:"First Pour",d:"Log your first drink of the voyage",t:function(v){return v.total>=1}},
+ {id:"six3",e:"🌅",n:"Six O'Clock Sailor",d:"3 rule days in a row with no early pour",t:function(v){return v.best>=3}},
+ {id:"six7",e:"🎖️",n:"Admiral of Six",d:"7 rule days in a row with no early pour",t:function(v){return v.best>=7}},
+ {id:"hydro",e:"💧",n:"Hydration Hero",d:"A water for every drink on a 2+ drink night",t:function(v){return v.hydro>=1}},
+ {id:"dry",e:"🌵",n:"Dry Dock",d:"A whole day with zero drinks",t:function(v){return v.dryPast>=1}},
+ {id:"steady",e:"🧭",n:"Steady Hand",d:"4 nights logged and never over your cap",t:function(v){return v.logged>=4&&v.over===0}},
+ {id:"deep",e:"🐋",n:"Deep Blue Diver",d:"Raise a glass on Deep Blue Day",t:function(){return !!state.deepBlue&&peek(state.deepBlue).drinks.length>0}},
+ {id:"scarlet",e:"🔴",n:"Scarlet Star",d:"A drink on Scarlet Night (Dec 7)",t:function(){return peek("2026-12-07").drinks.length>0}},
+ {id:"island",e:"🏝️",n:"Island Hopper",d:"Toast on 4 different port days",t:function(v){return v.portsToasted>=4}},
+ {id:"check",e:"✅",n:"Checklist Champ",d:"Tick every checklist item in one day",t:function(v){return v.allChecks>=1}},
+ {id:"fresh",e:"😎",n:"Fresh Fin",d:"Wake up feeling great",t:function(v){return v.moods.some(function(x){return x.m===4})}},
+ {id:"budget",e:"💳",n:"Budget Barnacle",d:"Finish the voyage within your bar tab credit",t:function(v){return v.done&&state.credit>0&&v.spent<=state.credit}}
+];
+var newBadge=null;
+function checkBadges(v){
+  var added=[]; BADGES.forEach(function(b){ if(!state.badges[b.id]&&b.t(v)){ state.badges[b.id]=clock().date; added.push(b); } });
+  if(added.length){ newBadge=added[0].id; save(); setTimeout(function(){ toast("🏅 New badge: "+added[0].e+" "+added[0].n+"!"); sfx("check"); },600); setTimeout(function(){newBadge=null; render();},2600); }
+}
+function grade(v){
+  if(!v.total&&!v.restr) return {g:"—",line:"Nothing logged yet. Octo is waiting with a fresh logbook."};
+  var sc=100-v.broke*15-v.over*10+Math.min(v.hydro,5)*2+(v.best>=7?4:0);
+  if(sc>=100) return {g:"A+",line:"Flawless. The six o'clock rule never stood a chance against you. Octo is framing this."};
+  if(sc>=90) return {g:"A",line:"Smooth sailing. A captain's voyage with a wobble or two."};
+  if(sc>=80) return {g:"B",line:"Solid voyage. A few early pours, but the ship held course."};
+  if(sc>=70) return {g:"C",line:"Choppy waters. Octo loves you anyway."};
+  return {g:"Arr",line:"A true pirate's voyage. Octo has notes, but mostly hugs."};
+}
+function renderExtras(v){
+  var C=clock(), i=idx(sel), d=peek(sel);
+  /* morning check-in */
+  $("moodDay").textContent="D"+(i+1)+" · "+dateLabel(sel);
+  if(i===0){ $("moodQ").textContent="First morning check-in is tomorrow. Tonight, enjoy the sail-away!"; $("moods").innerHTML=""; }
+  else { var pn=peek(VOY[i-1].d).drinks.length;
+    $("moodQ").textContent="How do you feel this morning? Last night: "+pn+" drink"+(pn===1?"":"s")+".";
+    $("moods").innerHTML=MOODS.map(function(m){return '<button class="md'+(d.mood===m[0]?" on":"")+'" data-m="'+m[0]+'">'+m[1]+'<small>'+m[2]+'</small></button>'}).join(""); }
+  /* bar tab */
+  var tonight=d.drinks.reduce(function(a,x){return a+priceOf(x.k)},0);
+  $("tabTotal").textContent=money(v.spent); $("tabTonight").textContent=(sel===C.date?"tonight ":"this day ")+money(tonight);
+  var tc=$("tabCredit");
+  if(state.credit>0){ var left=state.credit-v.spent; tc.className="tab-credit "+(left>=0?"ok":"over"); tc.innerHTML=(left>=0?"<b>"+money(left)+"</b>left of "+money(state.credit):"<b>"+money(-left)+" over</b>your "+money(state.credit)+" credit"); }
+  else { tc.className="tab-credit"; tc.innerHTML="Add your bar credit<br>to see what's left"; }
+  /* badges */
+  var got=BADGES.filter(function(b){return state.badges[b.id]}).length;
+  $("badgeCount").textContent=got+" of "+BADGES.length;
+  $("badges").innerHTML=BADGES.map(function(b){ var on=!!state.badges[b.id];
+    return '<button class="bd'+(on?"":" lock")+(newBadge===b.id?" new":"")+'" data-b="'+b.id+'"><i>'+(on?b.e:"🔒")+'</i>'+esc(b.n)+'</button>'}).join("");
+  /* report card */
+  var G=grade(v), fav=v.fav?drinkDef(v.fav):null;
+  var moodLine="—";
+  if(v.moods.length){ moodLine=MOODS.filter(function(m){return v.moods.some(function(x){return x.m===m[0]})}).map(function(m){
+      var xs=v.moods.filter(function(x){return x.m===m[0]}), a=xs.reduce(function(s,x){return s+x.prev},0)/xs.length; return m[1]+" after "+(Math.round(a*10)/10)+" drinks"; }).join(" · "); }
+  function mm(m){m=m%1440; return fmt(pad(Math.floor(m/60))+":"+pad(m%60));}
+  var rows=[["Total drinks",v.total+(v.logged?" over "+v.logged+" night"+(v.logged===1?"":"s"):"")],
+    ["Favorite drink",fav?fav.e+" "+fav.n+" ×"+v.byType[v.fav]:"—"],
+    ["Six o'clock wins",v.restr?v.kept+" of "+v.restr+" days":"—"],
+    ["Best streak",v.best+" day"+(v.best===1?"":"s")],
+    ["Earliest pour",v.earliest?"🚩 "+fmt(v.earliest.t)+" on D"+(idx(v.earliest.d)+1):"none 🎉"],
+    ["Average first pour",v.avgFirst!==null?mm(v.avgFirst):"—"],
+    ["Waters",v.water+" 💧"],
+    ["Bar tab",money(v.spent)+(state.credit>0?" of "+money(state.credit):"")],
+    ["Badges",got+" of "+BADGES.length],
+    ["Mornings",moodLine]];
+  $("repTag").textContent=v.done?"final":"so far";
+  $("report").innerHTML='<div class="grade"><b>'+G.g+'</b><span>'+esc(G.line)+'</span></div><ul class="rep-rows">'+rows.map(function(r){return '<li><span>'+r[0]+'</span><b>'+esc(r[1])+'</b></li>'}).join("")+'</ul>';
+  var txt="📜 My Ink & Tonic report card"+(v.done?"":" (so far)")+" — Brilliant Lady 🐙\nGrade: "+G.g+"\n"+rows.map(function(r){return r[0]+": "+r[1]}).join("\n")+"\n"+SHARE_URL;
+  $("repShare").href="https://wa.me/?text="+encodeURIComponent(txt);
+  checkBadges(v);
+}
+
 /* ---------- events ---------- */
 function selectDay(d){ if(!d||d===sel) return; sel=d; timeTouched=false; setTimeInput(); render(); scrollChip(); }
 function setTimeInput(){var C=clock(); $("tIn").value=sel===C.date?C.hhmm:"19:00"}
@@ -1100,6 +1293,15 @@ $("addForm").onsubmit=function(e){e.preventDefault(); var v=$("addIn").value.tri
   state.checklist.push({id:"c"+Date.now().toString(36),t:v.slice(0,60)}); $("addIn").value=""; save(); render(); toast("Added to Octo's list ✍️")};
 $("mute").onclick=function(){state.muted=!state.muted; save(); render(); if(!state.muted) sfx("tap")};
 $("music").onclick=toggleMusic;
+$("moods").onclick=function(e){ var b=e.target.closest("[data-m]"); if(!b) return; var d=dayOf(sel), m=+b.getAttribute("data-m");
+  d.mood=(d.mood===m?0:m); save(); render(); if(d.mood){ sfx("tap"); toast(["","🥴 Rough one. Water, coffee, sunshine. You've got this","😐 Noted. Easy morning, sailor","🙂 Nice! Steady as she goes","😎 Fresh as a sea breeze. Octo approves"][d.mood]); } };
+$("badges").onclick=function(e){ var b=e.target.closest("[data-b]"); if(!b) return; var B=BADGES.filter(function(x){return x.id===b.getAttribute("data-b")})[0];
+  toast((state.badges[B.id]?B.e+" "+B.n+": earned!":"🔒 "+B.n)+" · "+B.d); };
+(function(){ $("priceGrid").innerHTML=DRINKS.map(function(x){return '<label>'+x.e+" "+x.n+'<input type="number" inputmode="decimal" min="0" step="0.5" data-p="'+x.k+'" value="'+priceOf(x.k)+'"></label>'}).join("");
+  $("creditIn").value=state.credit||"";
+  $("priceGrid").addEventListener("change",function(e){ var k=e.target.getAttribute("data-p"); if(!k) return; var v=parseFloat(e.target.value); if(!(v>=0)) v=PRICES[k]; state.prices[k]=v; e.target.value=v; save(); render(); });
+  $("creditIn").addEventListener("change",function(){ var v=parseFloat(this.value); state.credit=(v>0?v:0); save(); render(); toast(state.credit?"💳 Bar credit set: "+money(state.credit):"Bar credit cleared"); });
+})();
 var SHARE_URL=(window.claude||!/^https?:/.test(location.protocol))?"https://alvinthechipmunk123.github.io/index/ink.html":location.href.split("#")[0];
 var SHARE_MSG="Ahoy! 🐙🍸 Meet Octo, my drink tracker for the Virgin Voyages Brilliant Lady cruise (Nov 30 – Dec 10). Bar opens at six! "+SHARE_URL;
 $("waLink").href="https://wa.me/?text="+encodeURIComponent(SHARE_MSG);
@@ -1109,8 +1311,8 @@ $("copyLink").onclick=function(){ var b=this;
 $("port").addEventListener("click",function(e){ var wb=e.target.closest("#wxOn"); if(wb) wxTurnOn(wb); });
 function nextTip(){ rot++; sfx("tap"); cheers(); render(); }
 $("speech").onclick=nextTip; $("octo").addEventListener("click",nextTip);
-$("reset").onclick=function(){sheet({title:"Reset the whole voyage?",text:"This clears every drink, water and checkmark. Your checklist items and Deep Blue Day stay.",ok:"Reset",no:"Keep it",
-  onOk:function(){state.days={}; save(); render(); sfx("wave"); toast("Fresh logbook. Anchors aweigh ⚓")}})};
+$("reset").onclick=function(){sheet({title:"Reset the whole voyage?",text:"This clears every drink, water, checkmark, mood and badge. Your checklist items, prices, bar credit and Deep Blue Day stay.",ok:"Reset",no:"Keep it",
+  onOk:function(){state.days={}; state.badges={}; save(); render(); sfx("wave"); toast("Fresh logbook. Anchors aweigh ⚓")}})};
 
 /* ---------- clock tick + alerts ---------- */
 var prev=clock();
@@ -1121,6 +1323,16 @@ function tick(){
   if(restricted&&C.date===prev.date){
     if(prev.mins<1065&&C.mins>=1065&&C.mins<1080) {toast("🐙 15 minutes to the bar. Pick your pour!"); sfx("soon");}
     if(prev.mins<1080&&C.mins>=1080&&C.mins<1110) banner();
+  }
+  var ti=idx(C.date);
+  if(ti>=0&&C.date===prev.date){
+    var S=SAIL[ti];
+    if(S&&ti>0){
+      if(prev.mins<S-60&&C.mins>=S-60&&C.mins<S-30){ sfx("aboard"); sheet({title:"⚓ Ship sails in 1 hour",text:VOY[ti].port.split(",")[0]+" sails at "+mfmt(S)+". All-aboard is usually 30 minutes before, so check the app and start heading back.",ok:"On my way",no:"Got it"}); }
+      if(prev.mins<S-30&&C.mins>=S-30&&C.mins<S){ sfx("aboard"); sheet({title:"🚨 30 minutes to sailing!",text:"Back aboard now, sailor. The ship sails at "+mfmt(S)+" and it won't wait for Octo either.",ok:"Running!",no:"I'm aboard"}); }
+    }
+    var ss=sunsetMinFor(ti);
+    if(prev.mins<ss-15&&C.mins>=ss-15&&C.mins<ss){ sfx("soon"); toast("🌅 Sunset in 15 minutes ("+mfmt(ss)+"). Head up on deck!"+(!isFree(C.date)&&ss<1080?" The view's free, the bar opens at six 😉":"")); }
   }
   prev=C;
   if(!timeTouched&&sel===C.date) $("tIn").value=C.hhmm;
