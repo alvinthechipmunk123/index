@@ -155,6 +155,24 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .fact b{display:block;font-family:Fredoka;font-size:16px;color:var(--navy)}
 .fact small{font-size:11px;color:#9C6B63}
 .fact.bad{background:#FFE1E1}.fact.bad b{color:var(--red)}
+/* low tide */
+.lowtide{background:linear-gradient(180deg,#F1FAFE 0%,#FFFDF8 70%);border-color:#CDE9F5}
+.lowtide h3{color:#1F5F8E}
+.lowtide .capctl button{background:#DDF0F8;color:#1F5F8E}
+.lowtide .capctl{color:#4E6A86}
+.tide-msg{font-family:Fredoka;font-weight:600;font-size:16px;color:var(--navy);margin-top:6px;line-height:1.3}
+.tide{display:flex;gap:5px;margin-top:10px;align-items:flex-end}
+.tide i{flex:1;height:14px;border-radius:8px;background:#E3F1F7;position:relative}
+.tide i.goal{background:linear-gradient(90deg,#BDE6F4,#8FD3EC)}
+.tide i.f{background:linear-gradient(90deg,#3FA7C9,#1F5F8E)}
+.tide i.f.over{background:linear-gradient(90deg,#FFB48A,#FF8A74)}
+.tide i.mark::after{content:"🎯";position:absolute;right:-8px;top:-18px;font-size:13px}
+.tide-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+.tide-stats div{background:#E8F6FC;border-radius:14px;padding:7px 4px;text-align:center;font-size:10.5px;color:#4E6A86;font-weight:700}
+.tide-stats b{display:block;font-family:Fredoka;font-size:19px;color:#1F5F8E;line-height:1.15}
+.pass{width:100%;margin-top:10px;border-radius:16px;padding:11px;font-family:Fredoka;font-weight:600;font-size:16px;color:#fff;
+  background:linear-gradient(180deg,#4FBCE0,#2B86B4);box-shadow:0 3px 0 #1F6E9C;touch-action:manipulation}
+.pass:active{transform:translateY(2px);box-shadow:0 1px 0 #1F6E9C}
 /* morning check-in */
 .mood-q{font-size:13.5px;color:#4A3A3A;margin-top:6px;line-height:1.35;font-weight:600}
 .moods{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
@@ -566,17 +584,18 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
     <div class="log" id="log"></div>
   </section>
 
+  <section class="card lowtide">
+    <h3>🌊 Low Tide <span class="capctl">goal <button id="goalMinus" aria-label="Lower goal">−</button><b id="goalV">2</b><button id="goalPlus" aria-label="Raise goal">+</button></span></h3>
+    <div class="tide-msg" id="tideMsg"></div>
+    <div class="tide" id="tide"></div>
+    <div class="tide-stats" id="tideStats"></div>
+    <button class="pass" id="passBtn">🙌 I passed on one</button>
+  </section>
+
   <section class="card">
     <h3>🍹 Drink Tracker <span class="trk-n"><b id="trkN">0</b><span><span id="trkLbl">drinks total</span><br><i id="trkTonight">this voyage</i></span></span></h3>
     <div class="trk" id="trk"></div>
     <div class="facts" id="facts"></div>
-  </section>
-
-  <section class="card">
-    <h3>💳 Bar Tab <span class="r" id="tabTonight"></span></h3>
-    <div class="tab-top"><div class="tab-big"><b id="tabTotal">$0</b><span>this voyage</span></div><div class="tab-credit" id="tabCredit"></div></div>
-    <label class="credit-in">Bar tab credit $ <input id="creditIn" type="number" inputmode="decimal" min="0" step="10" placeholder="0"></label>
-    <details class="prices"><summary>Edit drink prices</summary><div class="price-grid" id="priceGrid"></div><div class="rfoot">Set these to the menu prices on board. Virgin adds no tip or service charge to drinks, so the menu price is what you pay.</div></details>
   </section>
 
   <section class="card">
@@ -697,7 +716,7 @@ function $(id){return document.getElementById(id)}
 function pad(n){return String(n).padStart(2,"0")}
 function ymd(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-function fresh(){return {v:3,deepBlue:"2026-12-08",cap:5,muted:false,prices:{},credit:0,badges:{},
+function fresh(){return {v:3,deepBlue:"2026-12-08",cap:5,goal:2,muted:false,prices:{},credit:0,badges:{},
   checklist:[{id:"move",t:"Move: gym, deck run or a port wander"},{id:"meet",t:"Meet a new sailor"},{id:"sunset",t:"Catch the sunset on deck"}],
   days:{}}}
 function merge(s){var f=fresh(); if(!s||typeof s!=="object") return f;
@@ -708,6 +727,7 @@ function merge(s){var f=fresh(); if(!s||typeof s!=="object") return f;
   if(!o.prices||typeof o.prices!=="object") o.prices={};
   if(typeof o.credit!=="number"||o.credit<0) o.credit=0;
   if(!o.badges||typeof o.badges!=="object") o.badges={};
+  if(typeof o.goal!=="number"||o.goal<0) o.goal=2;
   if(!s.v||s.v<2){ if(o.deepBlue==="2026-12-01") o.deepBlue="2026-12-08"; migrated=true; }
   if(!s.v||s.v<3){ if(o.cap===3) o.cap=5; o.v=3; migrated=true; }
   return o;}
@@ -892,8 +912,10 @@ function add(k,t,btn,def){
   if(early(sel,t)) msg="🚩 Logged before six";
   else if(n===state.cap) msg="That's "+n+". Cap reached 🫧";
   else if(n>state.cap) msg="Ink alert! "+n+" on a "+state.cap+" cap 🦑";
+  else if(n===goal()) msg=def.e+" That's your goal. Water next and tomorrow is golden 💧";
+  else if(n<goal()) msg=def.e+" "+def.n+" logged. Nice and easy 💙";
   else if(d.water<n-1) msg=def.e+" Logged. Water next? 💧";
-  else msg=def.e+" "+def.n+" logged. Cheers! 🥂";
+  else msg=def.e+" Past your goal, still under the cap. You've got this 💙";
   toast(msg,"Undo",function(){ undoDrink(newest.id); });
   if(!timeTouched&&sel===clock().date) $("tIn").value=clock().hhmm;
 }
@@ -919,7 +941,7 @@ function moodAndLine(){
   else if(free){mood="m-free"; lines= why==="sail"?["Sail-away day! Free pass, wave bye to Miami 🎉","Day one rules: there are no rules 🎊","Welcome aboard, sailor! 🐙"]:["Deep Blue Day 🌊 The ocean is the only clock","Free pass at sea. Octo approves 🐙","Blue water, no rules, big smiles 💙"];}
   else if(isToday&&C.mins<1080){mood="m-wait"; var left=hm(1080-C.mins);
     lines=["Bar opens in "+left+". Hold fast, sailor ⚓","Eight arms, zero drinks till six 🐙","Espresso now, martini at six ☕","The sun is still climbing the mast ☀️ "+left+" to go"];}
-  else if(isToday){mood="m-open"; lines= n===0?["Sun's over the yardarm! 🍸","Bar's open and your glass is empty. Scandalous 😱","Stirred, up, extra cold, lemon twist?"]:[n+" down. Pace it like a pro 🌊","Cheers from all eight arms! 🥂","Water between rounds keeps Octo happy 💧"];}
+  else if(isToday){mood="m-open"; lines= (n>0&&n<goal())?["Nice and easy tonight. Octo is proud 💙","Slow sips, big sunsets 🌅","Under your goal and looking good 🐙"]:(n>0&&n===goal())?["Sweet spot reached. Water time? 💧","Right at your goal. Classy 🎩"]:n===0?["Sun's over the yardarm! 🍸","Bar's open and your glass is empty. Scandalous 😱","Stirred, up, extra cold, lemon twist?"]:[n+" down. Pace it like a pro 🌊","Cheers from all eight arms! 🥂","Water between rounds keeps Octo happy 💧"];}
   else if(sel<C.date){mood=anyEarly?"m-cap":"m-done"; lines= anyEarly?["That day had an early pour 🚩 Tomorrow's a new tide"]:n?[n+" drinks, all after six. Smooth sailing ⛵"]:["A dry day! Octo salutes you 🫡"];}
   else {mood="m-preview"; lines=[v.port+": bar opens at six 🍸",v.octo];}
   /* outside warnings, Octo mixes in the selected day's own tip, food and fact */
@@ -1172,11 +1194,12 @@ function wxTurnOn(btn){ if(!MCP) return; btn.disabled=true; btn.textContent="ask
 
 
 /* ---------- voyage stats, bar tab, badges, report ---------- */
+function goal(){ return Math.min(state.goal, state.cap); }
 function priceOf(k){ var v=state.prices[k]; return (typeof v==="number"&&v>=0)?v:(PRICES[k]||12); }
 function money(v){ return "$"+(Math.round(v*100)/100).toFixed(v%1?2:0); }
 var MOODS=[[4,"😎","great"],[3,"🙂","good"],[2,"😐","meh"],[1,"🥴","rough"]];
 function vstats(){
-  var C=clock(), o={days:[],total:0,byType:{},spent:0,water:0,broke:0,over:0,kept:0,restr:0,best:0,streak:0,earliest:null,firsts:[],logged:0,portsToasted:0,hydro:0,dryPast:0,allChecks:0,moods:[]};
+  var C=clock(), o={pastNights:0,lowNights:0,lowRun:0,lowBest:0,lowDrinkNights:0,oneNights:0,passes:0,days:[],total:0,byType:{},spent:0,water:0,broke:0,over:0,kept:0,restr:0,best:0,streak:0,earliest:null,firsts:[],logged:0,portsToasted:0,hydro:0,dryPast:0,allChecks:0,moods:[]};
   VOY.forEach(function(x,j){ var d=peek(x.d), n=d.drinks.length, er=d.drinks.some(function(y){return early(x.d,y.t)});
     o.total+=n; o.water+=(d.water||0); if(n) o.logged++;
     d.drinks.forEach(function(y){ o.byType[y.k]=(o.byType[y.k]||0)+1; o.spent+=priceOf(y.k); if(early(x.d,y.t)&&(!o.earliest||toMins(y.t)<toMins(o.earliest.t))) o.earliest={t:y.t,d:x.d}; });
@@ -1188,6 +1211,8 @@ function vstats(){
     if(state.checklist.length&&state.checklist.every(function(it){return d.checks&&d.checks[it.id]})) o.allChecks++;
     if(x.d<=C.date&&!isFree(x.d)){ o.restr++; if(er) o.streak=0; else { o.kept++; o.streak++; if(o.streak>o.best) o.best=o.streak; } }
     if(d.mood&&j>0) o.moods.push({m:d.mood, prev:peek(VOY[j-1].d).drinks.length});
+    o.passes+=(d.passes||0);
+    if(x.d<C.date){ o.pastNights++; if(n<=goal()){ o.lowNights++; o.lowRun++; if(o.lowRun>o.lowBest) o.lowBest=o.lowRun; if(n>=1) o.lowDrinkNights++; } else o.lowRun=0; if(n===1) o.oneNights++; }
   });
   var fav=null; for(var k in o.byType) if(!fav||o.byType[k]>o.byType[fav]) fav=k; o.fav=fav;
   o.avgFirst=o.firsts.length?Math.round(o.firsts.reduce(function(a,b){return a+b},0)/o.firsts.length):null;
@@ -1206,7 +1231,10 @@ var BADGES=[
  {id:"island",e:"🏝️",n:"Island Hopper",d:"Toast on 4 different port days",t:function(v){return v.portsToasted>=4}},
  {id:"check",e:"✅",n:"Checklist Champ",d:"Tick every checklist item in one day",t:function(v){return v.allChecks>=1}},
  {id:"fresh",e:"😎",n:"Fresh Fin",d:"Wake up feeling great",t:function(v){return v.moods.some(function(x){return x.m===4})}},
- {id:"budget",e:"💳",n:"Budget Barnacle",d:"Finish the voyage within your bar tab credit",t:function(v){return v.done&&state.credit>0&&v.spent<=state.credit}}
+ {id:"lowtide",e:"🌊",n:"Low Tide",d:"Finish a night at or under your goal",t:function(v){return v.lowDrinkNights>=1}},
+ {id:"shell",e:"🐚",n:"Seashell Streak",d:"3 low-tide nights in a row",t:function(v){return v.lowBest>=3}},
+ {id:"pass",e:"🙌",n:"Strong Pass",d:"Pass on 3 drinks",t:function(v){return v.passes>=3}},
+ {id:"light",e:"🪶",n:"Light as a Feather",d:"A night with exactly one drink",t:function(v){return v.oneNights>=1}}
 ];
 var newBadge=null;
 function checkBadges(v){
@@ -1215,7 +1243,7 @@ function checkBadges(v){
 }
 function grade(v){
   if(!v.total&&!v.restr) return {g:"—",line:"Nothing logged yet. Octo is waiting with a fresh logbook."};
-  var sc=100-v.broke*15-v.over*10+Math.min(v.hydro,5)*2+(v.best>=7?4:0);
+  var sc=100-v.broke*15-v.over*10+Math.min(v.hydro,5)*2+(v.best>=7?4:0)+Math.min(v.lowNights,6)*2+Math.min(v.passes,5);
   if(sc>=100) return {g:"A+",line:"Flawless. The six o'clock rule never stood a chance against you. Octo is framing this."};
   if(sc>=90) return {g:"A",line:"Smooth sailing. A captain's voyage with a wobble or two."};
   if(sc>=80) return {g:"B",line:"Solid voyage. A few early pours, but the ship held course."};
@@ -1224,18 +1252,26 @@ function grade(v){
 }
 function renderExtras(v){
   var C=clock(), i=idx(sel), d=peek(sel);
+  checkBadges(v);
   /* morning check-in */
   $("moodDay").textContent="D"+(i+1)+" · "+dateLabel(sel);
   if(i===0){ $("moodQ").textContent="First morning check-in is tomorrow. Tonight, enjoy the sail-away!"; $("moods").innerHTML=""; }
   else { var pn=peek(VOY[i-1].d).drinks.length;
-    $("moodQ").textContent="How do you feel this morning? Last night: "+pn+" drink"+(pn===1?"":"s")+".";
+    $("moodQ").textContent="How do you feel this morning? Last night: "+pn+" drink"+(pn===1?"":"s")+(pn<=goal()?(pn===0?". A dry night! 🌞":". A low-tide night 🌊 Well sailed!"):".");
     $("moods").innerHTML=MOODS.map(function(m){return '<button class="md'+(d.mood===m[0]?" on":"")+'" data-m="'+m[0]+'">'+m[1]+'<small>'+m[2]+'</small></button>'}).join(""); }
-  /* bar tab */
-  var tonight=d.drinks.reduce(function(a,x){return a+priceOf(x.k)},0);
-  $("tabTotal").textContent=money(v.spent); $("tabTonight").textContent=(sel===C.date?"tonight ":"this day ")+money(tonight);
-  var tc=$("tabCredit");
-  if(state.credit>0){ var left=state.credit-v.spent; tc.className="tab-credit "+(left>=0?"ok":"over"); tc.innerHTML=(left>=0?"<b>"+money(left)+"</b>left of "+money(state.credit):"<b>"+money(-left)+" over</b>your "+money(state.credit)+" credit"); }
-  else { tc.className="tab-credit"; tc.innerHTML="Add your bar credit<br>to see what's left"; }
+  /* low tide */
+  var G2=goal(), n2=d.drinks.length, isT=sel===C.date, msg;
+  $("goalV").textContent=G2;
+  if(n2===0) msg=isT&&C.mins<1080&&!isFree(sel)?"Fresh slate tonight. Goal: "+G2+" or fewer 💙":(sel<C.date?"A dry day. Octo is beaming 🌞":"Nothing yet. Every glass tonight is a choice, and you're steering 🧭");
+  else if(n2<G2) msg="Nice and easy: "+n2+" of "+G2+". Savor it, there's no rush 🍸";
+  else if(n2===G2) msg="Right on your goal. Perfect moment to switch to water 💧 Tomorrow-you says thanks";
+  else if(n2<=state.cap) msg="A little past your goal, still under the cap. A water next keeps it a good night 💙";
+  else msg="Over the cap tonight. Tomorrow's a new tide, and Octo's still cheering for you 🌊";
+  $("tideMsg").textContent=msg;
+  var slots=Math.max(G2,n2,1), th="";
+  for(var q=0;q<slots;q++) th+='<i class="'+(q<G2?"goal":"")+(q<n2?" f":"")+(q<n2&&q>=G2?" over":"")+(q===G2-1?" mark":"")+'"></i>';
+  $("tide").innerHTML=th;
+  $("tideStats").innerHTML='<div><b>'+v.lowRun+'</b>low-tide streak</div><div><b>'+v.lowNights+(v.pastNights?'/'+v.pastNights:'')+'</b>low-tide nights</div><div><b>'+(d.passes||0)+' · '+v.passes+'</b>passed tonight · trip</div>';
   /* badges */
   var got=BADGES.filter(function(b){return state.badges[b.id]}).length;
   $("badgeCount").textContent=got+" of "+BADGES.length;
@@ -1254,14 +1290,14 @@ function renderExtras(v){
     ["Earliest pour",v.earliest?"🚩 "+fmt(v.earliest.t)+" on D"+(idx(v.earliest.d)+1):"none 🎉"],
     ["Average first pour",v.avgFirst!==null?mm(v.avgFirst):"—"],
     ["Waters",v.water+" 💧"],
-    ["Bar tab",money(v.spent)+(state.credit>0?" of "+money(state.credit):"")],
+    ["Low-tide nights",v.lowNights+" of "+v.pastNights+" (goal "+goal()+" or fewer)"],
+    ["Drinks passed on",v.passes+" 🙌"],
     ["Badges",got+" of "+BADGES.length],
     ["Mornings",moodLine]];
   $("repTag").textContent=v.done?"final":"so far";
   $("report").innerHTML='<div class="grade"><b>'+G.g+'</b><span>'+esc(G.line)+'</span></div><ul class="rep-rows">'+rows.map(function(r){return '<li><span>'+r[0]+'</span><b>'+esc(r[1])+'</b></li>'}).join("")+'</ul>';
   var txt="📜 My Ink & Tonic report card"+(v.done?"":" (so far)")+" — Brilliant Lady 🐙\nGrade: "+G.g+"\n"+rows.map(function(r){return r[0]+": "+r[1]}).join("\n")+"\n"+SHARE_URL;
   $("repShare").href="https://wa.me/?text="+encodeURIComponent(txt);
-  checkBadges(v);
 }
 
 /* ---------- events ---------- */
@@ -1293,15 +1329,14 @@ $("addForm").onsubmit=function(e){e.preventDefault(); var v=$("addIn").value.tri
   state.checklist.push({id:"c"+Date.now().toString(36),t:v.slice(0,60)}); $("addIn").value=""; save(); render(); toast("Added to Octo's list ✍️")};
 $("mute").onclick=function(){state.muted=!state.muted; save(); render(); if(!state.muted) sfx("tap")};
 $("music").onclick=toggleMusic;
+$("goalMinus").onclick=function(){ if(state.goal>0){ state.goal=Math.min(state.goal,state.cap)-1; save(); render(); } };
+$("goalPlus").onclick=function(){ if(state.goal<state.cap){ state.goal++; save(); render(); } };
+$("passBtn").onclick=function(){ var d=dayOf(sel); d.passes=(d.passes||0)+1; save(); render(); sfx("check"); burst(this,"🙌"); cheers();
+  toast(["🙌 Passed on one! Octo is doing a happy wiggle","🌊 Strong pass. That's how low tides are made","💙 Future-you just high-fived you","✨ Skipping one is the classiest drink of all"][Math.floor(Math.random()*4)],"Undo",function(){ var d2=dayOf(sel); d2.passes=Math.max(0,(d2.passes||0)-1); save(); render(); }); };
 $("moods").onclick=function(e){ var b=e.target.closest("[data-m]"); if(!b) return; var d=dayOf(sel), m=+b.getAttribute("data-m");
   d.mood=(d.mood===m?0:m); save(); render(); if(d.mood){ sfx("tap"); toast(["","🥴 Rough one. Water, coffee, sunshine. You've got this","😐 Noted. Easy morning, sailor","🙂 Nice! Steady as she goes","😎 Fresh as a sea breeze. Octo approves"][d.mood]); } };
 $("badges").onclick=function(e){ var b=e.target.closest("[data-b]"); if(!b) return; var B=BADGES.filter(function(x){return x.id===b.getAttribute("data-b")})[0];
   toast((state.badges[B.id]?B.e+" "+B.n+": earned!":"🔒 "+B.n)+" · "+B.d); };
-(function(){ $("priceGrid").innerHTML=DRINKS.map(function(x){return '<label>'+x.e+" "+x.n+'<input type="number" inputmode="decimal" min="0" step="0.5" data-p="'+x.k+'" value="'+priceOf(x.k)+'"></label>'}).join("");
-  $("creditIn").value=state.credit||"";
-  $("priceGrid").addEventListener("change",function(e){ var k=e.target.getAttribute("data-p"); if(!k) return; var v=parseFloat(e.target.value); if(!(v>=0)) v=PRICES[k]; state.prices[k]=v; e.target.value=v; save(); render(); });
-  $("creditIn").addEventListener("change",function(){ var v=parseFloat(this.value); state.credit=(v>0?v:0); save(); render(); toast(state.credit?"💳 Bar credit set: "+money(state.credit):"Bar credit cleared"); });
-})();
 var SHARE_URL=(window.claude||!/^https?:/.test(location.protocol))?"https://alvinthechipmunk123.github.io/index/ink.html":location.href.split("#")[0];
 var SHARE_MSG="Ahoy! 🐙🍸 Meet Octo, my drink tracker for the Virgin Voyages Brilliant Lady cruise (Nov 30 – Dec 10). Bar opens at six! "+SHARE_URL;
 $("waLink").href="https://wa.me/?text="+encodeURIComponent(SHARE_MSG);
